@@ -1,8 +1,30 @@
 import streamlit as st
 from supabase import create_client, Client
 
-# 1. Configuração da Página Mestra (Tela Cheia)
+# 1. Configuração da Página Mestra (Tela Cheia) - OBRIGATORIAMENTE O PRIMEIRO COMANDO
 st.set_page_config(page_title="JP Client Vault - Limpa Nome", layout="wide", initial_sidebar_state="expanded")
+
+# ==========================================
+# MATRIZ DE ESTILO PROFISSIONAL (CSS)
+# ==========================================
+def injetar_css_profissional():
+    st.markdown("""
+        <style>
+        /* Ocultar elementos padrão do Streamlit para visual de site real */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        
+        /* Customização da cor de fundo de todo o site */
+        .stApp {
+            background-color: #f4f6f9; /* Um tom de cinza super claro e elegante */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# Ativando o estilo imediatamente na inicialização
+injetar_css_profissional()
+# ==========================================
 
 # 2. Inicialização do Motor de Banco de Dados (Supabase)
 @st.cache_resource
