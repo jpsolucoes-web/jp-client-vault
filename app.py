@@ -220,3 +220,4 @@ if not st.session_state['usuario_autenticado']:
     tela_login()
 else:
     tela_principal()
+# forçando atualizacao painel
