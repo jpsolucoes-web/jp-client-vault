@@ -49,15 +49,16 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #1e293b !important; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
-            color: #ffffff !important; font-size: 16px !important; font-weight: 500 !important;
+        /* AUMENTO DA FONTE DO MENU LATERAL PARA NAVEGAÇÃO PERFEITA */
+        [data-testid="stSidebar"] .stRadio label span {
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            padding: 4px 0px !important;
+            color: #f8fafc !important;
         }
         
-        /* Ajuste Fino para Mídias (Imagens e Vídeos) ficarem perfeitas e sem vácuo */
-        [data-testid="stImage"] img, [data-testid="stVideo"] video {
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
-            object-fit: cover;
+        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
+            color: #ffffff !important; font-size: 16px !important; font-weight: 500 !important;
         }
         
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -82,7 +83,7 @@ def injetar_css_profissional():
         .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Botão WhatsApp Flutuante 100% Minimalista (Apenas Ícone) */
+        /* Botão WhatsApp Flutuante Minimalista (Apenas Ícone) */
         .whatsapp-float {
             position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important;
             border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
@@ -99,7 +100,7 @@ def injetar_css_profissional():
 
 injetar_css_profissional()
 
-# Ícone WhatsApp Limpo e Redondo (Sem texto)
+# Ícone WhatsApp Limpo e Redondo
 st.markdown("""
     <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank" title="Precisa de Ajuda?">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -207,9 +208,32 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (ALINHAMENTO 100% PROFISSIONAL)
+    # 🏠 HOME PAGE (SIMETRIA PERFEITA E ANIMAÇÃO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
+        # Injeta CSS apenas na Home para as mídias terem cravados 380px de altura e não deixarem vácuos
+        st.markdown("""
+            <style>
+            [data-testid="stImage"] img, [data-testid="stVideo"] video {
+                width: 100% !important;
+                height: 380px !important;
+                object-fit: cover !important;
+                border-radius: 15px !important;
+                box-shadow: 0px 8px 20px rgba(0,0,0,0.5) !important;
+            }
+            @keyframes pulso-radar {
+                0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+                70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            }
+            .relogio-container {
+                background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; 
+                border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; 
+                margin-bottom: 30px; animation: pulso-radar 2s infinite;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        
         st.markdown("<h1 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #94a3b8; margin-top: 0; margin-bottom: 20px;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
         
@@ -217,7 +241,7 @@ def tela_principal():
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; margin-bottom: 30px;">
+        <div class="relogio-container">
             <h3 style="margin: 0; color: #f59e0b; font-size: clamp(16px, 2vw, 20px);">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL ({d_br})</h3>
             <div id="clock_div" style="color: #10b981; font-size: clamp(24px, 4vw, 45px); font-weight: 900; letter-spacing: 2px; margin-top: 10px;">Calculando tempo...</div>
         </div>
@@ -238,8 +262,8 @@ def tela_principal():
         """
         components.html(clock_html, height=140)
         
-        # OTIMIZAÇÃO: 3 Colunas iguais garantindo que as mídias fiquem perfeitas
-        c_m1, c_m2, c_m3 = st.columns([1, 1, 1], gap="small")
+        # 3 Colunas iguais lado a lado. O CSS 'object-fit: cover' fará com que todas tenham exatamente 380px de altura
+        c_m1, c_m2, c_m3 = st.columns([1, 1, 1], gap="medium")
         with c_m1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: pass
@@ -296,7 +320,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COMPLETO)
+    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -514,7 +538,7 @@ def tela_principal():
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES</h3>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA</h3>
             <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
@@ -533,10 +557,10 @@ def tela_principal():
         st.subheader("Lista Paga – Passo a Passo Completo")
         with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
         with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -549,9 +573,17 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
+        
+        st.subheader("Perguntas Frequentes")
+        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4)
+    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
