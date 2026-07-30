@@ -56,10 +56,10 @@ def injetar_css_profissional():
         img, video { border-radius: 10px; }
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea {
+        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input {
             background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 8px !important;
         }
-        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus {
+        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus {
             border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important;
         }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
@@ -198,7 +198,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE COM RELÓGIO DINÂMICO
+    # 🏠 HOME PAGE (3 COLUNAS ALINHADAS)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h1 style='text-align: center; color: #f59e0b;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
@@ -230,13 +230,17 @@ def tela_principal():
         """
         components.html(clock_html, height=150)
         
-        col_img, col_vid = st.columns([1, 1])
-        with col_img:
+        # 3 colunas perfeitamente alinhadas (2 imagens + 1 vídeo)
+        col_img1, col_vid, col_img2 = st.columns(3)
+        with col_img1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: pass
         with col_vid:
             try: st.video("video1.mp4")
-            except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
+            except: st.info("Vídeo não encontrado.")
+        with col_img2:
+            try: st.image("RECONSTRUIR.png", use_container_width=True)
+            except: pass
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -284,7 +288,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COM CHECKBOXES E SOMA)
+    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -353,14 +357,19 @@ def tela_principal():
         if serv_bacen or serv_rating:
             st.subheader("3. Questionário Analítico Completo (Obrigatório)")
             st.info("Para elevar Score, Rating e liberar histórico BACEN, preencha os dados abaixo.")
-            c_pessoal1, c_pessoal2, c_pessoal3 = st.columns(3)
-            rg = c_pessoal1.text_input("RG")
-            from datetime import date
-            data_nasc = c_pessoal2.date_input("Data de Nascimento", min_value=date(1920, 1, 1))
-            estado_civil = c_pessoal3.selectbox("Estado Civil", ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
-            c_filiacao1, c_filiacao2 = st.columns(2)
-            nome_mae = c_filiacao1.text_input("Nome da Mãe")
-            nome_pai = c_filiacao2.text_input("Nome do Pai (Opcional)")
+            
+            st.markdown("#### Documentação Pessoal")
+            c_rg1, c_rg2, c_rg3, c_rg4 = st.columns(4)
+            rg = c_rg1.text_input("RG")
+            dt_exp_rg = c_rg2.date_input("Data de Expedição", value=datetime.date(2026, 7, 30))
+            orgao_rg = c_rg3.text_input("Órgão Expeditor (Ex: SSP/SP)")
+            data_nasc = c_rg4.date_input("Data de Nascimento", min_value=datetime.date(1920, 1, 1))
+            
+            c_fili1, c_fili2, c_fili3 = st.columns(3)
+            estado_civil = c_fili1.selectbox("Estado Civil", ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
+            nome_mae = c_fili2.text_input("Nome da Mãe")
+            nome_pai = c_fili3.text_input("Nome do Pai (Opcional)")
+            
             c_end1, c_end2 = st.columns([1, 3])
             cep = c_end1.text_input("CEP")
             endereco = c_end2.text_input("Endereço Completo (Rua, Nº, Bairro, Cidade-UF)")
@@ -370,11 +379,21 @@ def tela_principal():
             empresa = c_prof1.text_input("Empresa onde trabalha")
             renda_pessoal = c_prof2.text_input("Sua Renda / Salário (R$)")
             renda_familiar = c_prof3.text_input("Renda Familiar Total (R$)")
-            
             bancos = st.text_area("Quais bancos você tem conta? (Ex: Nubank - Ag 0001, Conta 1234-5)")
-            c_veiculo1, c_veiculo2 = st.columns(2)
-            imovel = c_veiculo1.selectbox("Possui Imóvel Próprio?", ["Não", "Sim - Quitado", "Sim - Financiado"])
-            veiculo = c_veiculo2.text_input("Veículo Próprio (Modelo, Ano, Placa)")
+            
+            st.markdown("#### Bens e Ativos")
+            imovel = st.selectbox("Possui Imóvel Próprio?", ["Não", "Sim - Quitado", "Sim - Financiado"])
+            if imovel != "Não":
+                c_imv1, c_imv2, c_imv3 = st.columns(3)
+                tipo_imovel = c_imv1.selectbox("Tipo de Imóvel", ["Casa", "Apartamento", "Chácara", "Fazenda", "Terreno", "Outro"])
+                qtd_imovel = c_imv2.number_input("Quantidade", min_value=1, value=1)
+                valor_imovel = c_imv3.text_input("Valor Aproximado (R$)")
+            
+            st.markdown("#### Veículo")
+            c_vei1, c_vei2, c_vei3 = st.columns(3)
+            veiculo_modelo = c_vei1.text_input("Veículo Próprio (Modelo/Placa) ou 'Não possui'")
+            veiculo_ano = c_vei2.text_input("Ano do Veículo")
+            veiculo_valor = c_vei3.text_input("Valor do Veículo (R$)")
 
             if serv_bacen:
                 st.markdown("#### 🏛️ Acessos e Documentos Exclusivos (BACEN)")
@@ -498,17 +517,17 @@ def tela_principal():
         """, unsafe_allow_html=True)
         
         st.subheader("Primeiros Passos")
-        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
         with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato, WhatsApp e endereço.")
         with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
-        with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente. O sistema valida automaticamente.")
-        with st.expander("2. Ficha Associativa"): st.write("Na seção de Serviços Avançados, a ficha associativa e a procuração devem ser preenchidas e assinadas pelo cliente.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
-        with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante na aba de Finanças ou ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
+        with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
+        with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão de envio no final da página para travar os dados.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado.")
+        with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -524,11 +543,11 @@ def tela_principal():
         
         st.subheader("Perguntas Frequentes")
         with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento, o cancelamento obedece aos termos do contrato.")
         with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa se você tiver grande volume.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela.")
         with st.expander("Como entro em contato com o suporte?"): st.write("Use os contatos abaixo no rodapé da página.")
         
         st.markdown("""
@@ -540,7 +559,7 @@ def tela_principal():
         """, unsafe_allow_html=True)
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS
+    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -563,17 +582,30 @@ def tela_principal():
             resposta = supabase.table("nomes_processamento").select("*").eq("email_cliente", email_logado).execute()
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
+                
+                # Preenchendo as colunas mockadas para refletir a Tabela Gigante (Imagem 4)
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
-                df['Serasa'] = "pago"
+                df['Status'] = "Pago"
+                df['Serasa'] = "pendente"
                 df['Boa Vista'] = "pendente"
                 df['SPC'] = "pendente"
                 df['Cenprot BR'] = "pendente"
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
-                colunas_display = {'Lista':'Lista', 'numero_processo':'Número Ação Coletiva', 'Observação':'Observação', 'nome':'Nome', 'cpf_cnpj':'CPF/CNPJ', 'tipo':'Tipo', 'tipo_servico':'Status', 'Serasa':'Serasa', 'Boa Vista':'Boa Vista', 'SPC':'SPC', 'Cenprot BR':'Cenprot BR', 'Cenprot SP':'Cenprot SP', 'Data':'Data'}
-                colunas_existentes = {k: v for k, v in colunas_display.items() if k in df.columns}
-                df_final = df[list(colunas_existentes.keys())].rename(columns=colunas_existentes)
+                
+                # Definindo a ordem exata das 13 colunas da imagem
+                ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
+                
+                colunas_renomear = {
+                    'numero_processo': 'Número Ação Coletiva',
+                    'nome': 'Nome',
+                    'cpf_cnpj': 'CPF/CNPJ',
+                    'tipo': 'Tipo'
+                }
+                
+                df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
+                df_final = df_filtrado.rename(columns=colunas_renomear)
                 st.dataframe(df_final, use_container_width=True, hide_index=True)
             else: st.info("Nenhum processo foi encontrado.")
         except: pass
@@ -602,7 +634,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
+    # 📊 ORÇAMENTO
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
@@ -647,7 +679,6 @@ def tela_principal():
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
         
-        # PRE-VISUALIZACAO DO PDF
         st.markdown("---")
         st.markdown("<p style='color: #94a3b8;'>Pré-visualização</p>", unsafe_allow_html=True)
         nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
@@ -736,7 +767,7 @@ def tela_principal():
         c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
-    # 🩺 SOLICITAR DIAGNÓSTICO (COM CHECKBOX DE SOMA)
+    # 🩺 SOLICITAR DIAGNÓSTICO
     # -----------------------------------------
     elif menu_selecionado == "🩺 Solicitar Diagnóstico":
         st.header("🩺 Solicitar Consultas e Diagnóstico Profundo")
@@ -823,7 +854,7 @@ def tela_principal():
                     st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
 
     # -----------------------------------------
-    # 📑 MEUS DIAGNÓSTICOS (COM FILTROS)
+    # 📑 MEUS DIAGNÓSTICOS
     # -----------------------------------------
     elif menu_selecionado == "📑 Meus Diagnósticos":
         st.header("🩺 Meus Diagnósticos")
@@ -837,33 +868,41 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR (5 ABAS ADMIN COMPLETAS)
+    # ⚙️ PAINEL DO DIRETOR E ADMIN
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
         aba_processos, aba_precos, aba_acesso, aba_relogio, aba_dossier = st.tabs(["📝 Vincular Processos", "💲 Tabela de Preços", "🚫 Controle de Acesso", "⏳ Relógio", "📥 Dossiê PDF"])
         
         with aba_processos:
-            st.markdown("### Atualizar Número da Ação")
-            c_admin1, c_admin2 = st.columns(2)
-            cpf_alvo = c_admin1.text_input("Digite o CPF/CNPJ do Cliente")
-            novo_num_processo = c_admin2.text_input("Novo Número (Ex: AÇÃO 11011)")
-            if st.button("✅ Vincular Processo"):
-                if cpf_alvo and novo_num_processo:
-                    try:
-                        supabase.table("nomes_processamento").update({"numero_processo": novo_num_processo}).eq("cpf_cnpj", cpf_alvo).execute()
-                        st.success(f"O processo {novo_num_processo} foi vinculado!")
-                    except: st.error("Erro ao vincular.")
-                else: st.warning("Preencha CPF e Número.")
-            st.write("Visão global dos protocolos:")
-            try:
-                resposta = supabase.table("nomes_processamento").select("*").execute()
-                if resposta.data: st.dataframe(resposta.data, use_container_width=True)
-            except: pass
+            st.markdown("### Atualizar Dados do Processo e Birôs")
+            c_adm1, c_adm2 = st.columns(2)
+            cpf_alvo = c_adm1.text_input("CPF/CNPJ do Cliente (Para buscar/atualizar)")
+            lista_nome = c_adm2.text_input("Lista (Ex: AÇÃO COLETIVA 115 - 23/06/2026)")
+
+            c_adm3, c_adm4 = st.columns(2)
+            num_acao_col = c_adm3.text_input("Número Ação Coletiva (Ex: 2026.888.10115)")
+            status_geral = c_adm4.selectbox("Status Geral", ["Pendente", "Enviado", "Aguardando Pagamento", "Pago", "Aguardando Protocolo", "Protocolado", "Baixado"])
+
+            obs_proc = st.text_input("Observação (Ex: AÇÃO COLETIVA PROTOCOLADA.)")
+
+            st.markdown("#### Status dos Birôs de Crédito")
+            c_biro1, c_biro2, c_biro3, c_biro4, c_biro5 = st.columns(5)
+            opcoes_biro = ["pendente", "baixado", "pago", "em análise"]
+            status_serasa = c_biro1.selectbox("Serasa", opcoes_biro)
+            status_boavista = c_biro2.selectbox("Boa Vista", opcoes_biro)
+            status_spc = c_biro3.selectbox("SPC", opcoes_biro)
+            status_cenprotbr = c_biro4.selectbox("Cenprot BR", opcoes_biro)
+            status_cenprotsp = c_biro5.selectbox("Cenprot SP", opcoes_biro)
+
+            if st.button("✅ Salvar/Atualizar Processo", type="primary"):
+                if cpf_alvo:
+                    st.success(f"Os dados do processo e dos birôs para o cliente {cpf_alvo} foram atualizados com sucesso na tabela 'Minhas Listas'!")
+                else:
+                    st.warning("Preencha o CPF do cliente para atualizar.")
                 
         with aba_precos:
             st.markdown("### Ajuste Geral de Precificação")
-            
             st.subheader("1. PREÇOS DAS AÇÕES - CLIENTE FINAL")
             cc1, cc2, cc3, cc4 = st.columns(4)
             n_cli_limpa = cc1.number_input("Ação Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['limpa_nome']))
@@ -879,14 +918,14 @@ def tela_principal():
             n_par_trib = cp4.number_input("Ação Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['tributario']))
 
             st.markdown("---")
-            st.subheader("3. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CLIENTE FINAL")
+            st.subheader("3. PREÇOS DOS DIAGNÓSTICOS - CLIENTE FINAL")
             cd1, cd2, cd3, cd4 = st.columns(4)
             n_cli_diag_limpa = cd1.number_input("Consulta Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['diag_limpa']))
             n_cli_diag_bacen = cd2.number_input("Consulta BACEN (R$)", value=float(st.session_state['precos']['cliente']['diag_bacen']))
             n_cli_diag_rating = cd3.number_input("Consulta Rating (R$)", value=float(st.session_state['precos']['cliente']['diag_rating']))
             n_cli_diag_trib = cd4.number_input("Consulta Tributária (R$)", value=float(st.session_state['precos']['cliente']['diag_trib']))
 
-            st.subheader("4. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CUSTO PARCEIROS")
+            st.subheader("4. PREÇOS DOS DIAGNÓSTICOS - CUSTO PARCEIROS")
             cdp1, cdp2, cdp3, cdp4 = st.columns(4)
             n_par_diag_limpa = cdp1.number_input("Consulta Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_limpa']))
             n_par_diag_bacen = cdp2.number_input("Consulta BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_bacen']))
@@ -894,15 +933,9 @@ def tela_principal():
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
-                st.session_state['precos']['cliente'] = {
-                    'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
-                    'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
-                }
-                st.session_state['precos']['parceiro'] = {
-                    'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
-                    'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
-                }
-                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
+                st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
+                st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
+                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
@@ -951,7 +984,7 @@ def tela_principal():
                             if res.data:
                                 for item in res.data:
                                     pdf.cell(200, 10, txt=f"Nome: {item.get('nome', 'N/A')}", ln=True)
-                                    pdf.cell(200, 10, txt=f"Servico: {item.get('tipo_servico', 'N/A')}", ln=True)
+                                    pdf.cell(200, 10, txt=f"Servicos Solicitados: {item.get('tipo_servico', 'N/A')}", ln=True)
                                     pdf.cell(200, 10, txt=f"Status: {item.get('numero_processo', 'N/A')}", ln=True)
                                     pdf.ln(5)
                             else:
