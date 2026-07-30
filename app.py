@@ -38,7 +38,7 @@ is_parceiro = st.query_params.get("tipo") == "parceiro"
 perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 
 # ==========================================
-# 3. MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
+# 3. MATRIZ DE ESTILO PROFISSIONAL (DASHBOARD ELITE) E WHATSAPP
 # ==========================================
 def injetar_css_profissional():
     st.markdown("""
@@ -46,21 +46,56 @@ def injetar_css_profissional():
         #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        [data-testid="stSidebar"] { background-color: #1e293b !important; }
-        [data-testid="stSidebar"] * { color: #ffffff !important; }
+        [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
+        [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* AUMENTO DA FONTE DO MENU LATERAL PARA NAVEGAÇÃO PERFEITA */
+        /* DESTRUIÇÃO DAS BOLINHAS DO RADIO - MENU LATERAL ESTILO APP PROFISSIONAL */
+        [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-of-type {
+            display: none !important;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
+            background-color: #1e293b;
+            border-left: 4px solid #10b981;
+            font-weight: bold;
+        }
         [data-testid="stSidebar"] .stRadio label span {
-            font-size: 20px !important;
-            font-weight: 700 !important;
-            padding: 4px 0px !important;
-            color: #f8fafc !important;
+            font-size: 16px !important;
+            padding-left: 5px !important;
+        }
+        
+        /* ELIMINANDO O VÁCUO PRETO - BANNERS PERFEITOS */
+        .banner-img img, [data-testid="stImage"] img {
+            width: 100% !important;
+            height: 260px !important;
+            object-fit: cover !important;
+            border-radius: 12px !important;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+        }
+        [data-testid="stVideo"] video {
+            width: 100% !important;
+            height: 220px !important;
+            object-fit: cover !important;
+            border-radius: 12px !important;
+            border: 1px solid #334155;
         }
         
         label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
-            color: #ffffff !important; font-size: 16px !important; font-weight: 500 !important;
+            color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important;
         }
-        
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input {
@@ -75,13 +110,10 @@ def injetar_css_profissional():
             background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%;
         }
         .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
-        hr { border-color: #334155; }
         
+        .dashboard-card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 100%; }
         .checkout-box { background-color: #1e293b; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        .card-servico { background-color: #1e293b; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
-        .metric-card { background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
-        .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
-        .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
+        .card-servico { background-color: #1e293b; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
         
         /* Botão WhatsApp Flutuante Minimalista (Apenas Ícone) */
         .whatsapp-float {
@@ -102,7 +134,7 @@ injetar_css_profissional()
 
 # Ícone WhatsApp Limpo e Redondo
 st.markdown("""
-    <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank" title="Precisa de Ajuda?">
+    <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank" title="Suporte (49) 99807-7332">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
     </a>
 """, unsafe_allow_html=True)
@@ -203,47 +235,36 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (SIMETRIA PERFEITA E ANIMAÇÃO)
+    # 🏠 HOME PAGE (DASHBOARD ELITE - SEM VÁCUO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        # Injeta CSS apenas na Home para as mídias terem cravados 380px de altura e não deixarem vácuos
-        st.markdown("""
-            <style>
-            [data-testid="stImage"] img, [data-testid="stVideo"] video {
-                width: 100% !important;
-                height: 380px !important;
-                object-fit: cover !important;
-                border-radius: 15px !important;
-                box-shadow: 0px 8px 20px rgba(0,0,0,0.5) !important;
-            }
-            @keyframes pulso-radar {
-                0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-                70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-            }
-            .relogio-container {
-                background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; 
-                border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; 
-                margin-bottom: 30px; animation: pulso-radar 2s infinite;
-            }
-            </style>
-        """, unsafe_allow_html=True)
+        # Cabeçalho de Boas-Vindas
+        st.markdown(f"<h2 style='color: #ffffff; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #94a3b8; font-size: 14px; margin-top: 5px; margin-bottom: 25px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
         
-        st.markdown("<h1 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #94a3b8; margin-top: 0; margin-bottom: 20px;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
-        
+        # LINHA 1: BANNERS LADO A LADO (Altura travada e cover no CSS)
+        c_banner1, c_banner2 = st.columns(2)
+        with c_banner1:
+            try: st.image("valortecpflimpo.png", use_container_width=True)
+            except: st.info("Banner 1")
+        with c_banner2:
+            try: st.image("RECONSTRUIR.png", use_container_width=True)
+            except: st.info("Banner 2")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # LINHA 2: RELÓGIO (ESQUERDA) E VÍDEO (DIREITA)
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div class="relogio-container">
-            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(16px, 2vw, 20px);">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL ({d_br})</h3>
-            <div id="clock_div" style="color: #10b981; font-size: clamp(24px, 4vw, 45px); font-weight: 900; letter-spacing: 2px; margin-top: 10px;">Calculando tempo...</div>
+        <div style="text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
+            <div id="clock_div" style="color: #10b981; font-size: 40px; font-weight: 900; letter-spacing: 2px; margin-top: 5px;">Calculando...</div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
@@ -256,23 +277,31 @@ def tela_principal():
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 hours = hours < 10 ? "0" + hours : hours; minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds;
-                document.getElementById("clock_div").innerHTML = days + " Dias : " + hours + "h : " + minutes + "m : " + seconds + "s";
+                document.getElementById("clock_div").innerHTML = days + " D : " + hours + " h : " + minutes + " m : " + seconds + " s";
             }}, 1000);
         </script>
         """
-        components.html(clock_html, height=140)
-        
-        # 3 Colunas iguais lado a lado. O CSS 'object-fit: cover' fará com que todas tenham exatamente 380px de altura
-        c_m1, c_m2, c_m3 = st.columns([1, 1, 1], gap="medium")
-        with c_m1:
-            try: st.image("valortecpflimpo.png", use_container_width=True)
-            except: pass
-        with c_m2:
+
+        c_info1, c_info2 = st.columns(2)
+        with c_info1:
+            st.markdown(f'<div class="dashboard-card"><h4 style="color:#94a3b8 !important; font-size:16px;">⏱️ Prazo de Encerramento (Ação Oficial)</h4><p style="color:#f59e0b; font-size:14px; margin-bottom:15px;">Data Limite: {d_br}</p>', unsafe_allow_html=True)
+            components.html(clock_html, height=80)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        with c_info2:
+            st.markdown('<div class="dashboard-card"><h4 style="color:#94a3b8 !important; font-size:16px;">🎥 Treinamento / Informativo</h4>', unsafe_allow_html=True)
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
-        with c_m3:
-            try: st.image("RECONSTRUIR.png", use_container_width=True)
-            except: pass
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # LINHA 3: AÇÕES RÁPIDAS
+        st.markdown("<h4 style='color:#f8fafc !important; font-size:18px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
+        c_act1, c_act2, c_act3 = st.columns(3)
+        with c_act1: st.button("📋 Gerenciar Minhas Listas", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
+        with c_act2: st.button("💲 Painel Financeiro", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
+        with c_act3: st.button("📊 Fazer um Orçamento", use_container_width=True, on_click=mudar_pagina, args=("📊 Orçamento",))
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -530,7 +559,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO
+    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -538,7 +567,7 @@ def tela_principal():
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA</h3>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES</h3>
             <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
@@ -583,7 +612,7 @@ def tela_principal():
         with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
+    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4 COM AS 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -607,6 +636,7 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
+                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -617,8 +647,15 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
+                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
+                
+                colunas_renomear = {
+                    'numero_processo': 'Número Ação Coletiva',
+                    'nome': 'Nome',
+                    'cpf_cnpj': 'CPF/CNPJ',
+                    'tipo': 'Tipo'
+                }
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -884,7 +921,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR (5 ABAS ADMIN COMPLETAS)
+    # ⚙️ PAINEL DO DIRETOR E ADMIN
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
