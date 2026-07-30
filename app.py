@@ -29,11 +29,13 @@ if 'precos' not in st.session_state:
     st.session_state['precos'] = {
         'cliente': {
             'limpa_nome': 250.00, 'bacen': 1200.00, 'rating': 500.00, 'tributario': 2000.00,
-            'diag_limpa': 150.00, 'diag_bacen': 150.00, 'diag_rating': 150.00, 'diag_trib': 150.00
+            'diag_limpa': 150.00, 'diag_bacen': 150.00, 'diag_rating': 150.00, 'diag_trib': 150.00,
+            'reprotocolo': 212.50
         },
         'parceiro': {
             'limpa_nome': 150.00, 'bacen': 600.00, 'rating': 250.00, 'tributario': 1000.00,
-            'diag_limpa': 50.00, 'diag_bacen': 50.00, 'diag_rating': 50.00, 'diag_trib': 50.00
+            'diag_limpa': 50.00, 'diag_bacen': 50.00, 'diag_rating': 50.00, 'diag_trib': 50.00,
+            'reprotocolo': 127.50
         }
     }
 
@@ -43,6 +45,11 @@ if 'precos_carregados' not in st.session_state:
         res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
         if res_p.data:
             st.session_state['precos'] = res_p.data[0]['valor_json']
+            
+            # Injeção retroativa de segurança caso o banco antigo não tenha a chave 'reprotocolo'
+            if 'reprotocolo' not in st.session_state['precos']['cliente']:
+                st.session_state['precos']['cliente']['reprotocolo'] = 212.50
+                st.session_state['precos']['parceiro']['reprotocolo'] = 127.50
     except:
         pass
     st.session_state['precos_carregados'] = True
@@ -588,10 +595,11 @@ def tela_principal():
                 except: st.error("Erro no sistema.")
 
     # -----------------------------------------
-    # 🔄 REPROTOCOLO
+    # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V2 - TABELA DINÂMICA)
     # -----------------------------------------
     elif menu_selecionado == "🔄 Reprotocolo":
         st.header("🔄 Área de Reprotocolo")
+        
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o modelo de Reprotocolo.**")
             up_reprot = st.file_uploader("Anexar Novo Modelo Reprotocolo Oficial (.docx)", type=['docx'])
@@ -601,19 +609,83 @@ def tela_principal():
                     st.success("Modelo salvo com sucesso!")
             st.markdown("---")
             
-        c1, c2 = st.columns(2)
-        c1.text_input("Nome Completo / Razão Social")
-        c2.text_input("Número do CPF ou CNPJ")
+        valor_reprot_atual = float(st.session_state['precos'][perfil_atual].get('reprotocolo', 212.50))
         
-        # Leitura real do arquivo para o Parceiro baixar
-        if os.path.exists("Reprotocolo_Modelo.docx"):
-            with open("Reprotocolo_Modelo.docx", "rb") as file:
-                st.download_button("📥 Baixar Modelo Reprotocolo Oficial", data=file, file_name="Reprotocolo_Modelo.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-        else:
-            st.info("O Diretor ainda não disponibilizou o modelo de Reprotocolo.")
+        st.markdown(f"""
+            <div style='background-color: #1e293b; padding: 25px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 30px;'>
+                <p style='margin: 0; color: #e2e8f0; font-size: 16px;'>Selecione nomes já enviados para reprotocolar. Nomes enviados há <b>até 30 dias</b> são <b style='color:#10b981;'>gratuitos</b>. Acima de 30 dias: <b style='color:#f59e0b;'>R$ {valor_reprot_atual:,.2f}</b> por nome (referente ao custo de processamento).</p>
+                <p style='margin: 10px 0 0 0; color: #94a3b8; font-size: 14px;'>Os nomes reprotocolados serão adicionados à lista vigente: <span style='background-color: #f8fafc; padding: 4px 10px; border-radius: 6px; color: #0f172a; font-weight: bold;'>AÇÃO COLETIVA 121 - ABERTA</span></p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        c_busca1, c_busca2 = st.columns([1, 3])
+        c_busca1.selectbox("Filtro", ["Todas as Listas", "AÇÃO 120", "AÇÃO 119"], label_visibility="collapsed")
+        c_busca2.text_input("Busca", placeholder="Buscar por nome ou CPF/CNPJ...", label_visibility="collapsed")
+        
+        # DataFrame Simulado de Exemplo para a Seleção Dinâmica
+        df_dados_reprot = pd.DataFrame({
+            "Selecionar": [False, False],
+            "Nome": ["ADRIANA MARTINS DE MOURA", "ADRIANO DE SOUZA GARCIA"],
+            "CPF/CNPJ": ["458.273.706-49", "888.592.156-68"],
+            "Status": ["aprovado", "aprovado"],
+            "Prazo": ["> 30 dias", "<= 30 dias"],
+            "Valor Original": ["R$ 250,00", "R$ 250,00"],
+            "Valor Reprotocolo": [f"R$ {valor_reprot_atual:,.2f}", "R$ 0,00"]
+        })
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        df_editado = st.data_editor(
+            df_dados_reprot,
+            column_config={
+                "Selecionar": st.column_config.CheckboxColumn("✅", default=False),
+                "Status": st.column_config.TextColumn("Status"),
+            },
+            disabled=["Nome", "CPF/CNPJ", "Status", "Prazo", "Valor Original", "Valor Reprotocolo"],
+            hide_index=True,
+            use_container_width=True
+        )
+        
+        # Algoritmo de Cálculo Condicional
+        total_pagar_reprot = 0.0
+        qtd_selecionados = 0
+        
+        for index, row in df_editado.iterrows():
+            if row["Selecionar"]:
+                qtd_selecionados += 1
+                if row["Prazo"] == "> 30 dias":
+                    total_pagar_reprot += valor_reprot_atual
+                    
+        st.markdown("---")
+        st.markdown(f"""
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #0f172a; border-radius: 8px; border-left: 5px solid #10b981;">
+                <div><span style="color:#94a3b8;">Nomes Selecionados:</span> <b style="font-size:18px; color:white;">{qtd_selecionados}</b></div>
+                <div><span style="color:#94a3b8;">Total a Pagar:</span> <b style="font-size:24px; color:#10b981;">R$ {total_pagar_reprot:,.2f}</b></div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        c_up1, c_up2 = st.columns(2)
+        with c_up1:
+            if os.path.exists("Reprotocolo_Modelo.docx"):
+                with open("Reprotocolo_Modelo.docx", "rb") as file:
+                    st.download_button("📥 Baixar Modelo Reprotocolo", data=file, file_name="Reprotocolo_Modelo.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+            else:
+                st.info("Modelo de Reprotocolo indisponível no momento.")
+        with c_up2:
+            st.file_uploader("Upload Documento Assinado (.pdf)", type=['pdf', 'jpg', 'png'], label_visibility="collapsed")
             
-        st.file_uploader("Upload do Reprotocolo Assinado e Preenchido", type=['pdf', 'jpg', 'png'])
-        if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
+        if st.button("🚀 Confirmar Reprotocolo", use_container_width=True):
+            if qtd_selecionados == 0:
+                st.warning("⚠️ Marque as caixas (checkbox) dos nomes que deseja reprotocolar na tabela acima.")
+            else:
+                if total_pagar_reprot > 0:
+                    st.success(f"Pedido registrado! Gere o pagamento da taxa de expiração (R$ {total_pagar_reprot:,.2f}).")
+                    st.markdown("<h3 style='text-align: center; color: #10b981;'>PAGAMENTO PIX</h3>", unsafe_allow_html=True)
+                    st.code("jp.solucoes.sc.diretor@gmail.com", language="text")
+                else:
+                    st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
@@ -1072,33 +1144,37 @@ def tela_principal():
             n_par_diag_rating = cdp3.number_input("Consulta Rating Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_rating']))
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
+            st.markdown("---")
+            st.subheader("5. TAXA DE REPROTOCOLO")
+            cr1, cr2 = st.columns(2)
+            n_cli_reprot = cr1.number_input("Reprotocolo Cliente (R$)", value=float(st.session_state['precos']['cliente']['reprotocolo']))
+            n_par_reprot = cr2.number_input("Reprotocolo Parceiro (R$)", value=float(st.session_state['precos']['parceiro']['reprotocolo']))
+
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
                 novos_precos = {
                     'cliente': {
                         'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
-                        'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
+                        'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib,
+                        'reprotocolo': n_cli_reprot
                     },
                     'parceiro': {
                         'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
-                        'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
+                        'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib,
+                        'reprotocolo': n_par_reprot
                     }
                 }
                 st.session_state['precos'] = novos_precos
                 
                 try:
-                    # Verifica se a tabela já tem a linha salva
                     verificar = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
                     
                     if verificar.data:
-                        # Se já existe, ele apenas atualiza (Update puro)
                         supabase.table("configuracoes_sistema").update({"valor_json": novos_precos}).eq("chave", "tabela_precos").execute()
                     else:
-                        # Se não existe, ele cria pela primeira vez (Insert puro)
                         supabase.table("configuracoes_sistema").insert({"chave": "tabela_precos", "valor_json": novos_precos}).execute()
                     
                     st.success("✅ Tabelas atualizadas e salvas permanentemente no banco de dados!")
                 except Exception as ex:
-                    # Se falhar, vai jogar o ERRO EXATO na sua tela para matarmos a charada
                     st.error(f"⚠️ O banco recusou a gravação. O erro exato foi: {ex}")
                 
         with aba_acesso:
