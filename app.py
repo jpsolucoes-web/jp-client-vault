@@ -12,7 +12,18 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="JP Client Vault - Reabilitação", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
-# 2. INICIALIZAÇÃO DE PREÇOS, ACESSOS E DATA (SESSÃO)
+# 2. CONEXÃO SUPABASE
+# ==========================================
+@st.cache_resource
+def init_connection():
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+supabase: Client = init_connection()
+
+# ==========================================
+# 3. INICIALIZAÇÃO DE PREÇOS, ACESSOS E DATA
 # ==========================================
 if 'precos' not in st.session_state:
     st.session_state['precos'] = {
@@ -25,6 +36,16 @@ if 'precos' not in st.session_state:
             'diag_limpa': 50.00, 'diag_bacen': 50.00, 'diag_rating': 50.00, 'diag_trib': 50.00
         }
     }
+
+# Carregar preços salvos no banco de dados (Persistência)
+if 'precos_carregados' not in st.session_state:
+    try:
+        res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
+        if res_p.data:
+            st.session_state['precos'] = res_p.data[0]['valor_json']
+    except:
+        pass
+    st.session_state['precos_carregados'] = True
 
 if 'usuarios_bloqueados' not in st.session_state:
     st.session_state['usuarios_bloqueados'] = []
@@ -40,7 +61,7 @@ is_parceiro = st.query_params.get("tipo") == "parceiro"
 perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 
 # ==========================================
-# 3. MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
+# 4. MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
 # ==========================================
 def injetar_css_profissional():
     st.markdown("""
@@ -57,57 +78,25 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
         /* O GRANDE SEGREDO: Flexbox CSS para Forçar Simetria e Eliminar Vácuos */
-        .simetria-perfeita {
-            display: flex;
-            width: 100%;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .simetria-box {
-            flex: 1; /* Força os dois blocos a dividirem exatos 50% da tela */
-            height: 380px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-            background-color: #1e293b;
-        }
-        .simetria-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .simetria-box video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .espaco-livre {
-            display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;
-            color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px;
-        }
+        .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; }
+        .simetria-box { flex: 1; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b; }
+        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
+        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
+        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px; }
         
         /* Ajuste Galeria de Campanhas */
         [data-testid="stImage"] img { border-radius: 12px; }
         
         /* Textos e Caixas de Entrada */
-        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
-            color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important;
-        }
+        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label { color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important; }
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input {
-            background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 8px !important;
-        }
-        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus {
-            border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important;
-        }
+        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 8px !important; }
+        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important; }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
         /* Botões */
-        .stButton>button {
-            background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%;
-        }
+        .stButton>button { background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%; }
         .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
         hr { border-color: #334155; }
         
@@ -120,11 +109,7 @@ def injetar_css_profissional():
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
         /* Botão WhatsApp Flutuante Minimalista */
-        .whatsapp-float {
-            position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important;
-            border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 2px 4px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease;
-        }
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease; }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
         
@@ -145,16 +130,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 4. CONEXÃO E NAVEGAÇÃO
+# 5. CONTROLE DE SESSÃO E NAVEGAÇÃO
 # ==========================================
-@st.cache_resource
-def init_connection():
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
-    return create_client(url, key)
-
-supabase: Client = init_connection()
-
 if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_autenticado'] = False
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
 if 'menu_navegacao' not in st.session_state: st.session_state['menu_navegacao'] = "🏠 Home"
@@ -167,7 +144,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 5. TELA DE LOGIN
+# 6. TELA DE LOGIN
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -203,7 +180,7 @@ def tela_login():
                         st.error("Erro ao criar conta.")
 
 # ==========================================
-# 6. TELA PRINCIPAL (O MOTOR DO SISTEMA)
+# 7. TELA PRINCIPAL (O MOTOR DO SISTEMA)
 # ==========================================
 def tela_principal():
     email_logado = st.session_state['dados_usuario'].email
@@ -287,7 +264,7 @@ def tela_principal():
         with col_m1:
             if os.path.exists("custom_meio_1.png"): st.image("custom_meio_1.png", use_container_width=True)
             elif is_diretor: st.markdown("<div class='espaco-livre' style='height:380px;'>Vitrine Meio Esquerda (Upload no Admin)</div>", unsafe_allow_html=True)
-            else: st.markdown("<div style='height:380px;'></div>", unsafe_allow_html=True) # Espaçador invisível
+            else: st.markdown("<div style='height:380px;'></div>", unsafe_allow_html=True)
             
         with col_m2:
             vid_path = "custom_video.mp4" if os.path.exists("custom_video.mp4") else "video1.mp4"
@@ -666,7 +643,6 @@ def tela_principal():
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("1. Baixar Modelos (.docx)")
-            # Verifica e cria botão de download real para cada contrato
             if os.path.exists("Contrato_LimpaNome.docx"):
                 with open("Contrato_LimpaNome.docx", "rb") as file: st.download_button("📄 Contrato Limpa Nome", data=file, file_name="Contrato_LimpaNome.docx", use_container_width=True)
             else: st.info("Contrato Limpa Nome indisponível.")
@@ -1065,7 +1041,8 @@ def tela_principal():
                     st.warning("Preencha o CPF do cliente para atualizar.")
                 
         with aba_precos:
-            st.markdown("### Ajuste Geral de Precificação")
+            st.markdown("### Ajuste Geral de Precificação (Persistência no Banco)")
+            
             st.subheader("1. PREÇOS DAS AÇÕES - CLIENTE FINAL")
             cc1, cc2, cc3, cc4 = st.columns(4)
             n_cli_limpa = cc1.number_input("Ação Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['limpa_nome']))
@@ -1096,9 +1073,26 @@ def tela_principal():
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
-                st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
-                st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
-                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
+                novos_precos = {
+                    'cliente': {
+                        'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
+                        'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
+                    },
+                    'parceiro': {
+                        'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
+                        'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
+                    }
+                }
+                st.session_state['precos'] = novos_precos
+                
+                try:
+                    supabase.table("configuracoes_sistema").upsert({
+                        "chave": "tabela_precos",
+                        "valor_json": novos_precos
+                    }, on_conflict="chave").execute()
+                    st.success("✅ Tabelas atualizadas e salvas permanentemente no banco de dados!")
+                except Exception as ex:
+                    st.warning("⚠️ Valores aplicados na sessão atual, mas houve falha ao gravar no Supabase. Verifique se a tabela 'configuracoes_sistema' existe lá no painel do banco de dados.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
@@ -1196,7 +1190,6 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar/Atualizar Todas as Mídias na Home", type="primary", use_container_width=True):
-                # Principais
                 if up_top1:
                     with open("custom_topo_1.png", "wb") as f: f.write(up_top1.getbuffer())
                 if up_top2:
@@ -1206,7 +1199,6 @@ def tela_principal():
                 if up_vid:
                     with open("custom_video.mp4", "wb") as f: f.write(up_vid.getbuffer())
                     
-                # Galeria
                 if img1:
                     with open("custom_home_1.png", "wb") as f: f.write(img1.getbuffer())
                 if img2:
