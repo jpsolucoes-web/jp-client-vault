@@ -53,7 +53,13 @@ def injetar_css_profissional():
             color: #ffffff !important; font-size: 16px !important; font-weight: 500 !important;
         }
         
-        img, video { border-radius: 10px; }
+        /* Ajuste Fino para Mídias (Imagens e Vídeos) ficarem perfeitas e sem vácuo */
+        [data-testid="stImage"] img, [data-testid="stVideo"] video {
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+            object-fit: cover;
+        }
+        
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input {
@@ -76,11 +82,11 @@ def injetar_css_profissional():
         .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Botão WhatsApp Flutuante Minimalista */
+        /* Botão WhatsApp Flutuante 100% Minimalista (Apenas Ícone) */
         .whatsapp-float {
             position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important;
             border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 2px 2px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease;
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease;
         }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
@@ -93,9 +99,9 @@ def injetar_css_profissional():
 
 injetar_css_profissional()
 
-# Ícone WhatsApp Limpo e Redondo
+# Ícone WhatsApp Limpo e Redondo (Sem texto)
 st.markdown("""
-    <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank" title="Precisa de Ajuda?">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
     </a>
 """, unsafe_allow_html=True)
@@ -201,20 +207,19 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (LAYOUT ALINHADO E OTIMIZADO)
+    # 🏠 HOME PAGE (ALINHAMENTO 100% PROFISSIONAL)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        st.markdown("<h1 style='text-align: center; color: #f59e0b;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #94a3b8;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
-        st.write("---")
+        st.markdown("<h1 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #94a3b8; margin-top: 0; margin-bottom: 20px;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
         
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; margin-bottom: 20px;">
-            <h3 style="margin: 0; color: #f59e0b; font-size: 20px;">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL ({d_br})</h3>
-            <div id="clock_div" style="color: #10b981; font-size: 45px; font-weight: 900; letter-spacing: 2px; margin-top: 10px;">Calculando tempo...</div>
+        <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; margin-bottom: 30px;">
+            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(16px, 2vw, 20px);">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL ({d_br})</h3>
+            <div id="clock_div" style="color: #10b981; font-size: clamp(24px, 4vw, 45px); font-weight: 900; letter-spacing: 2px; margin-top: 10px;">Calculando tempo...</div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
@@ -231,21 +236,19 @@ def tela_principal():
             }}, 1000);
         </script>
         """
-        components.html(clock_html, height=150)
+        components.html(clock_html, height=140)
         
-        # OTIMIZAÇÃO DE ESPAÇO: Imagem 1 e Vídeo lado a lado, Imagem 3 centralizada embaixo
-        col_topo1, col_top2 = st.columns(2)
-        with col_topo1:
+        # OTIMIZAÇÃO: 3 Colunas iguais garantindo que as mídias fiquem perfeitas
+        c_m1, c_m2, c_m3 = st.columns([1, 1, 1], gap="small")
+        with c_m1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: pass
-        with col_top2:
+        with c_m2:
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
-            
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        try: st.image("RECONSTRUIR.png", use_container_width=True)
-        except: pass
+        with c_m3:
+            try: st.image("RECONSTRUIR.png", use_container_width=True)
+            except: pass
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -293,7 +296,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES COMPLETOS DE BENS)
+    # 🛡️ ENVIAR PROTOCOLO (COMPLETO)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -366,7 +369,7 @@ def tela_principal():
             st.markdown("#### Documentação Pessoal")
             c_rg1, c_rg2, c_rg3, c_rg4 = st.columns(4)
             rg = c_rg1.text_input("RG")
-            dt_exp_rg = c_rg2.date_input("Data de Expedição", value=datetime.date(2026, 7, 30))
+            dt_exp_rg = c_rg2.date_input("Data de Expedição do RG", value=datetime.date(2026, 7, 30))
             orgao_rg = c_rg3.text_input("Órgão Expeditor (Ex: SSP/SP)")
             data_nasc = c_rg4.date_input("Data de Nascimento", min_value=datetime.date(1920, 1, 1))
             
@@ -503,7 +506,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO (RENOMEADO)
+    # 📖 MANUAL DO PARCEIRO
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -511,8 +514,8 @@ def tela_principal():
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA</h3>
-            <p>A JP Soluções é uma plataforma que conecta parceiros aos serviços de regularização de CPF/CNPJ.</p>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES</h3>
+            <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
                 <li>✅ Acompanhamento em tempo real</li>
@@ -524,16 +527,16 @@ def tela_principal():
         
         st.subheader("Primeiros Passos")
         with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
-        with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato, WhatsApp e endereço.")
+        with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato e endereço.")
         with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
         with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
         with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -546,14 +549,6 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
-        
-        st.subheader("Perguntas Frequentes")
-        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
-        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
-        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
     # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4)
@@ -580,7 +575,6 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
-                # Mockando os status dos Birôs conforme Imagem 4
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -592,13 +586,7 @@ def tela_principal():
                 df['Data'] = "23/06/2026"
                 
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                
-                colunas_renomear = {
-                    'numero_processo': 'Número Ação Coletiva',
-                    'nome': 'Nome',
-                    'cpf_cnpj': 'CPF/CNPJ',
-                    'tipo': 'Tipo'
-                }
+                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -763,7 +751,7 @@ def tela_principal():
         c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
-    # 🩺 SOLICITAR DIAGNÓSTICO (COM CHECKBOX DE SOMA)
+    # 🩺 SOLICITAR DIAGNÓSTICO
     # -----------------------------------------
     elif menu_selecionado == "🩺 Solicitar Diagnóstico":
         st.header("🩺 Solicitar Consultas e Diagnóstico Profundo")
@@ -864,7 +852,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR (ADMIN COM 5 ABAS)
+    # ⚙️ PAINEL DO DIRETOR (5 ABAS ADMIN COMPLETAS)
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
@@ -914,14 +902,14 @@ def tela_principal():
             n_par_trib = cp4.number_input("Ação Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['tributario']))
 
             st.markdown("---")
-            st.subheader("3. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CLIENTE FINAL")
+            st.subheader("3. PREÇOS DOS DIAGNÓSTICOS - CLIENTE FINAL")
             cd1, cd2, cd3, cd4 = st.columns(4)
             n_cli_diag_limpa = cd1.number_input("Consulta Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['diag_limpa']))
             n_cli_diag_bacen = cd2.number_input("Consulta BACEN (R$)", value=float(st.session_state['precos']['cliente']['diag_bacen']))
             n_cli_diag_rating = cd3.number_input("Consulta Rating (R$)", value=float(st.session_state['precos']['cliente']['diag_rating']))
             n_cli_diag_trib = cd4.number_input("Consulta Tributária (R$)", value=float(st.session_state['precos']['cliente']['diag_trib']))
 
-            st.subheader("4. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CUSTO PARCEIROS")
+            st.subheader("4. PREÇOS DOS DIAGNÓSTICOS - CUSTO PARCEIROS")
             cdp1, cdp2, cdp3, cdp4 = st.columns(4)
             n_par_diag_limpa = cdp1.number_input("Consulta Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_limpa']))
             n_par_diag_bacen = cdp2.number_input("Consulta BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_bacen']))
@@ -929,15 +917,9 @@ def tela_principal():
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
-                st.session_state['precos']['cliente'] = {
-                    'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
-                    'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
-                }
-                st.session_state['precos']['parceiro'] = {
-                    'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
-                    'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
-                }
-                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
+                st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
+                st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
+                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
