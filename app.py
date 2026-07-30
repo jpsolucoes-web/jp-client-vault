@@ -52,7 +52,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* Banners Perfeitos na Home - Sem deformar e sem vácuo preto */
+        /* Banners Perfeitos na Home - Forçando 100% sem vácuo */
         [data-testid="stImage"] img {
             width: 100% !important; height: 380px !important; object-fit: cover !important;
             border-radius: 12px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); border: 1px solid #334155;
@@ -212,19 +212,20 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        
+        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (DASHBOARD ELITE MAXIMIZADO)
+    # 🏠 HOME PAGE (COM VITRINE DE 8 IMAGENS E SEM VÁCUO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
-        # LINHA 1: Banners Grandes Fixos
-        col_banner1, col_banner2 = st.columns(2, gap="large")
+        # LINHA 1: Banners Grandes Lado a Lado (Gap 'small' para se abraçarem e preencherem a borda)
+        col_banner1, col_banner2 = st.columns(2, gap="small")
         with col_banner1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: st.info("Imagem 1 não encontrada")
@@ -234,15 +235,15 @@ def tela_principal():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # LINHA 2: Relógio, Nova Imagem 1, Vídeo, Nova Imagem 2 (Preenchendo todo o vácuo)
+        # LINHA 2: Relógio e Vídeo (Gap 'small')
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
         <div style="background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; height: 380px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);">
-            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(14px, 1.5vw, 18px);">⏳ PRAZO OFICIAL</h3>
-            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 30px;">Data Limite: {d_br}</p>
-            <div id="clock_div" style="color: #10b981; font-size: clamp(18px, 2.5vw, 30px); font-weight: 900; letter-spacing: 1px;">Calculando...</div>
+            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(18px, 2vw, 24px);">⏳ PRAZO OFICIAL</h3>
+            <p style="color: #94a3b8; font-size: 16px; margin-bottom: 30px;">Data Limite de Envio: {d_br}</p>
+            <div id="clock_div" style="color: #10b981; font-size: clamp(28px, 4vw, 55px); font-weight: 900; letter-spacing: 2px;">Calculando...</div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
@@ -255,45 +256,34 @@ def tela_principal():
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 hours = hours < 10 ? "0" + hours : hours; minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds;
-                document.getElementById("clock_div").innerHTML = days + "D " + hours + "h " + minutes + "m " + seconds + "s";
+                document.getElementById("clock_div").innerHTML = days + " D : " + hours + " h : " + minutes + " m : " + seconds + " s";
             }}, 1000);
         </script>
         """
 
-        # Agora a tela se divide em 4 blocos simétricos para matar o fundo escuro
-        c_linha2_1, c_linha2_2, c_linha2_3, c_linha2_4 = st.columns(4, gap="medium")
-        
-        with c_linha2_1:
+        col_info1, col_info2 = st.columns(2, gap="small")
+        with col_info1:
             components.html(clock_html, height=400)
             
-        with c_linha2_2:
-            try: st.image("nova_imagem_1.jpg", use_container_width=True)
-            except: st.info("Espaço reservado: nova_imagem_1.jpg")
-            
-        with c_linha2_3:
+        with col_info2:
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
-            
-        with c_linha2_4:
-            try: st.image("nova_imagem_2.jpg", use_container_width=True)
-            except: st.info("Espaço reservado: nova_imagem_2.jpg")
 
         # =========================================================================
-        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza se o Diretor enviar imagens pelo painel)
+        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza até 8 imagens do Diretor)
         # =========================================================================
-        img1_exists = os.path.exists("custom_home_1.png")
-        img2_exists = os.path.exists("custom_home_2.png")
-        img3_exists = os.path.exists("custom_home_3.png")
+        imagens_extras = []
+        for i in range(1, 9):
+            if os.path.exists(f"custom_home_{i}.png"):
+                imagens_extras.append(f"custom_home_{i}.png")
         
-        if img1_exists or img2_exists or img3_exists:
+        if imagens_extras:
             st.markdown("<br><h4 style='color:#f8fafc;'>🌟 Novidades / Campanhas</h4>", unsafe_allow_html=True)
-            c_extra = st.columns(3, gap="large")
-            if img1_exists:
-                with c_extra[0]: st.image("custom_home_1.png", use_container_width=True)
-            if img2_exists:
-                with c_extra[1]: st.image("custom_home_2.png", use_container_width=True)
-            if img3_exists:
-                with c_extra[2]: st.image("custom_home_3.png", use_container_width=True)
+            # Distribui as imagens em 4 colunas perfeitas
+            c_extra = st.columns(4, gap="small")
+            for idx, img_path in enumerate(imagens_extras):
+                with c_extra[idx % 4]:
+                    st.image(img_path, use_container_width=True)
         # =========================================================================
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -561,7 +551,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
+    # 📖 MANUAL DO PARCEIRO
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -604,6 +594,14 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
+        
+        st.subheader("Perguntas Frequentes")
+        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
     # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
@@ -974,7 +972,7 @@ def tela_principal():
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
                 st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
                 st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
-                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
+                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
@@ -1046,13 +1044,20 @@ def tela_principal():
                     st.warning("Digite o CPF ou CNPJ.")
                     
         with aba_vitrine:
-            st.markdown("### 🖼️ Gerenciador da Vitrine Home")
+            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Até 8 Imagens)")
             st.write("Faça o upload de novas imagens de campanhas ou informativos. Elas aparecerão automaticamente na página inicial dos clientes.")
             
-            c_up1, c_up2, c_up3 = st.columns(3)
+            c_up1, c_up2, c_up3, c_up4 = st.columns(4)
             img1 = c_up1.file_uploader("Upload Imagem Extra 1", type=['png', 'jpg', 'jpeg'])
             img2 = c_up2.file_uploader("Upload Imagem Extra 2", type=['png', 'jpg', 'jpeg'])
             img3 = c_up3.file_uploader("Upload Imagem Extra 3", type=['png', 'jpg', 'jpeg'])
+            img4 = c_up4.file_uploader("Upload Imagem Extra 4", type=['png', 'jpg', 'jpeg'])
+            
+            c_up5, c_up6, c_up7, c_up8 = st.columns(4)
+            img5 = c_up5.file_uploader("Upload Imagem Extra 5", type=['png', 'jpg', 'jpeg'])
+            img6 = c_up6.file_uploader("Upload Imagem Extra 6", type=['png', 'jpg', 'jpeg'])
+            img7 = c_up7.file_uploader("Upload Imagem Extra 7", type=['png', 'jpg', 'jpeg'])
+            img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar na Vitrine Home", type="primary", use_container_width=True):
                 if img1:
@@ -1061,12 +1066,23 @@ def tela_principal():
                     with open("custom_home_2.png", "wb") as f: f.write(img2.getbuffer())
                 if img3:
                     with open("custom_home_3.png", "wb") as f: f.write(img3.getbuffer())
+                if img4:
+                    with open("custom_home_4.png", "wb") as f: f.write(img4.getbuffer())
+                if img5:
+                    with open("custom_home_5.png", "wb") as f: f.write(img5.getbuffer())
+                if img6:
+                    with open("custom_home_6.png", "wb") as f: f.write(img6.getbuffer())
+                if img7:
+                    with open("custom_home_7.png", "wb") as f: f.write(img7.getbuffer())
+                if img8:
+                    with open("custom_home_8.png", "wb") as f: f.write(img8.getbuffer())
                 st.success("Vitrine atualizada! Os clientes já estão vendo as novas imagens na Home.")
                 
             if st.button("🗑️ Remover Imagens Extras (Limpar Vitrine)", use_container_width=True):
-                if os.path.exists("custom_home_1.png"): os.remove("custom_home_1.png")
-                if os.path.exists("custom_home_2.png"): os.remove("custom_home_2.png")
-                if os.path.exists("custom_home_3.png"): os.remove("custom_home_3.png")
+                for i in range(1, 9):
+                    file_path = f"custom_home_{i}.png"
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
                 st.success("Imagens extras removidas da Home.")
 
     else:
