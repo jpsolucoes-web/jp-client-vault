@@ -41,28 +41,40 @@ perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 # 3. MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
 # ==========================================
 def injetar_css_profissional():
+    # NOTA: O comando 'header {visibility: hidden;}' foi removido para não quebrar o botão de abrir/fechar o Menu.
     st.markdown("""
         <style>
-        #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+        #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        [data-testid="stSidebar"] { background-color: #1e293b !important; }
-        [data-testid="stSidebar"] * { color: #ffffff !important; }
+        [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
+        [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* RESTAURAÇÃO DO MENU LATERAL */
-        [data-testid="stSidebar"] .stRadio label span {
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            padding: 4px 0px !important;
+        /* Ajuste do Menu Lateral */
+        [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-of-type { display: none !important; }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label {
+            padding: 12px 15px; border-radius: 8px; margin-bottom: 5px;
+            background-color: transparent; transition: all 0.2s ease-in-out; cursor: pointer; border-left: 4px solid transparent;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label:hover { background-color: #1e293b; border-left: 4px solid #3b82f6; }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
+            background-color: #1e293b; border-left: 4px solid #10b981; font-weight: bold;
+        }
+        [data-testid="stSidebar"] .stRadio label span { font-size: 16px !important; padding-left: 5px !important; }
+        
+        /* ELIMINANDO O VÁCUO PRETO - BANNERS PERFEITOS */
+        [data-testid="stImage"] img {
+            width: 100% !important; height: 380px !important; object-fit: cover !important;
+            border-radius: 12px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); border: 1px solid #334155;
+        }
+        [data-testid="stVideo"] video {
+            width: 100% !important; height: 380px !important; object-fit: cover !important;
+            border-radius: 12px !important; border: 1px solid #334155; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
         }
         
         label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
-            color: #ffffff !important; font-size: 16px !important; font-weight: 500 !important;
+            color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important;
         }
-        
-        /* Mídias harmonizadas sem distorção */
-        img, video { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); }
-        
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input {
@@ -77,15 +89,10 @@ def injetar_css_profissional():
             background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%;
         }
         .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
-        hr { border-color: #334155; }
         
+        .dashboard-card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 100%; }
         .checkout-box { background-color: #1e293b; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        .card-servico { background-color: #1e293b; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
-        .metric-card { background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
-        .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
-        .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
-        
-        .dashboard-home-card { background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
+        .card-servico { background-color: #1e293b; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
         
         /* Botão WhatsApp Flutuante Minimalista (Apenas Ícone) */
         .whatsapp-float {
@@ -207,35 +214,37 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (NOVO DASHBOARD CLEAN E FUNCIONAL)
+    # 🏠 HOME PAGE (DASHBOARD ELITE - SEM VÁCUO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        # Saudação e Banners Grandes Lado a Lado
         st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
+        # LINHA 1: Banners Grandes Lado a Lado
         col_banner1, col_banner2 = st.columns(2, gap="large")
         with col_banner1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
-            except: pass
+            except: st.info("Imagem 1 não encontrada")
         with col_banner2:
             try: st.image("RECONSTRUIR.png", use_container_width=True)
-            except: pass
+            except: st.info("Imagem 3 não encontrada")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Relógio Dinâmico (Lado Esquerdo) e Vídeo (Lado Direito)
+        # LINHA 2: Relógio e Vídeo
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px 0;">
-            <div id="clock_div" style="color: #10b981; font-size: 50px; font-weight: 900; letter-spacing: 3px;">Calculando...</div>
+        <div style="background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; height: 380px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);">
+            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(18px, 2vw, 24px);">⏳ PRAZO OFICIAL</h3>
+            <p style="color: #94a3b8; font-size: 16px; margin-bottom: 30px;">Data Limite de Envio: {d_br}</p>
+            <div id="clock_div" style="color: #10b981; font-size: clamp(28px, 4vw, 55px); font-weight: 900; letter-spacing: 2px;">Calculando...</div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
@@ -253,26 +262,37 @@ def tela_principal():
         </script>
         """
 
-        col_info1, col_info2 = st.columns([1, 1], gap="large")
+        col_info1, col_info2 = st.columns(2, gap="large")
         with col_info1:
-            st.markdown(f'<div class="dashboard-home-card"><h4 style="color:#f8fafc; font-size:18px;">⏱️ Prazo de Encerramento (Ação Coletiva)</h4><p style="color:#f59e0b; font-size:15px; border-bottom:1px solid #334155; padding-bottom:10px;">Data Limite de Envio: {d_br}</p>', unsafe_allow_html=True)
-            components.html(clock_html, height=120)
-            st.markdown('</div>', unsafe_allow_html=True)
+            components.html(clock_html, height=400)
             
         with col_info2:
-            st.markdown('<div class="dashboard-home-card"><h4 style="color:#f8fafc; font-size:18px;">🎥 Informativo Estratégico</h4><p style="color:#94a3b8; font-size:15px; border-bottom:1px solid #334155; padding-bottom:10px;">Assista às orientações do nosso Diretor.</p>', unsafe_allow_html=True)
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
-            st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
+        
+        # =========================================================================
+        # ESTRUTURA PRONTA PARA ADICIONAR MAIS IMAGENS (SISTEMA PLUG AND PLAY)
+        # =========================================================================
+        # Para adicionar mais 2 imagens abaixo, basta descomentar o bloco a seguir e colocar o nome da foto:
+        
+        # c_nova1, c_nova2 = st.columns(2, gap="large")
+        # with c_nova1:
+        #     try: st.image("sua_nova_imagem_1.jpg", use_container_width=True)
+        #     except: pass
+        # with c_nova2:
+        #     try: st.image("sua_nova_imagem_2.jpg", use_container_width=True)
+        #     except: pass
+        # st.markdown("<br>", unsafe_allow_html=True)
+        # =========================================================================
 
-        # Ações Rápidas (Acesso Fácil)
+        # Ações Rápidas (Acesso Fácil no Rodapé da Home)
         st.markdown("<h4 style='color:#f8fafc; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
         with c_act1: st.button("📋 Gerenciar Minhas Listas", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
         with c_act2: st.button("💲 Painel Financeiro", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
-        with c_act3: st.button("💬 Suporte WhatsApp", use_container_width=True)
+        with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -320,7 +340,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO)
+    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO E CHECKBOX)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -530,7 +550,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
+    # 📖 MANUAL DO PARCEIRO
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -538,7 +558,7 @@ def tela_principal():
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA</h3>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES</h3>
             <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
@@ -560,7 +580,7 @@ def tela_principal():
         with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
         with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -583,7 +603,7 @@ def tela_principal():
         with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4 COM AS 13 COLUNAS)
+    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -607,7 +627,6 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
-                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -618,15 +637,8 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
-                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                
-                colunas_renomear = {
-                    'numero_processo': 'Número Ação Coletiva',
-                    'nome': 'Nome',
-                    'cpf_cnpj': 'CPF/CNPJ',
-                    'tipo': 'Tipo'
-                }
+                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -892,7 +904,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR (5 ABAS ADMIN COMPLETAS)
+    # ⚙️ PAINEL DO DIRETOR E ADMIN
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
@@ -942,14 +954,14 @@ def tela_principal():
             n_par_trib = cp4.number_input("Ação Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['tributario']))
 
             st.markdown("---")
-            st.subheader("3. PREÇOS DOS DIAGNÓSTICOS - CLIENTE FINAL")
+            st.subheader("3. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CLIENTE FINAL")
             cd1, cd2, cd3, cd4 = st.columns(4)
             n_cli_diag_limpa = cd1.number_input("Consulta Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['diag_limpa']))
             n_cli_diag_bacen = cd2.number_input("Consulta BACEN (R$)", value=float(st.session_state['precos']['cliente']['diag_bacen']))
             n_cli_diag_rating = cd3.number_input("Consulta Rating (R$)", value=float(st.session_state['precos']['cliente']['diag_rating']))
             n_cli_diag_trib = cd4.number_input("Consulta Tributária (R$)", value=float(st.session_state['precos']['cliente']['diag_trib']))
 
-            st.subheader("4. PREÇOS DOS DIAGNÓSTICOS - CUSTO PARCEIROS")
+            st.subheader("4. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CUSTO PARCEIROS")
             cdp1, cdp2, cdp3, cdp4 = st.columns(4)
             n_par_diag_limpa = cdp1.number_input("Consulta Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_limpa']))
             n_par_diag_bacen = cdp2.number_input("Consulta BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_bacen']))
@@ -957,9 +969,15 @@ def tela_principal():
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
-                st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
-                st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
-                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
+                st.session_state['precos']['cliente'] = {
+                    'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
+                    'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
+                }
+                st.session_state['precos']['parceiro'] = {
+                    'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
+                    'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
+                }
+                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
