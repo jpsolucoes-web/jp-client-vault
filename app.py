@@ -66,9 +66,8 @@ perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 def injetar_css_profissional():
     st.markdown("""
         <style>
-        /* Limpeza Básica */
-        /* Limpeza Básica */
-#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+        /* Limpeza Básica e Bloqueio do Cabeçalho do Streamlit/GitHub */
+        #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
         /* Expandindo o container para matar o vácuo nas bordas globais */
@@ -1087,13 +1086,20 @@ def tela_principal():
                 st.session_state['precos'] = novos_precos
                 
                 try:
-                    supabase.table("configuracoes_sistema").upsert({
-                        "chave": "tabela_precos",
-                        "valor_json": novos_precos
-                    }, on_conflict="chave").execute()
+                    # Verifica se a tabela já tem a linha salva
+                    verificar = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
+                    
+                    if verificar.data:
+                        # Se já existe, ele apenas atualiza (Update puro)
+                        supabase.table("configuracoes_sistema").update({"valor_json": novos_precos}).eq("chave", "tabela_precos").execute()
+                    else:
+                        # Se não existe, ele cria pela primeira vez (Insert puro)
+                        supabase.table("configuracoes_sistema").insert({"chave": "tabela_precos", "valor_json": novos_precos}).execute()
+                    
                     st.success("✅ Tabelas atualizadas e salvas permanentemente no banco de dados!")
                 except Exception as ex:
-                    st.warning("⚠️ Valores aplicados na sessão atual, mas houve falha ao gravar no Supabase. Verifique se a tabela 'configuracoes_sistema' existe lá no painel do banco de dados.")
+                    # Se falhar, vai jogar o ERRO EXATO na sua tela para matarmos a charada
+                    st.error(f"⚠️ O banco recusou a gravação. O erro exato foi: {ex}")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
