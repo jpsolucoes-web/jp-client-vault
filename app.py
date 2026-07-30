@@ -3,7 +3,6 @@ import pandas as pd
 from supabase import create_client, Client
 import datetime
 import os
-import base64
 import streamlit.components.v1 as components
 
 # ==========================================
@@ -56,13 +55,13 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* Ajustando imagens da Vitrine (Restante do site) */
+        /* Ajustando imagens da Vitrine de Forma Perfeita */
         [data-testid="stImage"] img {
-            width: 100% !important; height: 250px !important; object-fit: cover !important;
+            width: 100% !important; height: 350px !important; object-fit: cover !important;
             border-radius: 12px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); border: 1px solid #334155;
         }
         [data-testid="stVideo"] video {
-            width: 100% !important; height: 380px !important; object-fit: cover !important;
+            width: 100% !important; height: 350px !important; object-fit: cover !important;
             border-radius: 12px !important; border: 1px solid #334155; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
         }
         
@@ -222,100 +221,89 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (DASHBOARD ELITE)
+    # 🏠 HOME PAGE (NOVO DASHBOARD COM SISTEMA DE MÍDIA 100% DINÂMICO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
-
-        # =========================================================================
-        # LINHA 1: BANNERS - HTML CUSTOMIZADO PARA ELIMINAR 100% DO VÁCUO
-        # =========================================================================
-        img1_base64 = ""
-        img2_base64 = ""
-        
-        if os.path.exists("valortecpflimpo.png"):
-            with open("valortecpflimpo.png", "rb") as f:
-                img1_base64 = base64.b64encode(f.read()).decode()
-        if os.path.exists("RECONSTRUIR.png"):
-            with open("RECONSTRUIR.png", "rb") as f:
-                img2_base64 = base64.b64encode(f.read()).decode()
-
-        html_banners = f"""
-        <div style="display: flex; width: 100%; gap: 20px; margin-bottom: 30px;">
-            <div style="flex: 1; height: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b;">
-                <img src="data:image/png;base64,{img1_base64}" style="width: 100%; height: 100%; object-fit: cover;" alt="Limpa Nome" onerror="this.style.display='none'">
-            </div>
-            <div style="flex: 1; height: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b;">
-                <img src="data:image/png;base64,{img2_base64}" style="width: 100%; height: 100%; object-fit: cover;" alt="Reconstruir" onerror="this.style.display='none'">
-            </div>
-        </div>
-        """
-        st.markdown(html_banners, unsafe_allow_html=True)
-        # =========================================================================
-
-        # LINHA 2: Relógio e Vídeo
+        # Banner de Saudação e Relógio Horizontal Inteligente
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; height: 380px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);">
-            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(18px, 2vw, 24px);">⏳ PRAZO OFICIAL</h3>
-            <p style="color: #94a3b8; font-size: 16px; margin-bottom: 30px;">Data Limite de Envio: {d_br}</p>
-            <div id="clock_div" style="color: #10b981; font-size: clamp(28px, 4vw, 55px); font-weight: 900; letter-spacing: 2px;">Calculando...</div>
+        <div style="background-color: #1e293b; border-bottom: 2px solid #10b981; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.3);">
+            <div style="color: #f8fafc; font-size: 20px; font-weight: bold; font-family: sans-serif;">Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: #f59e0b; font-weight: bold; font-size: 15px;">⏳ PRAZO DE AÇÃO ({d_br}):</span>
+                <span id="clock_div_mini" style="color: #10b981; font-weight: 900; font-size: 20px; letter-spacing: 1px;">Calculando...</span>
+            </div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
             setInterval(function() {{
                 var now = new Date().getTime();
                 var distance = countDownDate - now;
-                if(distance < 0) {{ document.getElementById("clock_div").innerHTML = "AÇÃO INICIADA!"; return; }}
+                if(distance < 0) {{ document.getElementById("clock_div_mini").innerHTML = "AÇÃO INICIADA!"; return; }}
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 hours = hours < 10 ? "0" + hours : hours; minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds;
-                document.getElementById("clock_div").innerHTML = days + " D : " + hours + " h : " + minutes + " m : " + seconds + " s";
+                document.getElementById("clock_div_mini").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
             }}, 1000);
         </script>
         """
+        components.html(clock_html, height=75)
 
-        col_info1, col_info2 = st.columns(2, gap="large")
-        with col_info1:
-            components.html(clock_html, height=400)
+        # LINHA 1: Imagem Topo Esquerda e Imagem Topo Direita
+        col_t1, col_t2 = st.columns(2, gap="medium")
+        with col_t1:
+            img_t1 = "custom_topo_1.png" if os.path.exists("custom_topo_1.png") else "valortecpflimpo.png"
+            if os.path.exists(img_t1): st.image(img_t1, use_container_width=True)
+            else: st.markdown("<div style='height: 350px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8;'>Topo Esquerda (Use o Admin)</div>", unsafe_allow_html=True)
+        with col_t2:
+            img_t2 = "custom_topo_2.png" if os.path.exists("custom_topo_2.png") else "RECONSTRUIR.png"
+            if os.path.exists(img_t2): st.image(img_t2, use_container_width=True)
+            else: st.markdown("<div style='height: 350px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8;'>Topo Direita (Use o Admin)</div>", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # LINHA 2: Imagem Meio Esquerda (Substituta do Relógio) e Vídeo Meio Direita
+        col_m1, col_m2 = st.columns(2, gap="medium")
+        with col_m1:
+            img_m1 = "custom_meio_1.png"
+            if os.path.exists(img_m1): st.image(img_m1, use_container_width=True)
+            elif is_diretor: st.markdown("<div style='height: 350px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Vitrine Meio Esquerda (Suba a imagem no Painel)</div>", unsafe_allow_html=True)
             
-        with col_info2:
-            try: st.video("video1.mp4")
-            except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
+        with col_m2:
+            vid_path = "custom_video.mp4" if os.path.exists("custom_video.mp4") else "video1.mp4"
+            if os.path.exists(vid_path): st.video(vid_path)
+            elif is_diretor: st.info("Faça o upload do Vídeo Principal no Painel do Diretor.")
 
         # =========================================================================
-        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza 8 imagens do Diretor)
+        # LINHA 3: A GALERIA DE CAMPANHAS (Até 8 Imagens via Admin)
         # =========================================================================
         imagens_ativas = [i for i in range(1, 9) if os.path.exists(f"custom_home_{i}.png")]
         
         if is_diretor or imagens_ativas:
-            st.markdown("<br><h4 style='color:#f8fafc; border-bottom: 2px solid #334155; padding-bottom: 10px;'>🌟 Novidades e Campanhas</h4>", unsafe_allow_html=True)
+            st.markdown("<br><h4 style='color:#f8fafc; border-bottom: 2px solid #334155; padding-bottom: 10px;'>🌟 Campanhas e Informativos</h4>", unsafe_allow_html=True)
             
             if is_diretor:
-                # O Diretor vê o grid de 8 espaços fixos para saber onde cada imagem entra
-                c1, c2, c3, c4 = st.columns(4, gap="small")
+                c1, c2, c3, c4 = st.columns(4, gap="medium")
                 cols1 = [c1, c2, c3, c4]
                 for i in range(1, 5):
                     with cols1[i-1]:
                         if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div style='height: 180px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                        else: st.markdown(f"<div style='height: 250px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
-                c5, c6, c7, c8 = st.columns(4, gap="small")
+                c5, c6, c7, c8 = st.columns(4, gap="medium")
                 cols2 = [c5, c6, c7, c8]
                 for i in range(5, 9):
                     with cols2[i-5]:
                         if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div style='height: 180px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                        else: st.markdown(f"<div style='height: 250px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
             else:
-                # O Cliente só vê as imagens que existem, empacotadas ordenadamente
                 for row_start in range(0, len(imagens_ativas), 4):
-                    cols = st.columns(4, gap="small")
+                    cols = st.columns(4, gap="medium")
                     for col_offset in range(4):
                         if row_start + col_offset < len(imagens_ativas):
                             with cols[col_offset]:
@@ -587,7 +575,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
+    # 📖 MANUAL DO PARCEIRO
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -630,6 +618,14 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
+        
+        st.subheader("Perguntas Frequentes")
+        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
     # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
@@ -656,6 +652,7 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
+                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -666,8 +663,15 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
+                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
+                
+                colunas_renomear = {
+                    'numero_processo': 'Número Ação Coletiva',
+                    'nome': 'Nome',
+                    'cpf_cnpj': 'CPF/CNPJ',
+                    'tipo': 'Tipo'
+                }
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -1072,9 +1076,19 @@ def tela_principal():
                     st.warning("Digite o CPF ou CNPJ.")
                     
         with aba_vitrine:
-            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Até 8 Imagens)")
-            st.write("Faça o upload de novas imagens de campanhas ou informativos. Elas aparecerão automaticamente na página inicial dos clientes.")
+            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Até 12 Mídias Dinâmicas)")
+            st.write("Faça o upload de novas imagens de campanhas ou substitua o vídeo oficial. As mudanças refletem instantaneamente para os clientes.")
             
+            st.markdown("#### 1. Mídias Principais do Topo e Meio")
+            c_t1, c_t2 = st.columns(2)
+            up_top1 = c_t1.file_uploader("Upload Imagem Topo Esquerda (Substitui Valorte)", type=['png', 'jpg', 'jpeg'])
+            up_top2 = c_t2.file_uploader("Upload Imagem Topo Direita (Substitui Reconstruir)", type=['png', 'jpg', 'jpeg'])
+            
+            c_m1, c_m2 = st.columns(2)
+            up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda (Antigo Relógio)", type=['png', 'jpg', 'jpeg'])
+            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Substitui video1.mp4)", type=['mp4', 'mov'])
+            
+            st.markdown("#### 2. Galeria de Campanhas Extra (Até 8 Imagens)")
             c_up1, c_up2, c_up3, c_up4 = st.columns(4)
             img1 = c_up1.file_uploader("Upload Imagem Extra 1", type=['png', 'jpg', 'jpeg'])
             img2 = c_up2.file_uploader("Upload Imagem Extra 2", type=['png', 'jpg', 'jpeg'])
@@ -1087,7 +1101,18 @@ def tela_principal():
             img7 = c_up7.file_uploader("Upload Imagem Extra 7", type=['png', 'jpg', 'jpeg'])
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
-            if st.button("💾 Salvar na Vitrine Home", type="primary", use_container_width=True):
+            if st.button("💾 Salvar/Atualizar Todas as Mídias na Home", type="primary", use_container_width=True):
+                # Principais
+                if up_top1:
+                    with open("custom_topo_1.png", "wb") as f: f.write(up_top1.getbuffer())
+                if up_top2:
+                    with open("custom_topo_2.png", "wb") as f: f.write(up_top2.getbuffer())
+                if up_mid1:
+                    with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
+                if up_vid:
+                    with open("custom_video.mp4", "wb") as f: f.write(up_vid.getbuffer())
+                    
+                # Galeria
                 if img1:
                     with open("custom_home_1.png", "wb") as f: f.write(img1.getbuffer())
                 if img2:
@@ -1104,14 +1129,14 @@ def tela_principal():
                     with open("custom_home_7.png", "wb") as f: f.write(img7.getbuffer())
                 if img8:
                     with open("custom_home_8.png", "wb") as f: f.write(img8.getbuffer())
-                st.success("Vitrine atualizada! Os clientes já estão vendo as novas imagens na Home.")
+                st.success("Vitrine 100% atualizada! Os clientes já estão vendo as novas mídias.")
                 
-            if st.button("🗑️ Remover Imagens Extras (Limpar Vitrine)", use_container_width=True):
-                for i in range(1, 9):
-                    file_path = f"custom_home_{i}.png"
+            if st.button("🗑️ Restaurar Padrões e Limpar Toda a Vitrine", use_container_width=True):
+                files_to_remove = ["custom_topo_1.png", "custom_topo_2.png", "custom_meio_1.png", "custom_video.mp4"] + [f"custom_home_{i}.png" for i in range(1, 9)]
+                for file_path in files_to_remove:
                     if os.path.exists(file_path):
                         os.remove(file_path)
-                st.success("Imagens extras removidas da Home.")
+                st.success("Toda a vitrine foi limpa e as imagens/vídeos originais retornaram.")
 
     else:
         st.header(menu_selecionado[2:])
