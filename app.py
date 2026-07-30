@@ -3,6 +3,7 @@ import pandas as pd
 from supabase import create_client, Client
 import datetime
 import os
+import base64
 import streamlit.components.v1 as components
 
 # ==========================================
@@ -48,13 +49,16 @@ def injetar_css_profissional():
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
+        /* Expandindo o container para matar o vácuo nas bordas */
+        .block-container { padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* Banners Perfeitos na Home - Forçando 100% sem vácuo */
+        /* Ajustando imagens da Vitrine (Restante do site) */
         [data-testid="stImage"] img {
-            width: 100% !important; height: 380px !important; object-fit: cover !important;
+            width: 100% !important; height: 250px !important; object-fit: cover !important;
             border-radius: 12px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); border: 1px solid #334155;
         }
         [data-testid="stVideo"] video {
@@ -91,7 +95,7 @@ def injetar_css_profissional():
         .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Botão WhatsApp Flutuante Minimalista (Apenas Ícone) */
+        /* Botão WhatsApp Flutuante Minimalista */
         .whatsapp-float {
             position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important;
             border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
@@ -218,24 +222,39 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM VITRINE DE 8 IMAGENS E SEM VÁCUO)
+    # 🏠 HOME PAGE (DASHBOARD ELITE)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
-        # LINHA 1: Banners Grandes Lado a Lado (Gap 'small' para se abraçarem e preencherem a borda)
-        col_banner1, col_banner2 = st.columns(2, gap="small")
-        with col_banner1:
-            try: st.image("valortecpflimpo.png", use_container_width=True)
-            except: st.info("Imagem 1 não encontrada")
-        with col_banner2:
-            try: st.image("RECONSTRUIR.png", use_container_width=True)
-            except: st.info("Imagem 3 não encontrada")
+        # =========================================================================
+        # LINHA 1: BANNERS - HTML CUSTOMIZADO PARA ELIMINAR 100% DO VÁCUO
+        # =========================================================================
+        img1_base64 = ""
+        img2_base64 = ""
+        
+        if os.path.exists("valortecpflimpo.png"):
+            with open("valortecpflimpo.png", "rb") as f:
+                img1_base64 = base64.b64encode(f.read()).decode()
+        if os.path.exists("RECONSTRUIR.png"):
+            with open("RECONSTRUIR.png", "rb") as f:
+                img2_base64 = base64.b64encode(f.read()).decode()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        html_banners = f"""
+        <div style="display: flex; width: 100%; gap: 20px; margin-bottom: 30px;">
+            <div style="flex: 1; height: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b;">
+                <img src="data:image/png;base64,{img1_base64}" style="width: 100%; height: 100%; object-fit: cover;" alt="Limpa Nome" onerror="this.style.display='none'">
+            </div>
+            <div style="flex: 1; height: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b;">
+                <img src="data:image/png;base64,{img2_base64}" style="width: 100%; height: 100%; object-fit: cover;" alt="Reconstruir" onerror="this.style.display='none'">
+            </div>
+        </div>
+        """
+        st.markdown(html_banners, unsafe_allow_html=True)
+        # =========================================================================
 
-        # LINHA 2: Relógio e Vídeo (Gap 'small')
+        # LINHA 2: Relógio e Vídeo
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
@@ -261,7 +280,7 @@ def tela_principal():
         </script>
         """
 
-        col_info1, col_info2 = st.columns(2, gap="small")
+        col_info1, col_info2 = st.columns(2, gap="large")
         with col_info1:
             components.html(clock_html, height=400)
             
@@ -270,20 +289,37 @@ def tela_principal():
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
 
         # =========================================================================
-        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza até 8 imagens do Diretor)
+        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza 8 imagens do Diretor)
         # =========================================================================
-        imagens_extras = []
-        for i in range(1, 9):
-            if os.path.exists(f"custom_home_{i}.png"):
-                imagens_extras.append(f"custom_home_{i}.png")
+        imagens_ativas = [i for i in range(1, 9) if os.path.exists(f"custom_home_{i}.png")]
         
-        if imagens_extras:
-            st.markdown("<br><h4 style='color:#f8fafc;'>🌟 Novidades / Campanhas</h4>", unsafe_allow_html=True)
-            # Distribui as imagens em 4 colunas perfeitas
-            c_extra = st.columns(4, gap="small")
-            for idx, img_path in enumerate(imagens_extras):
-                with c_extra[idx % 4]:
-                    st.image(img_path, use_container_width=True)
+        if is_diretor or imagens_ativas:
+            st.markdown("<br><h4 style='color:#f8fafc; border-bottom: 2px solid #334155; padding-bottom: 10px;'>🌟 Novidades e Campanhas</h4>", unsafe_allow_html=True)
+            
+            if is_diretor:
+                # O Diretor vê o grid de 8 espaços fixos para saber onde cada imagem entra
+                c1, c2, c3, c4 = st.columns(4, gap="small")
+                cols1 = [c1, c2, c3, c4]
+                for i in range(1, 5):
+                    with cols1[i-1]:
+                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
+                        else: st.markdown(f"<div style='height: 180px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                c5, c6, c7, c8 = st.columns(4, gap="small")
+                cols2 = [c5, c6, c7, c8]
+                for i in range(5, 9):
+                    with cols2[i-5]:
+                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
+                        else: st.markdown(f"<div style='height: 180px; border: 2px dashed #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+            else:
+                # O Cliente só vê as imagens que existem, empacotadas ordenadamente
+                for row_start in range(0, len(imagens_ativas), 4):
+                    cols = st.columns(4, gap="small")
+                    for col_offset in range(4):
+                        if row_start + col_offset < len(imagens_ativas):
+                            with cols[col_offset]:
+                                st.image(f"custom_home_{imagens_ativas[row_start + col_offset]}.png", use_container_width=True)
         # =========================================================================
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -551,7 +587,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO
+    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -594,14 +630,6 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
-        
-        st.subheader("Perguntas Frequentes")
-        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
-        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
-        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
     # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
@@ -671,7 +699,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO
+    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
@@ -972,7 +1000,7 @@ def tela_principal():
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
                 st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
                 st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
-                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
+                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
