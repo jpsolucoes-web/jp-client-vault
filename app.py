@@ -76,12 +76,15 @@ def injetar_css_profissional():
         .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
+        /* Botão WhatsApp Flutuante Minimalista */
         .whatsapp-float {
-            position: fixed; bottom: 30px; right: 30px; background-color: #10b981; color: #ffffff !important;
-            border-radius: 50px; padding: 12px 24px; font-size: 16px; font-weight: bold; text-decoration: none;
-            box-shadow: 2px 2px 15px rgba(0,0,0,0.5); z-index: 99999; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;
+            position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important;
+            border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease;
         }
-        .whatsapp-float:hover { background-color: #059669; transform: scale(1.05); }
+        .whatsapp-float svg { width: 35px; height: 35px; }
+        .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
+        
         .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
         .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
         .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #1e293b; border-radius: 8px;}
@@ -90,10 +93,10 @@ def injetar_css_profissional():
 
 injetar_css_profissional()
 
+# Ícone WhatsApp Limpo e Redondo
 st.markdown("""
     <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-        Suporte (49) 99807-7332
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
     </a>
 """, unsafe_allow_html=True)
 
@@ -198,7 +201,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (3 COLUNAS ALINHADAS)
+    # 🏠 HOME PAGE (LAYOUT ALINHADO E OTIMIZADO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h1 style='text-align: center; color: #f59e0b;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
@@ -209,7 +212,7 @@ def tela_principal():
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
+        <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; margin-bottom: 20px;">
             <h3 style="margin: 0; color: #f59e0b; font-size: 20px;">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL ({d_br})</h3>
             <div id="clock_div" style="color: #10b981; font-size: 45px; font-weight: 900; letter-spacing: 2px; margin-top: 10px;">Calculando tempo...</div>
         </div>
@@ -230,17 +233,19 @@ def tela_principal():
         """
         components.html(clock_html, height=150)
         
-        # 3 colunas perfeitamente alinhadas (2 imagens + 1 vídeo)
-        col_img1, col_vid, col_img2 = st.columns(3)
-        with col_img1:
+        # OTIMIZAÇÃO DE ESPAÇO: Imagem 1 e Vídeo lado a lado, Imagem 3 centralizada embaixo
+        col_topo1, col_top2 = st.columns(2)
+        with col_topo1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: pass
-        with col_vid:
+        with col_top2:
             try: st.video("video1.mp4")
-            except: st.info("Vídeo não encontrado.")
-        with col_img2:
-            try: st.image("RECONSTRUIR.png", use_container_width=True)
-            except: pass
+            except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        try: st.image("RECONSTRUIR.png", use_container_width=True)
+        except: pass
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -288,7 +293,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO)
+    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES COMPLETOS DE BENS)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -379,6 +384,7 @@ def tela_principal():
             empresa = c_prof1.text_input("Empresa onde trabalha")
             renda_pessoal = c_prof2.text_input("Sua Renda / Salário (R$)")
             renda_familiar = c_prof3.text_input("Renda Familiar Total (R$)")
+            
             bancos = st.text_area("Quais bancos você tem conta? (Ex: Nubank - Ag 0001, Conta 1234-5)")
             
             st.markdown("#### Bens e Ativos")
@@ -427,8 +433,8 @@ def tela_principal():
         st.markdown("---")
         st.subheader("4. Anexos e Documentação Oficial Geral")
         col_arq1, col_arq2 = st.columns(2)
-        doc_identificacao = col_arq1.file_uploader("Upload RG / CNH / CPF (Frente e Verso)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc1")
-        doc_endereco = col_arq2.file_uploader("Comprovante de Endereço (Atualizado)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc2")
+        doc_identificacao = col_arq1.file_uploader("Upload RG / CNH / CPF (Frente e Verso)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_1")
+        doc_endereco = col_arq2.file_uploader("Comprovante de Endereço (Atualizado)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_2")
         
         if serv_bacen or serv_rating:
             st.markdown("#### Documentação Avançada (Baixe o modelo, assine e faça o upload)")
@@ -497,16 +503,16 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO
+    # 📖 MANUAL DO PARCEIRO (RENOMEADO)
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
-        st.write("Guia completo para usar o sistema JP Soluções Positivo Nacional.")
+        st.write("Guia completo para usar o sistema JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA.")
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo ao Positivo Nacional</h3>
-            <p>O Positivo Nacional é uma plataforma que conecta parceiros aos serviços de regularização de CPF/CNPJ.</p>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA</h3>
+            <p>A JP Soluções é uma plataforma que conecta parceiros aos serviços de regularização de CPF/CNPJ.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
                 <li>✅ Acompanhamento em tempo real</li>
@@ -517,17 +523,17 @@ def tela_principal():
         """, unsafe_allow_html=True)
         
         st.subheader("Primeiros Passos")
-        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
         with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato, WhatsApp e endereço.")
         with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
         with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
         with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão de envio no final da página para travar os dados.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -543,20 +549,11 @@ def tela_principal():
         
         st.subheader("Perguntas Frequentes")
         with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
         with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela.")
-        with st.expander("Como entro em contato com o suporte?"): st.write("Use os contatos abaixo no rodapé da página.")
-        
-        st.markdown("""
-        <div style='background-color:#1e293b; padding: 25px; border-radius: 10px; margin-top: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>💬 Suporte e Ajuda</h3>
-            <p style='font-size: 18px;'>📞 <b>WhatsApp:</b> (49) 99807-7332</p>
-            <p style='font-size: 18px;'>📧 <b>Email:</b> jp.solucoes.sc.diretor@gmail.com</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
     # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4)
@@ -583,7 +580,7 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
-                # Preenchendo as colunas mockadas para refletir a Tabela Gigante (Imagem 4)
+                # Mockando os status dos Birôs conforme Imagem 4
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -594,7 +591,6 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
-                # Definindo a ordem exata das 13 colunas da imagem
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
                 
                 colunas_renomear = {
@@ -767,7 +763,7 @@ def tela_principal():
         c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
-    # 🩺 SOLICITAR DIAGNÓSTICO
+    # 🩺 SOLICITAR DIAGNÓSTICO (COM CHECKBOX DE SOMA)
     # -----------------------------------------
     elif menu_selecionado == "🩺 Solicitar Diagnóstico":
         st.header("🩺 Solicitar Consultas e Diagnóstico Profundo")
@@ -868,7 +864,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR E ADMIN
+    # ⚙️ PAINEL DO DIRETOR (ADMIN COM 5 ABAS)
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
@@ -918,14 +914,14 @@ def tela_principal():
             n_par_trib = cp4.number_input("Ação Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['tributario']))
 
             st.markdown("---")
-            st.subheader("3. PREÇOS DOS DIAGNÓSTICOS - CLIENTE FINAL")
+            st.subheader("3. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CLIENTE FINAL")
             cd1, cd2, cd3, cd4 = st.columns(4)
             n_cli_diag_limpa = cd1.number_input("Consulta Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['diag_limpa']))
             n_cli_diag_bacen = cd2.number_input("Consulta BACEN (R$)", value=float(st.session_state['precos']['cliente']['diag_bacen']))
             n_cli_diag_rating = cd3.number_input("Consulta Rating (R$)", value=float(st.session_state['precos']['cliente']['diag_rating']))
             n_cli_diag_trib = cd4.number_input("Consulta Tributária (R$)", value=float(st.session_state['precos']['cliente']['diag_trib']))
 
-            st.subheader("4. PREÇOS DOS DIAGNÓSTICOS - CUSTO PARCEIROS")
+            st.subheader("4. PREÇOS DAS CONSULTAS / DIAGNÓSTICOS - CUSTO PARCEIROS")
             cdp1, cdp2, cdp3, cdp4 = st.columns(4)
             n_par_diag_limpa = cdp1.number_input("Consulta Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_limpa']))
             n_par_diag_bacen = cdp2.number_input("Consulta BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_bacen']))
@@ -933,9 +929,15 @@ def tela_principal():
             n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
 
             if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
-                st.session_state['precos']['cliente'] = {'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib, 'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib}
-                st.session_state['precos']['parceiro'] = {'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib, 'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib}
-                st.success("Tabelas atualizadas com sucesso! Os módulos já operam com os novos valores.")
+                st.session_state['precos']['cliente'] = {
+                    'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
+                    'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib
+                }
+                st.session_state['precos']['parceiro'] = {
+                    'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
+                    'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib
+                }
+                st.success("Tabelas atualizadas com sucesso! Os módulos Enviar Protocolo e Diagnóstico já operam com os novos valores.")
                 
         with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
