@@ -212,14 +212,12 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        
-        # MENU LATERAL OFICIAL, VISÍVEL E SEGURO.
-        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM SISTEMA AUTOMÁTICO DE VITRINE)
+    # 🏠 HOME PAGE (DASHBOARD ELITE MAXIMIZADO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
@@ -236,15 +234,15 @@ def tela_principal():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # LINHA 2: Relógio e Vídeo
+        # LINHA 2: Relógio, Nova Imagem 1, Vídeo, Nova Imagem 2 (Preenchendo todo o vácuo)
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
         <div style="background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; height: 380px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);">
-            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(18px, 2vw, 24px);">⏳ PRAZO OFICIAL</h3>
-            <p style="color: #94a3b8; font-size: 16px; margin-bottom: 30px;">Data Limite de Envio: {d_br}</p>
-            <div id="clock_div" style="color: #10b981; font-size: clamp(28px, 4vw, 55px); font-weight: 900; letter-spacing: 2px;">Calculando...</div>
+            <h3 style="margin: 0; color: #f59e0b; font-size: clamp(14px, 1.5vw, 18px);">⏳ PRAZO OFICIAL</h3>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 30px;">Data Limite: {d_br}</p>
+            <div id="clock_div" style="color: #10b981; font-size: clamp(18px, 2.5vw, 30px); font-weight: 900; letter-spacing: 1px;">Calculando...</div>
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
@@ -257,21 +255,31 @@ def tela_principal():
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 hours = hours < 10 ? "0" + hours : hours; minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds;
-                document.getElementById("clock_div").innerHTML = days + " D : " + hours + " h : " + minutes + " m : " + seconds + " s";
+                document.getElementById("clock_div").innerHTML = days + "D " + hours + "h " + minutes + "m " + seconds + "s";
             }}, 1000);
         </script>
         """
 
-        col_info1, col_info2 = st.columns(2, gap="large")
-        with col_info1:
+        # Agora a tela se divide em 4 blocos simétricos para matar o fundo escuro
+        c_linha2_1, c_linha2_2, c_linha2_3, c_linha2_4 = st.columns(4, gap="medium")
+        
+        with c_linha2_1:
             components.html(clock_html, height=400)
             
-        with col_info2:
+        with c_linha2_2:
+            try: st.image("nova_imagem_1.jpg", use_container_width=True)
+            except: st.info("Espaço reservado: nova_imagem_1.jpg")
+            
+        with c_linha2_3:
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
+            
+        with c_linha2_4:
+            try: st.image("nova_imagem_2.jpg", use_container_width=True)
+            except: st.info("Espaço reservado: nova_imagem_2.jpg")
 
         # =========================================================================
-        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza se o Diretor enviar imagens extras)
+        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza se o Diretor enviar imagens pelo painel)
         # =========================================================================
         img1_exists = os.path.exists("custom_home_1.png")
         img2_exists = os.path.exists("custom_home_2.png")
@@ -553,7 +561,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO
+    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -583,7 +591,7 @@ def tela_principal():
         with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
         with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -598,7 +606,7 @@ def tela_principal():
         """, unsafe_allow_html=True)
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4 COM AS 13 COLUNAS)
+    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -622,7 +630,6 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
-                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -633,15 +640,8 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
-                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                
-                colunas_renomear = {
-                    'numero_processo': 'Número Ação Coletiva',
-                    'nome': 'Nome',
-                    'cpf_cnpj': 'CPF/CNPJ',
-                    'tipo': 'Tipo'
-                }
+                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -673,7 +673,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
+    # 📊 ORÇAMENTO
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
