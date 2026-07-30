@@ -44,25 +44,15 @@ perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 def injetar_css_profissional():
     st.markdown("""
         <style>
+        /* Limpeza Básica */
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
+        /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* Ajuste do Menu Lateral */
-        [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-of-type { display: none !important; }
-        [data-testid="stSidebar"] div[role="radiogroup"] > label {
-            padding: 12px 15px; border-radius: 8px; margin-bottom: 5px;
-            background-color: transparent; transition: all 0.2s ease-in-out; cursor: pointer; border-left: 4px solid transparent;
-        }
-        [data-testid="stSidebar"] div[role="radiogroup"] > label:hover { background-color: #1e293b; border-left: 4px solid #3b82f6; }
-        [data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
-            background-color: #1e293b; border-left: 4px solid #10b981; font-weight: bold;
-        }
-        [data-testid="stSidebar"] .stRadio label span { font-size: 16px !important; padding-left: 5px !important; }
-        
-        /* ELIMINANDO O VÁCUO PRETO - BANNERS PERFEITOS NA HOME */
+        /* Banners Perfeitos na Home - Sem deformar e sem vácuo preto */
         [data-testid="stImage"] img {
             width: 100% !important; height: 380px !important; object-fit: cover !important;
             border-radius: 12px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); border: 1px solid #334155;
@@ -72,6 +62,7 @@ def injetar_css_profissional():
             border-radius: 12px !important; border: 1px solid #334155; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
         }
         
+        /* Textos e Caixas de Entrada */
         label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label {
             color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important;
         }
@@ -85,14 +76,20 @@ def injetar_css_profissional():
         }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
+        /* Botões */
         .stButton>button {
             background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%;
         }
         .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
+        hr { border-color: #334155; }
         
+        /* Cards */
         .dashboard-card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 100%; }
         .checkout-box { background-color: #1e293b; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .card-servico { background-color: #1e293b; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
+        .metric-card { background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
+        .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
+        .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
         /* Botão WhatsApp Flutuante Minimalista (Apenas Ícone) */
         .whatsapp-float {
@@ -103,6 +100,7 @@ def injetar_css_profissional():
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
         
+        /* Tabela e Badges */
         .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
         .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
         .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #1e293b; border-radius: 8px;}
@@ -111,7 +109,7 @@ def injetar_css_profissional():
 
 injetar_css_profissional()
 
-# Ícone WhatsApp Limpo e Redondo
+# Ícone WhatsApp Flutuante Oficial
 st.markdown("""
     <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank" title="Suporte (49) 99807-7332">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -214,7 +212,9 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        
+        # MENU LATERAL OFICIAL, VISÍVEL E SEGURO.
+        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
@@ -573,15 +573,15 @@ def tela_principal():
         """, unsafe_allow_html=True)
         
         st.subheader("Primeiros Passos")
-        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
         with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato e endereço.")
         with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
         with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
         with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
         with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
 
@@ -596,18 +596,9 @@ def tela_principal():
         <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
         <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
         """, unsafe_allow_html=True)
-        
-        st.subheader("Perguntas Frequentes")
-        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento, o cancelamento obedece aos termos do contrato.")
-        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa se você tiver grande volume.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela.")
-        with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS
+    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4 COM AS 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -631,6 +622,7 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
+                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -641,8 +633,15 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
+                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
+                
+                colunas_renomear = {
+                    'numero_processo': 'Número Ação Coletiva',
+                    'nome': 'Nome',
+                    'cpf_cnpj': 'CPF/CNPJ',
+                    'tipo': 'Tipo'
+                }
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -674,7 +673,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO
+    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
@@ -756,6 +755,55 @@ def tela_principal():
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
+    # -----------------------------------------
+    # 📝 CONTRATOS PARA BAIXAR
+    # -----------------------------------------
+    elif menu_selecionado == "📝 Contratos para Baixar":
+        st.header("📝 Central de Contratos")
+        if is_diretor:
+            st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos.**")
+            c_mod1, c_mod2 = st.columns(2)
+            c_mod1.file_uploader("Substituir Contrato Limpa Nome", type=['docx', 'pdf'])
+            c_mod2.file_uploader("Substituir Contrato BACEN", type=['docx', 'pdf'])
+            c_mod1.file_uploader("Substituir Contrato Rating", type=['docx', 'pdf'])
+            c_mod2.file_uploader("Substituir Contrato Tributária", type=['docx', 'pdf'])
+            st.button("💾 Salvar Novos Modelos")
+            st.markdown("---")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("1. Baixar Modelos (.docx)")
+            st.download_button("📄 Contrato Limpa Nome", data="Doc", file_name="LimpaNome.docx", use_container_width=True)
+            st.download_button("🏦 Contrato BACEN", data="Doc", file_name="Bacen.docx", use_container_width=True)
+            st.download_button("📈 Contrato Rating", data="Doc", file_name="Rating.docx", use_container_width=True)
+            st.download_button("⚖️ Contrato Tributária", data="Doc", file_name="Tributario.docx", use_container_width=True)
+        with col2:
+            st.subheader("2. Enviar Assinado")
+            st.file_uploader("Upload Assinado", type=['pdf'])
+            if st.button("🚀 Enviar ao Cofre"): st.success("✅ Salvo!")
+
+    # -----------------------------------------
+    # 📄 DOCUMENTOS DE APOIO
+    # -----------------------------------------
+    elif menu_selecionado == "📄 Documentos de Apoio":
+        st.header("📄 Material de Apoio e Educação")
+        if is_diretor:
+            st.warning("👑 **ÁREA DO DIRETOR: Alimente as seções.**")
+            c_doc1, c_doc2 = st.columns(2)
+            c_doc1.file_uploader("1. Anexar: Manual Limpa Nome", type=['pdf', 'jpg'])
+            c_doc2.file_uploader("2. Anexar: Manual BACEN", type=['pdf', 'jpg'])
+            c_doc1.file_uploader("3. Anexar: O que é Rating Bancário?", type=['pdf', 'jpg'])
+            c_doc2.file_uploader("4. Anexar: O que é o BACEN?", type=['pdf', 'jpg'])
+            st.button("💾 Atualizar Arquivos")
+            st.markdown("---")
+        st.subheader("Manuais Oficiais (Passo a Passo)")
+        c_down1, c_down2 = st.columns(2)
+        c_down1.download_button("📖 Baixar Manual Limpa Nome", data="Doc", file_name="Manual_Limpa_Nome.pdf", use_container_width=True)
+        c_down2.download_button("📖 Baixar Manual BACEN", data="Doc", file_name="Manual_Bacen.pdf", use_container_width=True)
+        st.subheader("Informativos")
+        c_down3, c_down4 = st.columns(2)
+        c_down3.download_button("🧠 Baixar: O que é Rating?", data="Doc", file_name="Rating.pdf", use_container_width=True)
+        c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -859,7 +907,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR E ADMIN COM VITRINE
+    # ⚙️ PAINEL DO DIRETOR E ADMIN
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
