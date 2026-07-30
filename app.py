@@ -278,9 +278,6 @@ def tela_principal():
         # =========================================================================
         # LINHA 2: Imagem do Meio e Vídeo (Simetria Absoluta 50/50 sem vácuo)
         # =========================================================================
-        # O Streamlit lida melhor com vídeos gerados via Python nativo do que injetados em HTML.
-        # Então, aplicaremos o estilo de simetria nas colunas Python.
-        
         st.markdown("""<style>
             div[data-testid="column"] > div { height: 100%; }
             div[data-testid="column"] img, div[data-testid="column"] video { width: 100% !important; height: 380px !important; object-fit: cover !important; border-radius: 12px !important; border: 1px solid #334155; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); }
@@ -335,7 +332,6 @@ def tela_principal():
         # =========================================================================
         # LINHA 4: A GALERIA DE CAMPANHAS (Até 8 Imagens via Admin)
         # =========================================================================
-        # Restaura o CSS original para as imagens pequenas da galeria
         st.markdown("""<style>div[data-testid="column"] img { height: auto !important; max-height: 250px !important; }</style>""", unsafe_allow_html=True)
         
         imagens_ativas = [i for i in range(1, 9) if os.path.exists(f"custom_home_{i}.png")]
@@ -422,7 +418,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (COM DETALHES DE RG, IMÓVEL, VEÍCULO E CHECKBOX)
+    # 🛡️ ENVIAR PROTOCOLO
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -621,15 +617,121 @@ def tela_principal():
         st.header("🔄 Área de Reprotocolo")
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o modelo de Reprotocolo.**")
-            st.file_uploader("Anexar Novo Modelo Reprotocolo Oficial (.docx)", type=['docx', 'pdf'])
-            st.button("💾 Salvar Novo Modelo")
+            up_reprot = st.file_uploader("Anexar Novo Modelo Reprotocolo Oficial (.docx)", type=['docx'])
+            if st.button("💾 Salvar Novo Modelo"):
+                if up_reprot:
+                    with open("Reprotocolo_Modelo.docx", "wb") as f: f.write(up_reprot.getbuffer())
+                    st.success("Modelo salvo com sucesso!")
             st.markdown("---")
+            
         c1, c2 = st.columns(2)
         c1.text_input("Nome Completo / Razão Social")
         c2.text_input("Número do CPF ou CNPJ")
-        st.download_button("📥 Baixar Modelo Reprotocolo Oficial", data="Conteúdo", file_name="Reprotocolo.docx")
+        
+        # Leitura real do arquivo para o Parceiro baixar
+        if os.path.exists("Reprotocolo_Modelo.docx"):
+            with open("Reprotocolo_Modelo.docx", "rb") as file:
+                st.download_button("📥 Baixar Modelo Reprotocolo Oficial", data=file, file_name="Reprotocolo_Modelo.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        else:
+            st.info("O Diretor ainda não disponibilizou o modelo de Reprotocolo.")
+            
         st.file_uploader("Upload do Reprotocolo Assinado e Preenchido", type=['pdf', 'jpg', 'png'])
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
+
+    # -----------------------------------------
+    # 📝 CONTRATOS PARA BAIXAR
+    # -----------------------------------------
+    elif menu_selecionado == "📝 Contratos para Baixar":
+        st.header("📝 Central de Contratos")
+        if is_diretor:
+            st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos (.docx).**")
+            c_mod1, c_mod2 = st.columns(2)
+            c1_up = c_mod1.file_uploader("Substituir Contrato Limpa Nome", type=['docx'])
+            c2_up = c_mod2.file_uploader("Substituir Contrato BACEN", type=['docx'])
+            c3_up = c_mod1.file_uploader("Substituir Contrato Rating", type=['docx'])
+            c4_up = c_mod2.file_uploader("Substituir Contrato Tributária", type=['docx'])
+            
+            if st.button("💾 Salvar Novos Modelos"):
+                if c1_up:
+                    with open("Contrato_LimpaNome.docx", "wb") as f: f.write(c1_up.getbuffer())
+                if c2_up:
+                    with open("Contrato_Bacen.docx", "wb") as f: f.write(c2_up.getbuffer())
+                if c3_up:
+                    with open("Contrato_Rating.docx", "wb") as f: f.write(c3_up.getbuffer())
+                if c4_up:
+                    with open("Contrato_Tributaria.docx", "wb") as f: f.write(c4_up.getbuffer())
+                st.success("Modelos salvos com sucesso e disponíveis para os parceiros!")
+            st.markdown("---")
+            
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("1. Baixar Modelos (.docx)")
+            # Verifica e cria botão de download real para cada contrato
+            if os.path.exists("Contrato_LimpaNome.docx"):
+                with open("Contrato_LimpaNome.docx", "rb") as file: st.download_button("📄 Contrato Limpa Nome", data=file, file_name="Contrato_LimpaNome.docx", use_container_width=True)
+            else: st.info("Contrato Limpa Nome indisponível.")
+                
+            if os.path.exists("Contrato_Bacen.docx"):
+                with open("Contrato_Bacen.docx", "rb") as file: st.download_button("🏦 Contrato BACEN", data=file, file_name="Contrato_Bacen.docx", use_container_width=True)
+            else: st.info("Contrato BACEN indisponível.")
+                
+            if os.path.exists("Contrato_Rating.docx"):
+                with open("Contrato_Rating.docx", "rb") as file: st.download_button("📈 Contrato Rating", data=file, file_name="Contrato_Rating.docx", use_container_width=True)
+            else: st.info("Contrato Rating indisponível.")
+                
+            if os.path.exists("Contrato_Tributaria.docx"):
+                with open("Contrato_Tributaria.docx", "rb") as file: st.download_button("⚖️ Contrato Tributária", data=file, file_name="Contrato_Tributaria.docx", use_container_width=True)
+            else: st.info("Contrato Tributária indisponível.")
+            
+        with col2:
+            st.subheader("2. Enviar Assinado")
+            st.file_uploader("Upload Assinado (.pdf)", type=['pdf'])
+            if st.button("🚀 Enviar ao Cofre"): st.success("✅ Salvo!")
+
+    # -----------------------------------------
+    # 📄 DOCUMENTOS DE APOIO (COM BLOQUEIO DE CLIENTE FINAL)
+    # -----------------------------------------
+    elif menu_selecionado == "📄 Documentos de Apoio":
+        st.header("📄 Material de Apoio e Educação")
+        
+        # BARREIRA DE SEGURANÇA: Só Diretor ou Parceiro podem ver
+        if not is_diretor and not is_parceiro:
+            st.error("⛔ ACESSO RESTRITO.")
+            st.write("Esta área é de uso exclusivo para Parceiros e Revendedores Autorizados da JP Soluções.")
+        else:
+            if is_diretor:
+                st.warning("👑 **ÁREA DO DIRETOR: Alimente as seções.**")
+                c_doc1, c_doc2 = st.columns(2)
+                d1 = c_doc1.file_uploader("1. Anexar: Manual Limpa Nome", type=['pdf', 'jpg'])
+                d2 = c_doc2.file_uploader("2. Anexar: Manual BACEN", type=['pdf', 'jpg'])
+                d3 = c_doc1.file_uploader("3. Anexar: O que é Rating Bancário?", type=['pdf', 'jpg'])
+                d4 = c_doc2.file_uploader("4. Anexar: O que é o BACEN?", type=['pdf', 'jpg'])
+                
+                if st.button("💾 Atualizar Arquivos de Apoio"):
+                    if d1:
+                        with open("Manual_Limpa_Nome.pdf", "wb") as f: f.write(d1.getbuffer())
+                    if d2:
+                        with open("Manual_Bacen.pdf", "wb") as f: f.write(d2.getbuffer())
+                    if d3:
+                        with open("Info_Rating.pdf", "wb") as f: f.write(d3.getbuffer())
+                    if d4:
+                        with open("Info_Bacen.pdf", "wb") as f: f.write(d4.getbuffer())
+                    st.success("Documentos atualizados.")
+                st.markdown("---")
+                
+            st.subheader("Manuais Oficiais (Passo a Passo)")
+            c_down1, c_down2 = st.columns(2)
+            if os.path.exists("Manual_Limpa_Nome.pdf"):
+                with open("Manual_Limpa_Nome.pdf", "rb") as file: c_down1.download_button("📖 Baixar Manual Limpa Nome", data=file, file_name="Manual_Limpa_Nome.pdf", use_container_width=True)
+            if os.path.exists("Manual_Bacen.pdf"):
+                with open("Manual_Bacen.pdf", "rb") as file: c_down2.download_button("📖 Baixar Manual BACEN", data=file, file_name="Manual_Bacen.pdf", use_container_width=True)
+                
+            st.subheader("Informativos")
+            c_down3, c_down4 = st.columns(2)
+            if os.path.exists("Info_Rating.pdf"):
+                with open("Info_Rating.pdf", "rb") as file: c_down3.download_button("🧠 Baixar: O que é Rating?", data=file, file_name="Info_Rating.pdf", use_container_width=True)
+            if os.path.exists("Info_Bacen.pdf"):
+                with open("Info_Bacen.pdf", "rb") as file: c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data=file, file_name="Info_Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
     # 📖 MANUAL DO PARCEIRO
@@ -744,7 +846,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
+    # 📊 ORÇAMENTO
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
@@ -826,55 +928,6 @@ def tela_principal():
                 </div>
             </div>
         """, unsafe_allow_html=True)
-
-    # -----------------------------------------
-    # 📝 CONTRATOS PARA BAIXAR
-    # -----------------------------------------
-    elif menu_selecionado == "📝 Contratos para Baixar":
-        st.header("📝 Central de Contratos")
-        if is_diretor:
-            st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos.**")
-            c_mod1, c_mod2 = st.columns(2)
-            c_mod1.file_uploader("Substituir Contrato Limpa Nome", type=['docx', 'pdf'])
-            c_mod2.file_uploader("Substituir Contrato BACEN", type=['docx', 'pdf'])
-            c_mod1.file_uploader("Substituir Contrato Rating", type=['docx', 'pdf'])
-            c_mod2.file_uploader("Substituir Contrato Tributária", type=['docx', 'pdf'])
-            st.button("💾 Salvar Novos Modelos")
-            st.markdown("---")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader("1. Baixar Modelos (.docx)")
-            st.download_button("📄 Contrato Limpa Nome", data="Doc", file_name="LimpaNome.docx", use_container_width=True)
-            st.download_button("🏦 Contrato BACEN", data="Doc", file_name="Bacen.docx", use_container_width=True)
-            st.download_button("📈 Contrato Rating", data="Doc", file_name="Rating.docx", use_container_width=True)
-            st.download_button("⚖️ Contrato Tributária", data="Doc", file_name="Tributario.docx", use_container_width=True)
-        with col2:
-            st.subheader("2. Enviar Assinado")
-            st.file_uploader("Upload Assinado", type=['pdf'])
-            if st.button("🚀 Enviar ao Cofre"): st.success("✅ Salvo!")
-
-    # -----------------------------------------
-    # 📄 DOCUMENTOS DE APOIO
-    # -----------------------------------------
-    elif menu_selecionado == "📄 Documentos de Apoio":
-        st.header("📄 Material de Apoio e Educação")
-        if is_diretor:
-            st.warning("👑 **ÁREA DO DIRETOR: Alimente as seções.**")
-            c_doc1, c_doc2 = st.columns(2)
-            c_doc1.file_uploader("1. Anexar: Manual Limpa Nome", type=['pdf', 'jpg'])
-            c_doc2.file_uploader("2. Anexar: Manual BACEN", type=['pdf', 'jpg'])
-            c_doc1.file_uploader("3. Anexar: O que é Rating Bancário?", type=['pdf', 'jpg'])
-            c_doc2.file_uploader("4. Anexar: O que é o BACEN?", type=['pdf', 'jpg'])
-            st.button("💾 Atualizar Arquivos")
-            st.markdown("---")
-        st.subheader("Manuais Oficiais (Passo a Passo)")
-        c_down1, c_down2 = st.columns(2)
-        c_down1.download_button("📖 Baixar Manual Limpa Nome", data="Doc", file_name="Manual_Limpa_Nome.pdf", use_container_width=True)
-        c_down2.download_button("📖 Baixar Manual BACEN", data="Doc", file_name="Manual_Bacen.pdf", use_container_width=True)
-        st.subheader("Informativos")
-        c_down3, c_down4 = st.columns(2)
-        c_down3.download_button("🧠 Baixar: O que é Rating?", data="Doc", file_name="Rating.pdf", use_container_width=True)
-        c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -978,7 +1031,7 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR E ADMIN COM VITRINE
+    # ⚙️ PAINEL DO DIRETOR E ADMIN
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
@@ -1186,4 +1239,3 @@ def tela_principal():
 # 8. Controlador de Fluxo Inicial
 if not st.session_state['usuario_autenticado']: tela_login()
 else: tela_principal()
-           
