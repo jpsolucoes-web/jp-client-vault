@@ -4,11 +4,13 @@ from supabase import create_client, Client
 import datetime
 import streamlit.components.v1 as components
 
-# 1. Configuração da Página Mestra
-st.set_page_config(page_title="JP Client Vault - Limpa Nome", layout="wide", initial_sidebar_state="expanded")
+# ==========================================
+# 1. CONFIGURAÇÃO DA PÁGINA MESTRA
+# ==========================================
+st.set_page_config(page_title="JP Client Vault - Reabilitação", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
-# INICIALIZAÇÃO DE PREÇOS E ACESSOS (SESSÃO)
+# 2. INICIALIZAÇÃO DE PREÇOS E ACESSOS (SESSÃO)
 # ==========================================
 if 'precos' not in st.session_state:
     st.session_state['precos'] = {
@@ -23,7 +25,7 @@ is_parceiro = st.query_params.get("tipo") == "parceiro"
 perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 
 # ==========================================
-# MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
+# 3. MATRIZ DE ESTILO PROFISSIONAL (CSS) E WHATSAPP
 # ==========================================
 def injetar_css_profissional():
     st.markdown("""
@@ -41,12 +43,16 @@ def injetar_css_profissional():
         img, video { border-radius: 10px; }
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
+        /* Ajuste do campo de busca e inputs para ficarem legíveis e organizados */
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea {
-            background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; border-radius: 8px !important;
+            background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 8px !important;
         }
         .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus {
-            border-color: #f59e0b !important; box-shadow: 0 0 5px #f59e0b !important;
+            border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important;
         }
+        
+        /* Ajuste dos placeholders (textos de fundo) para não ficarem invisíveis */
+        ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
         .stButton>button {
             background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%;
@@ -81,7 +87,7 @@ def injetar_css_profissional():
 
 injetar_css_profissional()
 
-# Botão WhatsApp Global
+# Botão WhatsApp Global da Empresa
 st.markdown("""
     <a href="https://wa.me/5549998077332" class="whatsapp-float" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -89,7 +95,9 @@ st.markdown("""
     </a>
 """, unsafe_allow_html=True)
 
-# 2. Inicialização do Banco de Dados
+# ==========================================
+# 4. CONEXÃO COM BANCO DE DADOS
+# ==========================================
 @st.cache_resource
 def init_connection():
     url = st.secrets["SUPABASE_URL"]
@@ -98,14 +106,18 @@ def init_connection():
 
 supabase: Client = init_connection()
 
-# 3. Gerenciamento de Estado
+# ==========================================
+# 5. GERENCIAMENTO DE ESTADO E NAVEGAÇÃO
+# ==========================================
 if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_autenticado'] = False
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
 if 'menu_navegacao' not in st.session_state: st.session_state['menu_navegacao'] = "🏠 Home"
 
 def mudar_pagina(nova_pagina): st.session_state['menu_navegacao'] = nova_pagina
 
-# 4. Módulo de Autenticação Dual
+# ==========================================
+# 6. MÓDULO DE LOGIN E CADASTRO
+# ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -137,22 +149,25 @@ def tela_login():
                         supabase.auth.sign_up({"email": novo_email, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error(f"Erro ao criar conta.")
+                        st.error("Erro ao criar conta.")
 
-# 5. Renderização da Interface Interna
+# ==========================================
+# 7. INTERFACE INTERNA PRINCIPAL (O MOTOR DO SISTEMA)
+# ==========================================
 def tela_principal():
     email_logado = st.session_state['dados_usuario'].email
     is_diretor = (email_logado == "jp.solucoes.sc.diretor@gmail.com")
     
-    # Bloqueio Tático do Diretor
+    # 🔒 Bloqueio Tático do Diretor
     if email_logado in st.session_state['usuarios_bloqueados'] and not is_diretor:
         st.error("🚫 SEU ACESSO FOI SUSPENSO PELO DIRETOR DA PLATAFORMA.")
-        st.info("Entre em contato com o suporte para regularizar sua assinatura.")
+        st.info("Entre em contato com o suporte via WhatsApp para regularizar sua assinatura.")
         if st.button("Sair da Conta"):
             st.session_state['usuario_autenticado'] = False
             st.rerun()
         return
 
+    # 📌 Menu Lateral (Sidebar)
     with st.sidebar:
         try: st.image("logo.png", use_container_width=True)
         except: st.title("🛡️ JP Client Vault")
@@ -180,12 +195,13 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME
+    # 🏠 HOME PAGE (RELÓGIO E MÍDIA ALINHADA)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h1 style='text-align: center; color: #f59e0b;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #94a3b8;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
         st.write("---")
+        
         clock_html = """
         <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
             <h3 style="margin: 0; color: #f59e0b; font-size: 20px;">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL (05/08/2026)</h3>
@@ -207,6 +223,8 @@ def tela_principal():
         </script>
         """
         components.html(clock_html, height=150)
+        
+        # Alinhamento Perfeito das Imagens e Vídeos
         col_img, col_vid = st.columns([1, 1])
         with col_img:
             try: st.image("valortecpflimpo.png", use_container_width=True)
@@ -239,12 +257,12 @@ def tela_principal():
         c2.text_input("Rua")
         c3, c4, c5 = st.columns([1, 1, 2])
         c3.text_input("Número")
-        c4.selectbox("UF", ["SC", "PR", "RS", "SP", "RJ", "MG", "BA", "GO"])
+        c4.selectbox("UF", ["SC", "PR", "RS", "SP", "RJ", "MG", "BA", "GO", "DF", "AM", "PE", "CE", "ES"])
         c5.text_input("Cidade")
-        if st.button("💾 Salvar Alterações", use_container_width=True): st.success("Dados atualizados!")
+        if st.button("💾 Salvar Alterações", use_container_width=True): st.success("Dados atualizados com sucesso!")
 
     # -----------------------------------------
-    # 💼 SERVIÇOS
+    # 💼 SERVIÇOS AVANÇADOS
     # -----------------------------------------
     elif menu_selecionado == "💼 Serviços":
         st.header("💼 Nossos Serviços Avançados")
@@ -261,7 +279,7 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=mudar_pagina, args=("🛡️ Enviar Protocolo",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (AGORA COM CHECKBOXES DE SOMA!)
+    # 🛡️ ENVIAR PROTOCOLO (SOMA AUTOMÁTICA CHECKBOX)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -270,20 +288,33 @@ def tela_principal():
         st.subheader("1. Selecione a Natureza da Ação (Pode marcar vários)")
         st.write("Marque as opções desejadas. O valor total será calculado automaticamente no final.")
         
+        # Lógica de demonstração de preços Cliente vs Parceiro
         p_limpa = st.session_state['precos'][perfil_atual]['limpa_nome']
         p_bacen = st.session_state['precos'][perfil_atual]['bacen']
         p_rating = st.session_state['precos'][perfil_atual]['rating']
         p_trib = st.session_state['precos'][perfil_atual]['tributario']
 
+        if is_parceiro:
+            st.info("💡 **VISÃO DO PARCEIRO:** O valor principal exibido é o seu Custo. Entre parênteses está o Preço Sugerido para você cobrar do seu Cliente Final.")
+            txt_limpa = f"🛡️ 1 - Ação Limpa Nome — Custo: R$ {p_limpa:,.2f} (Venda Sugerida: R$ {st.session_state['precos']['cliente']['limpa_nome']:,.2f})"
+            txt_bacen = f"🏛️ 2 - BACEN — Custo: R$ {p_bacen:,.2f} (Venda Sugerida: R$ {st.session_state['precos']['cliente']['bacen']:,.2f})"
+            txt_rating = f"📈 3 - Rating Bancário — Custo: R$ {p_rating:,.2f} (Venda Sugerida: R$ {st.session_state['precos']['cliente']['rating']:,.2f})"
+            txt_trib = f"⚖️ 4 - Defesa Tributária — Custo: R$ {p_trib:,.2f} (Venda Sugerida: R$ {st.session_state['precos']['cliente']['tributario']:,.2f})"
+        else:
+            txt_limpa = f"🛡️ 1 - Ação Limpa Nome (Padrão) — R$ {p_limpa:,.2f}"
+            txt_bacen = f"🏛️ 2 - BACEN — R$ {p_bacen:,.2f}"
+            txt_rating = f"📈 3 - Rating Bancário — R$ {p_rating:,.2f}"
+            txt_trib = f"⚖️ 4 - Defesa Tributária — R$ {p_trib:,.2f}"
+
         c_chk1, c_chk2 = st.columns(2)
         with c_chk1:
-            serv_limpa = st.checkbox(f"🛡️ 1 - Ação Limpa Nome (Padrão) — R$ {p_limpa:,.2f}")
-            serv_rating = st.checkbox(f"📈 3 - Rating Bancário — R$ {p_rating:,.2f}")
+            serv_limpa = st.checkbox(txt_limpa)
+            serv_rating = st.checkbox(txt_rating)
         with c_chk2:
-            serv_bacen = st.checkbox(f"🏛️ 2 - BACEN — R$ {p_bacen:,.2f}")
-            serv_trib = st.checkbox(f"⚖️ 4 - Defesa Tributária — R$ {p_trib:,.2f}")
+            serv_bacen = st.checkbox(txt_bacen)
+            serv_trib = st.checkbox(txt_trib)
 
-        # Cálculo do carrinho
+        # Cálculo Inteligente do Carrinho
         total_carrinho = 0.0
         lista_servicos = []
         if serv_limpa: 
@@ -312,6 +343,7 @@ def tela_principal():
             telefone = st.text_input("WhatsApp com DDD")
         st.markdown("---")
 
+        # Exibe os blocos condicionalmente baseados no que o usuário marcou no Checkbox
         if serv_bacen or serv_rating:
             st.subheader("3. Questionário Analítico Completo (Obrigatório)")
             st.info("Para elevar Score, Rating e liberar histórico BACEN, preencha os dados abaixo.")
@@ -396,7 +428,7 @@ def tela_principal():
             <div class="checkout-box">
                 <h3 style="margin-top:0; color: #f59e0b;">Resumo do Carrinho</h3>
                 <p>Serviços Selecionados: <b>{texto_servicos_banco}</b></p>
-                <p>Total a Pagar: <b style="font-size: 24px; color: #10b981;">R$ {total_carrinho:,.2f}</b></p>
+                <p>Total a Pagar (Seu Custo): <b style="font-size: 24px; color: #10b981;">R$ {total_carrinho:,.2f}</b></p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -444,12 +476,12 @@ def tela_principal():
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
-        st.write("Guia completo para usar o sistema JP Soluções.")
+        st.write("Guia completo para usar o sistema JP Soluções Positivo Nacional.")
         
         st.markdown("""
         <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
-            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP Soluções</h3>
-            <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo ao Positivo Nacional</h3>
+            <p>O Positivo Nacional é uma plataforma que conecta parceiros aos serviços de regularização de CPF/CNPJ.</p>
             <ul style='list-style-type: none; padding: 0;'>
                 <li>✅ Sistema fácil e intuitivo</li>
                 <li>✅ Acompanhamento em tempo real</li>
@@ -460,17 +492,17 @@ def tela_principal():
         """, unsafe_allow_html=True)
         
         st.subheader("Primeiros Passos")
-        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
-        with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato e endereço.")
-        with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades.")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
+        with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato, WhatsApp e endereço.")
+        with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
-        with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente e anexe a documentação.")
-        with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor exato.")
-        with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante garante a agilidade no processamento da sua fila.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
+        with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente. O sistema valida automaticamente.")
+        with st.expander("2. Ficha Associativa"): st.write("Na seção de Serviços Avançados, a ficha associativa e a procuração devem ser preenchidas e assinadas pelo cliente.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
+        with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante na aba de Finanças ou ao Suporte garante a agilidade no processamento.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -486,14 +518,18 @@ def tela_principal():
         
         st.subheader("Perguntas Frequentes")
         with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
-        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
         with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
+        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa se você tiver grande volume.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Como entro em contato com o suporte?"): st.write("Use os contatos abaixo no rodapé da página.")
         
         st.markdown("""
         <div style='background-color:#1e293b; padding: 25px; border-radius: 10px; margin-top: 30px;'>
             <h3 style='color:#10b981; margin-top:0;'>💬 Suporte e Ajuda</h3>
-            <p><b>WhatsApp:</b> 49 9807 7332</p>
-            <p><b>Email:</b> jp.solucoes.sc.diretor@gmail.com</p>
+            <p style='font-size: 18px;'>📞 <b>WhatsApp:</b> 49 9807 7332</p>
+            <p style='font-size: 18px;'>📧 <b>Email:</b> jp.solucoes.sc.diretor@gmail.com</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -694,23 +730,29 @@ def tela_principal():
         c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
-    # 🩺 SOLICITAR DIAGNÓSTICO
+    # 🩺 SOLICITAR DIAGNÓSTICO (DROPDOWN NO FOCO)
     # -----------------------------------------
     elif menu_selecionado == "🩺 Solicitar Diagnóstico":
         st.header("🩺 Solicitar Diagnóstico Profundo")
+        
+        # Menu Selectbox para o Foco (conforme sua Imagem 1)
         diag_tipo = st.selectbox("Foco?", ["1 - BACEN", "2 - Birôs de Crédito", "3 - Rating Bancário", "4 - Tributário / Fiscal (CNPJ)"])
         st.markdown("---")
+        
         st.subheader("Dados Necessários")
         c_d1, c_d2 = st.columns(2)
         doc_diagnostico = c_d1.text_input("CPF ou CNPJ do Investigado")
+        
         if diag_tipo == "1 - BACEN":
             c_d2.text_input("Senha GOV.BR (Prata ou Ouro)", type="password")
         elif diag_tipo == "4 - Tributário / Fiscal (CNPJ)":
             c_d2.text_input("Senha do Certificado Digital", type="password")
             st.file_uploader("Upload Certificado A1 (.pfx)", type=['pfx', 'p12'])
         st.markdown("---")
+        
         val_d = st.session_state['precos'][perfil_atual]['diag']
         st.markdown(f"<div class='checkout-box'><h3>Resumo do Pedido</h3><p>Investigação: <b>{diag_tipo}</b></p><p>Taxa Única: <b style='font-size: 24px; color: #10b981;'>R$ {val_d:,.2f}</b></p></div>", unsafe_allow_html=True)
+        
         if st.button("✅ Confirmar e Gerar PIX", use_container_width=True):
             st.success("Pedido registrado!")
             st.markdown("<h2 style='text-align: center; color: #10b981;'>PAGAMENTO PIX OFICIAL</h2>", unsafe_allow_html=True)
@@ -799,5 +841,6 @@ def tela_principal():
         st.header(menu_selecionado[2:])
         st.info("Esta seção está em fase de implantação.")
 
+# 8. Controlador de Fluxo Inicial
 if not st.session_state['usuario_autenticado']: tela_login()
 else: tela_principal()
