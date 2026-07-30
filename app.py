@@ -72,6 +72,10 @@ def injetar_css_profissional():
         
         /* Ajuste pré-visualização PDF */
         .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
+        
+        /* Status Manual Parceiro */
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
+        .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #1e293b; border-radius: 8px;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -176,12 +180,12 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME E RELÓGIO (COMPONENTS I-FRAME)
+    # 🏠 HOME
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h1 style='text-align: center; color: #f59e0b;'>Portal de Reabilitação de Crédito</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #94a3b8;'>Ambiente blindado para envio e análise dos seus processos.</p>", unsafe_allow_html=True)
-        
+        st.write("---")
         clock_html = """
         <div style="background-color: #0f172a; border: 2px solid #f59e0b; padding: 20px; border-radius: 15px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif;">
             <h3 style="margin: 0; color: #f59e0b; font-size: 20px;">⏳ TEMPO PARA A PRÓXIMA AÇÃO OFICIAL (05/08/2026)</h3>
@@ -203,18 +207,13 @@ def tela_principal():
         </script>
         """
         components.html(clock_html, height=150)
-        
         col_img, col_vid = st.columns([1, 1])
         with col_img:
             try: st.image("valortecpflimpo.png", use_container_width=True)
             except: pass
         with col_vid:
             try: st.video("video1.mp4")
-            except: st.info("O vídeo 'video1.mp4' não foi encontrado ou formato incompatível.")
-                
-        st.write("---")
-        try: st.image("RECONSTRUIR.png", use_container_width=True)
-        except: pass
+            except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
 
     # -----------------------------------------
     # 👤 MEU PERFIL E ASSINATURA
@@ -262,13 +261,47 @@ def tela_principal():
             st.button("Acessar Tributário", on_click=mudar_pagina, args=("🛡️ Enviar Protocolo",), key="btn_trib", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (BACEN E RATING COMBINADOS)
+    # 🛡️ ENVIAR PROTOCOLO (AGORA COM CHECKBOXES DE SOMA!)
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
-        tipo_servico = st.selectbox("1. Selecione a Natureza da Ação", ["1 - Ação Limpa Nome (Padrão)", "2 - BACEN", "3 - Rating Bancário", "4 - Defesa Tributária"])
-        st.markdown("---")
+        st.markdown("Preencha os dados e selecione um ou mais serviços.")
+
+        st.subheader("1. Selecione a Natureza da Ação (Pode marcar vários)")
+        st.write("Marque as opções desejadas. O valor total será calculado automaticamente no final.")
         
+        p_limpa = st.session_state['precos'][perfil_atual]['limpa_nome']
+        p_bacen = st.session_state['precos'][perfil_atual]['bacen']
+        p_rating = st.session_state['precos'][perfil_atual]['rating']
+        p_trib = st.session_state['precos'][perfil_atual]['tributario']
+
+        c_chk1, c_chk2 = st.columns(2)
+        with c_chk1:
+            serv_limpa = st.checkbox(f"🛡️ 1 - Ação Limpa Nome (Padrão) — R$ {p_limpa:,.2f}")
+            serv_rating = st.checkbox(f"📈 3 - Rating Bancário — R$ {p_rating:,.2f}")
+        with c_chk2:
+            serv_bacen = st.checkbox(f"🏛️ 2 - BACEN — R$ {p_bacen:,.2f}")
+            serv_trib = st.checkbox(f"⚖️ 4 - Defesa Tributária — R$ {p_trib:,.2f}")
+
+        # Cálculo do carrinho
+        total_carrinho = 0.0
+        lista_servicos = []
+        if serv_limpa: 
+            total_carrinho += p_limpa
+            lista_servicos.append("Limpa Nome")
+        if serv_bacen: 
+            total_carrinho += p_bacen
+            lista_servicos.append("BACEN")
+        if serv_rating: 
+            total_carrinho += p_rating
+            lista_servicos.append("Rating Bancário")
+        if serv_trib: 
+            total_carrinho += p_trib
+            lista_servicos.append("Defesa Tributária")
+            
+        texto_servicos_banco = " + ".join(lista_servicos) if lista_servicos else "Nenhum"
+
+        st.markdown("---")
         st.subheader("2. Identificação do Cliente")
         col1, col2 = st.columns(2)
         with col1:
@@ -279,20 +312,17 @@ def tela_principal():
             telefone = st.text_input("WhatsApp com DDD")
         st.markdown("---")
 
-        if tipo_servico in ["2 - BACEN", "3 - Rating Bancário"]:
+        if serv_bacen or serv_rating:
             st.subheader("3. Questionário Analítico Completo (Obrigatório)")
-            st.info("Para elevar Score, Rating e liberar histórico BACEN, os dados abaixo são essenciais.")
-            
+            st.info("Para elevar Score, Rating e liberar histórico BACEN, preencha os dados abaixo.")
             c_pessoal1, c_pessoal2, c_pessoal3 = st.columns(3)
             rg = c_pessoal1.text_input("RG")
             from datetime import date
             data_nasc = c_pessoal2.date_input("Data de Nascimento", min_value=date(1920, 1, 1))
             estado_civil = c_pessoal3.selectbox("Estado Civil", ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)"])
-            
             c_filiacao1, c_filiacao2 = st.columns(2)
             nome_mae = c_filiacao1.text_input("Nome da Mãe")
             nome_pai = c_filiacao2.text_input("Nome do Pai (Opcional)")
-            
             c_end1, c_end2 = st.columns([1, 3])
             cep = c_end1.text_input("CEP")
             endereco = c_end2.text_input("Endereço Completo (Rua, Nº, Bairro, Cidade-UF)")
@@ -308,8 +338,7 @@ def tela_principal():
             imovel = c_veiculo1.selectbox("Possui Imóvel Próprio?", ["Não", "Sim - Quitado", "Sim - Financiado"])
             veiculo = c_veiculo2.text_input("Veículo Próprio (Modelo, Ano, Placa)")
 
-            # EXCLUSIVIDADES DE CADA UM
-            if tipo_servico == "2 - BACEN":
+            if serv_bacen:
                 st.markdown("#### 🏛️ Acessos e Documentos Exclusivos (BACEN)")
                 doc_scr_bacen = st.file_uploader("Upload do Extrato SCR Completo (Últimos 5 anos)", type=['pdf'])
                 if tipo_pessoa == "CPF":
@@ -323,28 +352,28 @@ def tela_principal():
                     senha_cert_bacen = c_cert2.text_input("Senha do Certificado Digital", type="password")
                     comp_end_pj = st.file_uploader("Comprovantes de Endereços", type=['png', 'jpg', 'pdf'], accept_multiple_files=True)
             
-            elif tipo_servico == "3 - Rating Bancário":
+            if serv_rating:
                 st.markdown("#### 📈 Credenciais de Acesso (Rating)")
                 c_senha1, c_senha2, c_senha3, c_senha4 = st.columns(4)
-                gov_login = c_senha1.text_input("Login GOV.BR")
-                gov_senha = c_senha2.text_input("Senha GOV.BR", type="password")
+                gov_login_r = c_senha1.text_input("Login GOV.BR (Rating)")
+                gov_senha_r = c_senha2.text_input("Senha GOV.BR (Rating)", type="password")
                 serasa_login = c_senha3.text_input("Login Serasa")
                 serasa_senha = c_senha4.text_input("Senha Serasa", type="password")
 
-        elif tipo_servico == "4 - Defesa Tributária":
+        if serv_trib:
             st.subheader("3. Acessos Fiscais (Tributário)")
             st.info("Para Defesa Tributária, o Certificado Digital é obrigatório.")
             ct1, ct2 = st.columns(2)
-            ct1.file_uploader("Upload Certificado Digital A1 (.pfx / .p12)", type=['pfx', 'p12'])
-            ct2.text_input("Senha do Certificado Digital", type="password")
+            ct1.file_uploader("Upload Certificado Digital A1 (.pfx / .p12)", type=['pfx', 'p12'], key="cert_trib")
+            ct2.text_input("Senha do Certificado Digital", type="password", key="senha_trib")
 
         st.markdown("---")
-        st.subheader("4. Anexos e Documentação Oficial")
+        st.subheader("4. Anexos e Documentação Oficial Geral")
         col_arq1, col_arq2 = st.columns(2)
-        doc_identificacao = col_arq1.file_uploader("Upload RG / CNH / CPF (Frente e Verso)", type=['png', 'jpg', 'jpeg', 'pdf'])
-        doc_endereco = col_arq2.file_uploader("Comprovante de Endereço (Atualizado)", type=['png', 'jpg', 'jpeg', 'pdf'])
+        doc_identificacao = col_arq1.file_uploader("Upload RG / CNH / CPF (Frente e Verso)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc1")
+        doc_endereco = col_arq2.file_uploader("Comprovante de Endereço (Atualizado)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc2")
         
-        if tipo_servico in ["2 - BACEN", "3 - Rating Bancário"]:
+        if serv_bacen or serv_rating:
             st.markdown("#### Documentação Avançada (Baixe o modelo, assine e faça o upload)")
             c_mod1, c_mod2, c_mod3 = st.columns(3)
             c_mod1.download_button("📥 Baixar Modelo Procuração", data="Doc", file_name="Procuracao_Modelo.docx")
@@ -356,29 +385,29 @@ def tela_principal():
             doc_hipo = c_up2.file_uploader("Upload Declaração de Hipossuficiência", type=['pdf', 'jpg'])
             
             c_up3, c_up4 = st.columns(2)
-            if tipo_servico != "2 - BACEN": 
-                doc_scr = c_up3.file_uploader("Relatório de Empréstimos SCR (Últimos 5 anos)", type=['pdf'])
+            if not serv_bacen: 
+                doc_scr_rat = c_up3.file_uploader("Relatório de Empréstimos SCR (Últimos 5 anos)", type=['pdf'])
             doc_extratos = c_up4.file_uploader("4 Últimos Extratos Bancários", type=['pdf'])
 
         st.markdown("---")
         st.subheader("5. Processamento e Pagamento")
-        if tipo_servico.startswith("1"): preco_num = st.session_state['precos'][perfil_atual]['limpa_nome']
-        elif tipo_servico.startswith("2"): preco_num = st.session_state['precos'][perfil_atual]['bacen']
-        elif tipo_servico.startswith("3"): preco_num = st.session_state['precos'][perfil_atual]['rating']
-        else: preco_num = st.session_state['precos'][perfil_atual]['tributario']
         
         st.markdown(f"""
             <div class="checkout-box">
-                <h3 style="margin-top:0; color: #f59e0b;">Resumo Financeiro</h3>
-                <p>Serviço Contratado: <b>{tipo_servico}</b></p><p>Taxa de Protocolo: <b style="font-size: 24px; color: #10b981;">R$ {preco_num:,.2f}</b></p>
+                <h3 style="margin-top:0; color: #f59e0b;">Resumo do Carrinho</h3>
+                <p>Serviços Selecionados: <b>{texto_servicos_banco}</b></p>
+                <p>Total a Pagar: <b style="font-size: 24px; color: #10b981;">R$ {total_carrinho:,.2f}</b></p>
             </div>
         """, unsafe_allow_html=True)
         
         if st.button("🚀 ENVIAR DADOS E GERAR PAGAMENTO"):
-            if not nome_cliente or not cpf_cnpj: st.error("⚠️ Nome e Documento são obrigatórios!")
+            if total_carrinho == 0:
+                st.warning("⚠️ Você precisa marcar pelo menos UM serviço na etapa 1.")
+            elif not nome_cliente or not cpf_cnpj: 
+                st.error("⚠️ Nome e Documento são obrigatórios!")
             else:
                 try:
-                    supabase.table("nomes_processamento").insert({"user_id": st.session_state['dados_usuario'].id, "email_cliente": email_logado, "nome": nome_cliente, "cpf_cnpj": cpf_cnpj, "tipo_servico": tipo_servico, "numero_processo": "Aguardando Protocolo"}).execute()
+                    supabase.table("nomes_processamento").insert({"user_id": st.session_state['dados_usuario'].id, "email_cliente": email_logado, "nome": nome_cliente, "cpf_cnpj": cpf_cnpj, "tipo_servico": texto_servicos_banco, "numero_processo": "Aguardando Protocolo"}).execute()
                     st.success("✅ Dados salvos com sucesso!")
                     st.markdown("---")
                     st.markdown("<h2 style='text-align: center; color: #10b981;'>PAGAMENTO PIX OFICIAL</h2>", unsafe_allow_html=True)
@@ -399,7 +428,7 @@ def tela_principal():
     elif menu_selecionado == "🔄 Reprotocolo":
         st.header("🔄 Área de Reprotocolo")
         if is_diretor:
-            st.warning("👑 **ÁREA DO DIRETOR: Alimente o modelo de Reprotocolo para o cliente baixar.**")
+            st.warning("👑 **ÁREA DO DIRETOR: Alimente o modelo de Reprotocolo.**")
             st.file_uploader("Anexar Novo Modelo Reprotocolo Oficial (.docx)", type=['docx', 'pdf'])
             st.button("💾 Salvar Novo Modelo")
             st.markdown("---")
@@ -408,10 +437,68 @@ def tela_principal():
         c2.text_input("Número do CPF ou CNPJ")
         st.download_button("📥 Baixar Modelo Reprotocolo Oficial", data="Conteúdo", file_name="Reprotocolo.docx")
         st.file_uploader("Upload do Reprotocolo Assinado e Preenchido", type=['pdf', 'jpg', 'png'])
-        if st.button("🚀 Enviar Reprotocolo"): st.success("✅ Enviado com sucesso.")
+        if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (COM FILTROS COMPLETOS)
+    # 📖 MANUAL DO PARCEIRO (COMPLETO RESTAURADO)
+    # -----------------------------------------
+    elif menu_selecionado == "📖 Manual do Parceiro":
+        st.header("📖 Manual do Parceiro")
+        st.write("Guia completo para usar o sistema JP Soluções.")
+        
+        st.markdown("""
+        <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
+            <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP Soluções</h3>
+            <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
+            <ul style='list-style-type: none; padding: 0;'>
+                <li>✅ Sistema fácil e intuitivo</li>
+                <li>✅ Acompanhamento em tempo real</li>
+                <li>✅ Suporte dedicado via WhatsApp</li>
+                <li>✅ Transparência total nos processos</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.subheader("Primeiros Passos")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
+        with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato e endereço.")
+        with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades.")
+
+        st.subheader("Lista Paga – Passo a Passo Completo")
+        with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente e anexe a documentação.")
+        with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor exato.")
+        with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante garante a agilidade no processamento da sua fila.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
+
+        st.subheader("Status Possíveis")
+        st.markdown("""
+        <div class="status-row"><span class="status-badge" style="background:#475569;">Pendente</span> Nome cadastrado, aguardando envio da lista.</div>
+        <div class="status-row"><span class="status-badge" style="background:#3b82f6;">Enviado</span> Lista enviada, aguardando pagamento.</div>
+        <div class="status-row"><span class="status-badge" style="background:#eab308;">Aguardando Pagamento</span> Comprovante em análise.</div>
+        <div class="status-row"><span class="status-badge" style="background:#10b981;">Pago</span> Pagamento confirmado, entrará em processamento.</div>
+        <div class="status-row"><span class="status-badge" style="background:#ef4444;">Reprovado</span> Problema com pagamento, verifique.</div>
+        <div class="status-row"><span class="status-badge" style="background:#f97316;">Aguardando Protocolo</span> Nome sendo preparado.</div>
+        <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
+        <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
+        """, unsafe_allow_html=True)
+        
+        st.subheader("Perguntas Frequentes")
+        with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
+        with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        
+        st.markdown("""
+        <div style='background-color:#1e293b; padding: 25px; border-radius: 10px; margin-top: 30px;'>
+            <h3 style='color:#10b981; margin-top:0;'>💬 Suporte e Ajuda</h3>
+            <p><b>WhatsApp:</b> 49 9807 7332</p>
+            <p><b>Email:</b> jp.solucoes.sc.diretor@gmail.com</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # -----------------------------------------
+    # 📋 MINHAS LISTAS
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -447,7 +534,7 @@ def tela_principal():
                 df_final = df[list(colunas_existentes.keys())].rename(columns=colunas_existentes)
                 st.dataframe(df_final, use_container_width=True, hide_index=True)
             else: st.info("Nenhum processo foi encontrado.")
-        except: st.error("Falha ao sincronizar com o banco de dados.")
+        except: pass
 
     # -----------------------------------------
     # 💲 FINANCEIRO
@@ -518,12 +605,10 @@ def tela_principal():
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
         
-        # PRE-VISUALIZACAO DO PDF (Idêntico a imagem 5)
+        # PRE-VISUALIZACAO DO PDF
         st.markdown("---")
         st.markdown("<p style='color: #94a3b8;'>Pré-visualização</p>", unsafe_allow_html=True)
-        
         nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
-        
         st.markdown(f"""
             <div class="pdf-preview">
                 <h1 style="color: {cor_selecionada}; text-align: right; border-bottom: 2px solid {cor_selecionada}; padding-bottom: 10px;">RECUPERE SEU CRÉDITO</h1>
