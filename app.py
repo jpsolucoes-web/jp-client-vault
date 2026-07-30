@@ -67,7 +67,8 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* Limpeza Básica */
-        #MainMenu {visibility: hidden;} footer {visibility: hidden;}
+        /* Limpeza Básica */
+#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
         /* Expandindo o container para matar o vácuo nas bordas globais */
