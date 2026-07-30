@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from supabase import create_client, Client
 import datetime
+import os
 import streamlit.components.v1 as components
 
 # ==========================================
@@ -41,7 +42,6 @@ perfil_atual = 'parceiro' if is_parceiro else 'cliente'
 # 3. MATRIZ DE ESTILO PROFISSIONAL E WHATSAPP
 # ==========================================
 def injetar_css_profissional():
-    # REMOVIDO os comandos CSS experimentais que esconderam o menu lateral.
     st.markdown("""
         <style>
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
@@ -49,6 +49,18 @@ def injetar_css_profissional():
         
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
+        
+        /* Ajuste do Menu Lateral */
+        [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-of-type { display: none !important; }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label {
+            padding: 12px 15px; border-radius: 8px; margin-bottom: 5px;
+            background-color: transparent; transition: all 0.2s ease-in-out; cursor: pointer; border-left: 4px solid transparent;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label:hover { background-color: #1e293b; border-left: 4px solid #3b82f6; }
+        [data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
+            background-color: #1e293b; border-left: 4px solid #10b981; font-weight: bold;
+        }
+        [data-testid="stSidebar"] .stRadio label span { font-size: 16px !important; padding-left: 5px !important; }
         
         /* ELIMINANDO O VÁCUO PRETO - BANNERS PERFEITOS NA HOME */
         [data-testid="stImage"] img {
@@ -202,20 +214,18 @@ def tela_principal():
             "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
-        
-        # MENU LATERAL RESTAURADO - SEM CSS DESTRUTIVO
-        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        st.radio("Menu de Navegação", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (DASHBOARD ELITE - SEM VÁCUO)
+    # 🏠 HOME PAGE (COM SISTEMA AUTOMÁTICO DE VITRINE)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
-        # LINHA 1: Banners Grandes Lado a Lado
+        # LINHA 1: Banners Grandes Fixos
         col_banner1, col_banner2 = st.columns(2, gap="large")
         with col_banner1:
             try: st.image("valortecpflimpo.png", use_container_width=True)
@@ -260,23 +270,26 @@ def tela_principal():
             try: st.video("video1.mp4")
             except: st.info("O vídeo 'video1.mp4' não foi encontrado.")
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        
         # =========================================================================
-        # ESTRUTURA PRONTA PARA ADICIONAR MAIS IMAGENS (SISTEMA PLUG AND PLAY)
+        # O SISTEMA "VITRINE AUTOMÁTICA" (Renderiza se o Diretor enviar imagens extras)
         # =========================================================================
-        # Para adicionar mais 2 imagens abaixo, basta descomentar o bloco a seguir e colocar o nome da foto:
+        img1_exists = os.path.exists("custom_home_1.png")
+        img2_exists = os.path.exists("custom_home_2.png")
+        img3_exists = os.path.exists("custom_home_3.png")
         
-        # c_nova1, c_nova2 = st.columns(2, gap="large")
-        # with c_nova1:
-        #     try: st.image("sua_nova_imagem_1.jpg", use_container_width=True)
-        #     except: pass
-        # with c_nova2:
-        #     try: st.image("sua_nova_imagem_2.jpg", use_container_width=True)
-        #     except: pass
-        # st.markdown("<br>", unsafe_allow_html=True)
+        if img1_exists or img2_exists or img3_exists:
+            st.markdown("<br><h4 style='color:#f8fafc;'>🌟 Novidades / Campanhas</h4>", unsafe_allow_html=True)
+            c_extra = st.columns(3, gap="large")
+            if img1_exists:
+                with c_extra[0]: st.image("custom_home_1.png", use_container_width=True)
+            if img2_exists:
+                with c_extra[1]: st.image("custom_home_2.png", use_container_width=True)
+            if img3_exists:
+                with c_extra[2]: st.image("custom_home_3.png", use_container_width=True)
         # =========================================================================
 
+        st.markdown("<br>", unsafe_allow_html=True)
+        
         # Ações Rápidas (Acesso Fácil no Rodapé da Home)
         st.markdown("<h4 style='color:#f8fafc; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
@@ -540,7 +553,7 @@ def tela_principal():
         if st.button("🚀 Enviar Reprotocolo", use_container_width=True): st.success("✅ Enviado com sucesso.")
 
     # -----------------------------------------
-    # 📖 MANUAL DO PARCEIRO (NOME OFICIAL)
+    # 📖 MANUAL DO PARCEIRO
     # -----------------------------------------
     elif menu_selecionado == "📖 Manual do Parceiro":
         st.header("📖 Manual do Parceiro")
@@ -560,17 +573,17 @@ def tela_principal():
         """, unsafe_allow_html=True)
         
         st.subheader("Primeiros Passos")
-        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro com seu email.")
+        with st.expander("1. Criar Conta e Fazer Login"): st.write("Acesse a página inicial e utilize o formulário de cadastro.")
         with st.expander("2. Completar Perfil"): st.write("Vá até a aba 'Meu Perfil' e atualize seus dados de contato e endereço.")
         with st.expander("3. Navegação pelo Sistema"): st.write("Utilize o menu lateral esquerdo para acessar todas as funcionalidades da ferramenta.")
 
         st.subheader("Lista Paga – Passo a Passo Completo")
         with st.expander("1. Cadastrar Nomes"): st.write("Na página 'Enviar Protocolo', preencha corretamente os dados do cliente.")
         with st.expander("2. Ficha Associativa"): st.write("Para os serviços avançados, baixe e assine os modelos de contratos e procurações.")
-        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página para travar os dados.")
-        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado automaticamente.")
+        with st.expander("3. Enviar Lista"): st.write("Após preencher tudo, clique no botão Laranja de envio no final da página.")
+        with st.expander("4. Realizar Pagamento"): st.write("O sistema gerará um QR Code e um código PIX. Efetue o pagamento do valor total calculado.")
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
-        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
+        with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'.")
 
         st.subheader("Status Possíveis")
         st.markdown("""
@@ -587,13 +600,14 @@ def tela_principal():
         st.subheader("Perguntas Frequentes")
         with st.expander("Quanto custa o serviço?"): st.write("Os valores variam conforme o pacote escolhido na tela de envio.")
         with st.expander("Quanto tempo leva o processamento?"): st.write("O tempo médio é informado diretamente pelo nosso suporte de acordo com o serviço contratado.")
-        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento e envio ao banco de dados, o cancelamento obedece aos termos do contrato.")
+        with st.expander("Posso cancelar um nome após o envio?"): st.write("Após o pagamento, o cancelamento obedece aos termos do contrato.")
         with st.expander("Como sei se o nome foi processado?"): st.write("Acompanhe pela aba Minhas Listas. O status mudará para 'Baixado'.")
-        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela para enviar um arquivo com melhor qualidade.")
+        with st.expander("Posso importar nomes via planilha?"): st.write("Entre em contato com o Diretor para ativação da importação em massa se você tiver grande volume.")
+        with st.expander("O que acontece se meu comprovante for reprovado?"): st.write("Você receberá uma notificação na tela.")
         with st.expander("Como entro em contato com o suporte?"): st.write("Use o botão verde do WhatsApp flutuante na tela.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (FORMATADA EXATAMENTE IGUAL IMAGEM 4 COM AS 13 COLUNAS)
+    # 📋 MINHAS LISTAS
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -617,7 +631,6 @@ def tela_principal():
             if resposta.data:
                 df = pd.DataFrame(resposta.data)
                 
-                # Mockando os dados para refletir as 13 colunas exatas exigidas
                 df['Lista'] = "AÇÃO COLETIVA 115 - 23/06/2026"
                 df['Observação'] = "AÇÃO COLETIVA PROTOCOLADA."
                 df['Status'] = "Pago"
@@ -628,15 +641,8 @@ def tela_principal():
                 df['Cenprot SP'] = "baixado"
                 df['Data'] = "23/06/2026"
                 
-                # Definindo a ordem das 13 colunas da imagem do cliente
                 ordem_colunas = ['Lista', 'numero_processo', 'Observação', 'nome', 'cpf_cnpj', 'tipo', 'Status', 'Serasa', 'Boa Vista', 'SPC', 'Cenprot BR', 'Cenprot SP', 'Data']
-                
-                colunas_renomear = {
-                    'numero_processo': 'Número Ação Coletiva',
-                    'nome': 'Nome',
-                    'cpf_cnpj': 'CPF/CNPJ',
-                    'tipo': 'Tipo'
-                }
+                colunas_renomear = {'numero_processo': 'Número Ação Coletiva', 'nome': 'Nome', 'cpf_cnpj': 'CPF/CNPJ', 'tipo': 'Tipo'}
                 
                 df_filtrado = df[[col for col in ordem_colunas if col in df.columns]]
                 df_final = df_filtrado.rename(columns=colunas_renomear)
@@ -668,7 +674,7 @@ def tela_principal():
             if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
-    # 📊 ORÇAMENTO (CALCULADORA E PDF COM PREVIEW)
+    # 📊 ORÇAMENTO
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
@@ -750,55 +756,6 @@ def tela_principal():
                 </div>
             </div>
         """, unsafe_allow_html=True)
-
-    # -----------------------------------------
-    # 📝 CONTRATOS PARA BAIXAR
-    # -----------------------------------------
-    elif menu_selecionado == "📝 Contratos para Baixar":
-        st.header("📝 Central de Contratos")
-        if is_diretor:
-            st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos.**")
-            c_mod1, c_mod2 = st.columns(2)
-            c_mod1.file_uploader("Substituir Contrato Limpa Nome", type=['docx', 'pdf'])
-            c_mod2.file_uploader("Substituir Contrato BACEN", type=['docx', 'pdf'])
-            c_mod1.file_uploader("Substituir Contrato Rating", type=['docx', 'pdf'])
-            c_mod2.file_uploader("Substituir Contrato Tributária", type=['docx', 'pdf'])
-            st.button("💾 Salvar Novos Modelos")
-            st.markdown("---")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader("1. Baixar Modelos (.docx)")
-            st.download_button("📄 Contrato Limpa Nome", data="Doc", file_name="LimpaNome.docx", use_container_width=True)
-            st.download_button("🏦 Contrato BACEN", data="Doc", file_name="Bacen.docx", use_container_width=True)
-            st.download_button("📈 Contrato Rating", data="Doc", file_name="Rating.docx", use_container_width=True)
-            st.download_button("⚖️ Contrato Tributária", data="Doc", file_name="Tributario.docx", use_container_width=True)
-        with col2:
-            st.subheader("2. Enviar Assinado")
-            st.file_uploader("Upload Assinado", type=['pdf'])
-            if st.button("🚀 Enviar ao Cofre"): st.success("✅ Salvo!")
-
-    # -----------------------------------------
-    # 📄 DOCUMENTOS DE APOIO
-    # -----------------------------------------
-    elif menu_selecionado == "📄 Documentos de Apoio":
-        st.header("📄 Material de Apoio e Educação")
-        if is_diretor:
-            st.warning("👑 **ÁREA DO DIRETOR: Alimente as seções.**")
-            c_doc1, c_doc2 = st.columns(2)
-            c_doc1.file_uploader("1. Anexar: Manual Limpa Nome", type=['pdf', 'jpg'])
-            c_doc2.file_uploader("2. Anexar: Manual BACEN", type=['pdf', 'jpg'])
-            c_doc1.file_uploader("3. Anexar: O que é Rating Bancário?", type=['pdf', 'jpg'])
-            c_doc2.file_uploader("4. Anexar: O que é o BACEN?", type=['pdf', 'jpg'])
-            st.button("💾 Atualizar Arquivos")
-            st.markdown("---")
-        st.subheader("Manuais Oficiais (Passo a Passo)")
-        c_down1, c_down2 = st.columns(2)
-        c_down1.download_button("📖 Baixar Manual Limpa Nome", data="Doc", file_name="Manual_Limpa_Nome.pdf", use_container_width=True)
-        c_down2.download_button("📖 Baixar Manual BACEN", data="Doc", file_name="Manual_Bacen.pdf", use_container_width=True)
-        st.subheader("Informativos")
-        c_down3, c_down4 = st.columns(2)
-        c_down3.download_button("🧠 Baixar: O que é Rating?", data="Doc", file_name="Rating.pdf", use_container_width=True)
-        c_down4.download_button("🏛️ Baixar: O que é o BACEN?", data="Doc", file_name="Bacen.pdf", use_container_width=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -902,11 +859,11 @@ def tela_principal():
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -----------------------------------------
-    # ⚙️ PAINEL DO DIRETOR E ADMIN
+    # ⚙️ PAINEL DO DIRETOR E ADMIN COM VITRINE
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
-        aba_processos, aba_precos, aba_acesso, aba_relogio, aba_dossier = st.tabs(["📝 Vincular Processos", "💲 Tabela de Preços", "🚫 Controle de Acesso", "⏳ Relógio", "📥 Dossiê PDF"])
+        aba_processos, aba_precos, aba_acesso, aba_relogio, aba_dossier, aba_vitrine = st.tabs(["📝 Vincular Processos", "💲 Tabela de Preços", "🚫 Controle de Acesso", "⏳ Relógio", "📥 Dossiê PDF", "🖼️ Vitrine Home"])
         
         with aba_processos:
             st.markdown("### Atualizar Dados do Processo e Birôs")
@@ -1039,6 +996,30 @@ def tela_principal():
                         st.download_button("📥 Baixar Dossiê (TXT)", data=texto_dossie, file_name=f"Dossie_{cpf_dossier}.txt", use_container_width=True)
                 else:
                     st.warning("Digite o CPF ou CNPJ.")
+                    
+        with aba_vitrine:
+            st.markdown("### 🖼️ Gerenciador da Vitrine Home")
+            st.write("Faça o upload de novas imagens de campanhas ou informativos. Elas aparecerão automaticamente na página inicial dos clientes.")
+            
+            c_up1, c_up2, c_up3 = st.columns(3)
+            img1 = c_up1.file_uploader("Upload Imagem Extra 1", type=['png', 'jpg', 'jpeg'])
+            img2 = c_up2.file_uploader("Upload Imagem Extra 2", type=['png', 'jpg', 'jpeg'])
+            img3 = c_up3.file_uploader("Upload Imagem Extra 3", type=['png', 'jpg', 'jpeg'])
+            
+            if st.button("💾 Salvar na Vitrine Home", type="primary", use_container_width=True):
+                if img1:
+                    with open("custom_home_1.png", "wb") as f: f.write(img1.getbuffer())
+                if img2:
+                    with open("custom_home_2.png", "wb") as f: f.write(img2.getbuffer())
+                if img3:
+                    with open("custom_home_3.png", "wb") as f: f.write(img3.getbuffer())
+                st.success("Vitrine atualizada! Os clientes já estão vendo as novas imagens na Home.")
+                
+            if st.button("🗑️ Remover Imagens Extras (Limpar Vitrine)", use_container_width=True):
+                if os.path.exists("custom_home_1.png"): os.remove("custom_home_1.png")
+                if os.path.exists("custom_home_2.png"): os.remove("custom_home_2.png")
+                if os.path.exists("custom_home_3.png"): os.remove("custom_home_3.png")
+                st.success("Imagens extras removidas da Home.")
 
     else:
         st.header(menu_selecionado[2:])
