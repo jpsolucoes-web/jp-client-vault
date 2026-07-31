@@ -25,6 +25,7 @@ supabase: Client = init_connection()
 # ==========================================
 # 3. LEITURA BLINDADA DE PARÂMETROS E INICIALIZAÇÃO
 # ==========================================
+# Proteção Anti-Queda: Evita erro se a URL carregar antes do servidor acordar
 try:
     tipo_acesso = st.query_params.get("tipo")
     is_parceiro = (tipo_acesso == "parceiro")
@@ -47,11 +48,14 @@ if 'precos' not in st.session_state:
         }
     }
 
+# Carregar preços salvos no banco de dados (Persistência)
 if 'precos_carregados' not in st.session_state:
     try:
         res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
         if res_p.data:
             st.session_state['precos'] = res_p.data[0]['valor_json']
+            
+            # Injeção retroativa de segurança para as novas variáveis
             if 'reprotocolo' not in st.session_state['precos']['cliente']:
                 st.session_state['precos']['cliente']['reprotocolo'] = 212.50
                 st.session_state['precos']['parceiro']['reprotocolo'] = 127.50
@@ -79,37 +83,74 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO: ESCONDER FORK/GITHUB
+           A. CIRURGIA DE CABEÇALHO (MANTÉM MENU, APAGA GITHUB)
            ========================================= */
-        footer { visibility: hidden !important; display: none !important; }
-        
-        /* ALVO EXATO: Esconder container do lado direito (Fork, Deploy) e manter o esquerdo (☰) */
-        header[data-testid="stHeader"] > div:last-child { display: none !important; visibility: hidden !important; }
+        /* Garante que o cabeçalho não fique transparente. Dá a cor azul escura igual a barra lateral */
+        header[data-testid="stHeader"] {
+            background-color: #0f172a !important;
+            border-bottom: 1px solid #1e293b !important;
+        }
+
+        /* Oculta APENAS as ferramentas da direita (GitHub, Fork, Deploy, 3 pontinhos) */
         header[data-testid="stHeader"] .stToolbarActions { display: none !important; visibility: hidden !important; }
-        .viewerBadge_container { display: none !important; visibility: hidden !important; }
+        [data-testid="stToolbar"] { display: none !important; }
+        .stDeployButton { display: none !important; }
+        .viewerBadge_container { display: none !important; }
+        #MainMenu { display: none !important; }
+        
+        /* Garante que o botão de abrir o menu lateral (>>) fique com a cor laranja visível */
+        [data-testid="collapsedControl"] {
+            color: #f59e0b !important;
+        }
+        [data-testid="collapsedControl"] svg {
+            fill: #f59e0b !important;
+        }
 
-        header { background-color: transparent !important; }
+        /* Oculta o rodapé do Streamlit */
+        footer { visibility: hidden !important; display: none !important; }
 
+        /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
+        /* Ajuste do container para o conteúdo começar abaixo da barra do cabeçalho */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
+        /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
         /* =========================================
            B. SIMETRIA E RESPONSIVIDADE (FLEX-WRAP)
            ========================================= */
-        .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .simetria-box { flex: 1 1 300px; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b; }
+        .simetria-perfeita { 
+            display: flex; 
+            width: 100%; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
+        }
+        .simetria-box { 
+            flex: 1 1 300px; 
+            height: 380px; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.5); 
+            border: 1px solid #334155; 
+            background-color: #1e293b; 
+        }
         .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
         .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px; }
         
-        @media (max-width: 768px) { .simetria-box { height: 250px !important; } }
+        /* Ajuste de Altura Dinâmica para Celular */
+        @media (max-width: 768px) {
+            .simetria-box { height: 250px !important; }
+        }
 
+        /* Ajuste Galeria de Campanhas */
         [data-testid="stImage"] img { border-radius: 12px; }
         
+        /* Textos e Caixas de Entrada */
         label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label { color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important; }
         h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -117,10 +158,12 @@ def injetar_css_profissional():
         .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important; }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
+        /* Botões */
         .stButton>button { background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%; }
         .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
         hr { border-color: #334155; }
         
+        /* Cards */
         .dashboard-card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 100%; }
         .checkout-box { background-color: #1e293b; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .card-servico { background-color: #1e293b; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
@@ -128,10 +171,12 @@ def injetar_css_profissional():
         .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
+        /* Botão WhatsApp Flutuante Minimalista */
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease; }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
         
+        /* Tabela e Badges */
         .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
         .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
         .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #1e293b; border-radius: 8px;}
@@ -162,7 +207,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -221,6 +266,7 @@ def tela_principal():
     email_logado = st.session_state['dados_usuario'].email
     is_diretor = (email_logado == "jp.solucoes.sc.diretor@gmail.com")
     
+    # Validação do Usuário Bloqueado
     if email_logado in st.session_state['usuarios_bloqueados'] and not is_diretor:
         st.error("🚫 SEU ACESSO FOI SUSPENSO PELO DIRETOR DA PLATAFORMA.")
         st.info("Entre em contato com o suporte via WhatsApp para regularizar.")
@@ -229,9 +275,12 @@ def tela_principal():
             st.rerun()
         return
 
+    # =========================================================
     # TRAVA DE SEGURANÇA 1: OBRIGA PREENCHIMENTO DO PERFIL
+    # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
+            # Tenta buscar no banco de dados a tabela de perfis
             res_perf = supabase.table("perfis_clientes").select("*").eq("user_id", st.session_state['dados_usuario'].id).execute()
             if res_perf.data and res_perf.data[0].get('cpf_cnpj') and res_perf.data[0].get('nome_exibicao'):
                 st.session_state['perfil_preenchido'] = True
@@ -240,6 +289,7 @@ def tela_principal():
                 st.session_state['perfil_preenchido'] = False
                 st.session_state['dados_perfil'] = {}
         except:
+            # Se a tabela não existir, libera provisoriamente na memória para não dar erro
             st.session_state['perfil_preenchido'] = False
             st.session_state['dados_perfil'] = {}
 
@@ -271,16 +321,18 @@ def tela_principal():
 
     menu_selecionado = st.session_state['menu_navegacao']
 
+    # =========================================================
     # TRAVA DE SEGURANÇA 2: EXECUÇÃO DO BLOQUEIO DE TELA
+    # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
-            return
+            return # Interrompe a tela aqui, forçando o cliente a preencher o perfil
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS (UX MOBILE) - O Código Corrigido e Blindado
+    # BOTÃO SALVA-VIDAS (UX MOBILE) - O Código Corrigido (on_click direto)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1046,7 +1098,7 @@ def tela_principal():
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
-        st.write("Use a calculadora inteligente e a projeção de ganhos para planejar seu orçamento.")
+        st.write("Use a calculadora inteligente e a projeção de ganhos para planear seu orçamento.")
         col_calc, col_proj = st.columns(2)
         with col_calc:
             st.markdown("<div style='background-color:#1e293b; padding:20px; border-radius:10px; height: 100%; border: 1px solid #334155;'>", unsafe_allow_html=True)
