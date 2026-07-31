@@ -924,7 +924,7 @@ def tela_principal():
     # -----------------------------------------
     # 💲 FINANCEIRO
     # -----------------------------------------
-    elif menu_selecionado == "💲 FINANCEIRO":
+    elif menu_selecionado == "💲 Financeiro":
         st.header("Financeiro")
         st.markdown("<p style='color: #94a3b8;'>Minhas listas enviadas e valores (Aguardando processamento de pagamentos)</p>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
@@ -1321,4 +1321,48 @@ def tela_principal():
             c_up5, c_up6, c_up7, c_up8 = st.columns(4)
             img5 = c_up5.file_uploader("Upload Imagem Extra 5", type=['png', 'jpg', 'jpeg'])
             img6 = c_up6.file_uploader("Upload Imagem Extra 6", type=['png', 'jpg', 'jpeg'])
-            img7 = c_up7.file_uploader
+            img7 = c_up7.file_uploader("Upload Imagem Extra 7", type=['png', 'jpg', 'jpeg'])
+            img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
+            
+            if st.button("💾 Salvar/Atualizar Todas as Mídias na Home", type="primary", use_container_width=True):
+                if up_top1:
+                    with open("custom_topo_1.png", "wb") as f: f.write(up_top1.getbuffer())
+                if up_top2:
+                    with open("custom_topo_2.png", "wb") as f: f.write(up_top2.getbuffer())
+                if up_mid1:
+                    with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
+                if up_vid:
+                    with open("custom_video.mp4", "wb") as f: f.write(up_vid.getbuffer())
+                    
+                if img1:
+                    with open("custom_home_1.png", "wb") as f: f.write(img1.getbuffer())
+                if img2:
+                    with open("custom_home_2.png", "wb") as f: f.write(img2.getbuffer())
+                if img3:
+                    with open("custom_home_3.png", "wb") as f: f.write(img3.getbuffer())
+                if img4:
+                    with open("custom_home_4.png", "wb") as f: f.write(img4.getbuffer())
+                if img5:
+                    with open("custom_home_5.png", "wb") as f: f.write(img5.getbuffer())
+                if img6:
+                    with open("custom_home_6.png", "wb") as f: f.write(img6.getbuffer())
+                if img7:
+                    with open("custom_home_7.png", "wb") as f: f.write(img7.getbuffer())
+                if img8:
+                    with open("custom_home_8.png", "wb") as f: f.write(img8.getbuffer())
+                st.success("Vitrine 100% atualizada! Os clientes já estão vendo as novas mídias.")
+                
+            if st.button("🗑️ Restaurar Padrões e Limpar Toda a Vitrine", use_container_width=True):
+                files_to_remove = ["custom_topo_1.png", "custom_topo_2.png", "custom_meio_1.png", "custom_video.mp4"] + [f"custom_home_{i}.png" for i in range(1, 9)]
+                for file_path in files_to_remove:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                st.success("Toda a vitrine foi limpa e as imagens/vídeos originais retornaram.")
+
+    else:
+        st.header(menu_selecionado[2:])
+        st.info("Esta seção está em fase de implantação.")
+
+# 8. Controlador de Fluxo Inicial
+if not st.session_state['usuario_autenticado']: tela_login()
+else: tela_principal()
