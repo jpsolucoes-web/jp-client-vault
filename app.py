@@ -86,18 +86,38 @@ def injetar_css_profissional():
         header[data-testid="stHeader"] { 
             background-color: #0f172a !important; 
             border-bottom: 1px solid #1e293b !important;
+            z-index: 99999 !important;
         }
 
-        /* Mantém o botão >> na esquerda com a cor laranja */
-        [data-testid="collapsedControl"] { color: #f59e0b !important; }
-        [data-testid="collapsedControl"] svg { fill: #f59e0b !important; color: #f59e0b !important; }
+        /* Mantém o botão de Menu (☰) na esquerda com a cor laranja */
+        [data-testid="collapsedControl"] { 
+            color: #f59e0b !important; 
+            visibility: visible !important;
+            display: flex !important;
+        }
+        [data-testid="collapsedControl"] svg { 
+            fill: #f59e0b !important; 
+            color: #f59e0b !important; 
+        }
 
-        /* CIRURGIA: Oculta APENAS o lado direito (GitHub, Deploy, Menu 3 Pontos) e Rodapé */
-        [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; }
-        .stDeployButton { display: none !important; visibility: hidden !important; }
-        .viewerBadge_container { display: none !important; visibility: hidden !important; }
-        footer { display: none !important; visibility: hidden !important; }
-        #MainMenu { display: none !important; visibility: hidden !important; }
+        /* 
+           A TÁTICA DO COMANDANTE (OFF-SCREEN HACK):
+           Em vez de usar 'display: none' que pode quebrar a barra, 
+           nós jogamos os botões chatos da direita para -9999px fora da tela.
+           Eles "existem", mas o cliente nunca vai ver.
+        */
+        [data-testid="stToolbar"], 
+        .stDeployButton, 
+        .viewerBadge_container, 
+        .viewerBadge_link, 
+        #MainMenu, 
+        footer { 
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
 
         /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
@@ -197,7 +217,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -207,6 +227,7 @@ def tela_login():
             
         st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
+        # ABA DE ESQUECI A SENHA INCLUÍDA AQUI
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -235,6 +256,7 @@ def tela_login():
                     except Exception as e:
                         st.error("Erro ao criar conta. Tente novamente.")
 
+        # LÓGICA DE RECUPERAÇÃO DE SENHA
         with aba_recuperar:
             with st.form("recover_form"):
                 st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
@@ -266,7 +288,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: Busca de Perfil
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -310,7 +332,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: Bloqueia Telas se não preencher Perfil
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -319,9 +341,9 @@ def tela_principal():
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
-    # =========================================================
+    # =======================================================================
     # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA NÃO DAR ERRO)
-    # =========================================================
+    # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
@@ -461,7 +483,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO ATUALIZADO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Meu Perfil e Assinatura")
