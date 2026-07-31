@@ -25,7 +25,6 @@ supabase: Client = init_connection()
 # ==========================================
 # 3. LEITURA BLINDADA DE PARÂMETROS E INICIALIZAÇÃO
 # ==========================================
-# Proteção Anti-Queda: Evita erro se a URL carregar antes do servidor acordar
 try:
     tipo_acesso = st.query_params.get("tipo")
     is_parceiro = (tipo_acesso == "parceiro")
@@ -48,14 +47,11 @@ if 'precos' not in st.session_state:
         }
     }
 
-# Carregar preços salvos no banco de dados (Persistência)
 if 'precos_carregados' not in st.session_state:
     try:
         res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
         if res_p.data:
             st.session_state['precos'] = res_p.data[0]['valor_json']
-            
-            # Injeção retroativa de segurança para as novas variáveis
             if 'reprotocolo' not in st.session_state['precos']['cliente']:
                 st.session_state['precos']['cliente']['reprotocolo'] = 212.50
                 st.session_state['precos']['parceiro']['reprotocolo'] = 127.50
@@ -83,47 +79,23 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO E MENU CELULAR (☰)
+           A. CABEÇALHO NATIVO E LIBERADO PARA MOBILE
            ========================================= */
-        /* Esconde apenas os elementos desnecessários, mantendo a barra nativa viva */
-        footer { display: none !important; } 
-        [data-testid="stToolbar"] { display: none !important; }
+        /* Oculta APENAS o rodapé, o botão deploy e o menu 3 pontinhos */
+        footer { visibility: hidden !important; }
+        #MainMenu { visibility: hidden !important; }
+        .stDeployButton { display: none !important; }
         
-        /* BARRA SUPERIOR SEMPRE VISÍVEL NO CELULAR */
-        header[data-testid="stHeader"] { 
-            background-color: #0f172a !important; 
-            border-bottom: 2px solid #f59e0b !important;
-            visibility: visible !important;
-            z-index: 999990 !important;
-        }
-        
-        /* BOTÃO HAMBÚRGUER GIGANTE E LARANJA PARA O CLIENTE NÃO SE PERDER */
-        [data-testid="collapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
-            background-color: #f59e0b !important;
-            border-radius: 8px !important;
-            margin-top: 10px !important;
-            margin-left: 10px !important;
-            padding: 5px 15px !important;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.5) !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: auto !important;
-        }
-        [data-testid="collapsedControl"] svg {
-            fill: #000000 !important;
-            color: #000000 !important;
-            width: 30px !important;
-            height: 30px !important;
-        }
+        /* GARENTE QUE O CABEÇALHO NATIVO (ONDE FICA O MENU ☰) CONTINUE FUNCIONANDO */
+        header { background-color: #0f172a !important; }
 
+        /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para dar espaço ao botão do menu e não colar nas bordas */
-        .block-container { padding: 5rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container - não pode sobrepor o cabeçalho */
+        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão e Segura */
+        /* Lateral Padrão */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
@@ -153,7 +125,6 @@ def injetar_css_profissional():
         /* Ajuste de Altura Dinâmica para Celular */
         @media (max-width: 768px) {
             .simetria-box { height: 250px !important; }
-            .block-container { padding: 6rem 1rem 1rem 1rem !important; }
         }
 
         /* Ajuste Galeria de Campanhas */
@@ -295,19 +266,6 @@ def tela_principal():
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
-
-    # =======================================================================
-    # BOTÃO SALVA-VIDAS (UX MOBILE) - Aparece em todas as telas menos na Home
-    # Substitui a necessidade de usar a setinha física de voltar do celular
-    # =======================================================================
-    if menu_selecionado != "🏠 Home":
-        st.markdown("<br>", unsafe_allow_html=True)
-        c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
-        with c_voltar2:
-            if st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True):
-                st.session_state['menu_navegacao'] = "🏠 Home"
-                st.rerun()
-        st.markdown("---")
 
     # -----------------------------------------
     # 🏠 HOME PAGE (SIMETRIA PERFEITA FLEXBOX E RELÓGIO CENTRAL)
