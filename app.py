@@ -25,7 +25,6 @@ supabase: Client = init_connection()
 # ==========================================
 # 3. LEITURA BLINDADA DE PARÂMETROS E INICIALIZAÇÃO
 # ==========================================
-# Proteção Anti-Queda: Evita erro se a URL carregar antes do servidor acordar
 try:
     tipo_acesso = st.query_params.get("tipo")
     is_parceiro = (tipo_acesso == "parceiro")
@@ -48,14 +47,11 @@ if 'precos' not in st.session_state:
         }
     }
 
-# Carregar preços salvos no banco de dados (Persistência)
 if 'precos_carregados' not in st.session_state:
     try:
         res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
         if res_p.data:
             st.session_state['precos'] = res_p.data[0]['valor_json']
-            
-            # Injeção retroativa de segurança para as novas variáveis
             if 'reprotocolo' not in st.session_state['precos']['cliente']:
                 st.session_state['precos']['cliente']['reprotocolo'] = 212.50
                 st.session_state['precos']['parceiro']['reprotocolo'] = 127.50
@@ -83,39 +79,35 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO: CIRURGIA DE PRECISÃO ABSOLUTA
+           A. CABEÇALHO: MANTÉM ESQUERDA (>>), OCULTA DIREITA (GITHUB)
            ========================================= */
-           
-        /* 1. MANTÉM A BARRA INTEIRA VISÍVEL E COM COR */
-        header[data-testid="stHeader"] {
-            background-color: #0f172a !important;
+        /* Oculta APENAS as ferramentas específicas do Streamlit/GitHub da direita */
+        [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
+        .stDeployButton { visibility: hidden !important; display: none !important; }
+        .viewerBadge_container { visibility: hidden !important; display: none !important; }
+        .viewerBadge_link { visibility: hidden !important; display: none !important; }
+        
+        /* Oculta o rodapé */
+        footer { visibility: hidden !important; display: none !important; }
+        #MainMenu { visibility: hidden !important; display: none !important; }
+        
+        /* GARENTE QUE O CABEÇALHO NATIVO CONTINUE FUNCIONANDO (Para o Menu não sumir) */
+        header[data-testid="stHeader"] { 
+            background-color: #0f172a !important; 
             border-bottom: 1px solid #1e293b !important;
         }
 
-        /* 2. MANTÉM O BOTÃO ESQUERDO (>> OU ☰) INTACTO E DESTACADO */
-        [data-testid="collapsedControl"] {
-            color: #f59e0b !important;
-        }
-        [data-testid="collapsedControl"] svg {
-            fill: #f59e0b !important;
-            color: #f59e0b !important;
-        }
+        /* Estiliza o botão esquerdo (>> ou ☰) para ficar destacado */
+        [data-testid="collapsedControl"] { color: #f59e0b !important; }
+        [data-testid="collapsedControl"] svg { fill: #f59e0b !important; color: #f59e0b !important; }
 
-        /* 3. EXTERMINA APENAS OS COMPONENTES DA DIREITA E O RODAPÉ (Sem quebrar a barra) */
-        [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; }
-        .stDeployButton { display: none !important; visibility: hidden !important; }
-        .viewerBadge_container { display: none !important; visibility: hidden !important; }
-        .viewerBadge_link { display: none !important; visibility: hidden !important; }
-        #MainMenu { display: none !important; visibility: hidden !important; }
-        footer { display: none !important; visibility: hidden !important; }
-
-        /* Fundo e cores gerais do App */
+        /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para o conteúdo não bater na barra superior */
+        /* Ajuste do container para não sobrepor o cabeçalho */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão e Segura */
+        /* Lateral Padrão */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
@@ -127,7 +119,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -207,7 +199,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
+# 6. TELA DE LOGIN (COM ESQUECI A SENHA)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -230,7 +222,7 @@ def tela_login():
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        st.error(f"Falha na autenticação. Verifique seu e-mail e senha.")
+                        st.error("Falha na autenticação. Verifique seu e-mail e senha.")
                         
         with aba_cadastro:
             with st.form("cadastro_form"):
@@ -242,7 +234,7 @@ def tela_login():
                         supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error(f"Erro ao criar conta. Tente novamente.")
+                        st.error("Erro ao criar conta. Tente novamente.")
 
         with aba_recuperar:
             with st.form("recover_form"):
@@ -266,7 +258,6 @@ def tela_principal():
     email_logado = st.session_state['dados_usuario'].email
     is_diretor = (email_logado == "jp.solucoes.sc.diretor@gmail.com")
     
-    # Validação do Usuário Bloqueado
     if email_logado in st.session_state['usuarios_bloqueados'] and not is_diretor:
         st.error("🚫 SEU ACESSO FOI SUSPENSO PELO DIRETOR DA PLATAFORMA.")
         st.info("Entre em contato com o suporte via WhatsApp para regularizar.")
@@ -276,11 +267,10 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: OBRIGA PREENCHIMENTO DO PERFIL
+    # TRAVA DE SEGURANÇA 1: Busca Perfil
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
-            # Tenta buscar no banco de dados a tabela de perfis
             res_perf = supabase.table("perfis_clientes").select("*").eq("user_id", st.session_state['dados_usuario'].id).execute()
             if res_perf.data and res_perf.data[0].get('cpf_cnpj') and res_perf.data[0].get('nome_exibicao'):
                 st.session_state['perfil_preenchido'] = True
@@ -289,7 +279,6 @@ def tela_principal():
                 st.session_state['perfil_preenchido'] = False
                 st.session_state['dados_perfil'] = {}
         except:
-            # Se a tabela não existir, libera provisoriamente na memória para não dar erro
             st.session_state['perfil_preenchido'] = False
             st.session_state['dados_perfil'] = {}
 
@@ -322,17 +311,17 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: EXECUÇÃO DO BLOQUEIO DE TELA
+    # TRAVA DE SEGURANÇA 2: Bloqueio de Navegação
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
-            return # Interrompe a tela aqui, forçando o cliente a preencher o perfil
+            return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS (UX MOBILE) - O Código Corrigido (on_click direto)
+    # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA EVITAR ERROS)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
