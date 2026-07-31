@@ -85,25 +85,35 @@ def injetar_css_profissional():
         /* =========================================
            A. CABEÇALHO NATIVO E MENU CELULAR (☰)
            ========================================= */
-        #MainMenu { display: none !important; } 
+        /* Esconde apenas os elementos desnecessários, mantendo a barra nativa viva */
         footer { display: none !important; } 
         [data-testid="stToolbar"] { display: none !important; }
         
-        /* Deixa o fundo do header transparente para não cortar a tela, mas mantendo o componente vivo */
-        header { background-color: transparent !important; }
+        /* BARRA SUPERIOR SEMPRE VISÍVEL NO CELULAR */
+        header[data-testid="stHeader"] { 
+            background-color: #0f172a !important; 
+            border-bottom: 2px solid #f59e0b !important;
+            visibility: visible !important;
+            z-index: 999990 !important;
+        }
         
-        /* CRIANDO O BOTÃO DESTACADO PARA O MENU MOBILE */
+        /* BOTÃO HAMBÚRGUER GIGANTE E LARANJA PARA O CLIENTE NÃO SE PERDER */
         [data-testid="collapsedControl"] {
-            background-color: #1e293b !important;
-            border: 2px solid #f59e0b !important;
+            display: flex !important;
+            visibility: visible !important;
+            background-color: #f59e0b !important;
             border-radius: 8px !important;
-            margin-top: 15px !important;
+            margin-top: 10px !important;
             margin-left: 10px !important;
+            padding: 5px 15px !important;
             box-shadow: 0px 4px 10px rgba(0,0,0,0.5) !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: auto !important;
         }
         [data-testid="collapsedControl"] svg {
-            fill: #f59e0b !important;
-            color: #f59e0b !important;
+            fill: #000000 !important;
+            color: #000000 !important;
             width: 30px !important;
             height: 30px !important;
         }
@@ -111,7 +121,7 @@ def injetar_css_profissional():
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
         /* Ajuste do container para dar espaço ao botão do menu e não colar nas bordas */
-        .block-container { padding: 4rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
+        .block-container { padding: 5rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
@@ -125,7 +135,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber (Celular) */
+            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -143,6 +153,7 @@ def injetar_css_profissional():
         /* Ajuste de Altura Dinâmica para Celular */
         @media (max-width: 768px) {
             .simetria-box { height: 250px !important; }
+            .block-container { padding: 6rem 1rem 1rem 1rem !important; }
         }
 
         /* Ajuste Galeria de Campanhas */
@@ -287,8 +298,10 @@ def tela_principal():
 
     # =======================================================================
     # BOTÃO SALVA-VIDAS (UX MOBILE) - Aparece em todas as telas menos na Home
+    # Substitui a necessidade de usar a setinha física de voltar do celular
     # =======================================================================
     if menu_selecionado != "🏠 Home":
+        st.markdown("<br>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
             if st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True):
