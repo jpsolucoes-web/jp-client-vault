@@ -79,56 +79,33 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. MENU FLUTUANTE INFERIOR (IDEIA DO COMANDANTE)
+           A. CABEÇALHO NATIVO E LIBERADO PARA MOBILE
            ========================================= */
-        /* Oculta as ferramentas indesejadas do topo (GitHub, Deploy) */
-        [data-testid="stToolbar"] { display: none !important; }
-        .stDeployButton { display: none !important; }
-        .viewerBadge_container { display: none !important; }
-        footer { display: none !important; }
-        #MainMenu { display: none !important; }
         
-        /* Deixa o cabeçalho original invisível para não atrapalhar o topo */
+        /* Mantém o Cabeçalho visível com a cor azul escura */
         header[data-testid="stHeader"] { 
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
+            background-color: #0f172a !important; 
+            border-bottom: 1px solid #1e293b !important;
         }
 
-        /* PEGA O BOTÃO DE MENU (☰) E JOGA PARA BAIXO COMO UM APP NATIVO */
-        [data-testid="collapsedControl"] {
-            position: fixed !important;
-            bottom: 30px !important;
-            left: 30px !important;
-            top: auto !important;
-            background-color: #f59e0b !important;
-            border-radius: 50% !important;
-            width: 65px !important;
-            height: 65px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-shadow: 2px 4px 15px rgba(0,0,0,0.8) !important;
-            z-index: 999999 !important;
-            transition: all 0.3s ease !important;
-        }
-        [data-testid="collapsedControl"] svg {
-            width: 35px !important;
-            height: 35px !important;
-            fill: #000000 !important;
-            color: #000000 !important;
-        }
-        [data-testid="collapsedControl"]:hover {
-            transform: scale(1.1) !important;
-        }
+        /* Mantém o botão >> na esquerda com a cor laranja */
+        [data-testid="collapsedControl"] { color: #f59e0b !important; }
+        [data-testid="collapsedControl"] svg { fill: #f59e0b !important; color: #f59e0b !important; }
 
-        /* Fundo e cores gerais do App */
+        /* CIRURGIA: Oculta APENAS o lado direito (GitHub, Deploy, Menu 3 Pontos) e Rodapé */
+        [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; }
+        .stDeployButton { display: none !important; visibility: hidden !important; }
+        .viewerBadge_container { display: none !important; visibility: hidden !important; }
+        footer { display: none !important; visibility: hidden !important; }
+        #MainMenu { display: none !important; visibility: hidden !important; }
+
+        /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para subir o conteúdo e dar folga embaixo para os botões */
-        .block-container { padding-top: 2rem !important; padding-bottom: 6rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container - não pode sobrepor o cabeçalho */
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão e Segura */
+        /* Lateral Padrão */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
@@ -140,7 +117,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -220,7 +197,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -230,7 +207,6 @@ def tela_login():
             
         st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
-        # ABA DE ESQUECI A SENHA INCLUÍDA AQUI
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -245,7 +221,7 @@ def tela_login():
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        st.error(f"Falha na autenticação. Verifique seu e-mail e senha.")
+                        st.error("Falha na autenticação. Verifique seu e-mail e senha.")
                         
         with aba_cadastro:
             with st.form("cadastro_form"):
@@ -257,9 +233,8 @@ def tela_login():
                         supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error(f"Erro ao criar conta. Tente novamente.")
+                        st.error("Erro ao criar conta. Tente novamente.")
 
-        # LÓGICA DE RECUPERAÇÃO DE SENHA
         with aba_recuperar:
             with st.form("recover_form"):
                 st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
@@ -291,7 +266,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
+    # TRAVA DE SEGURANÇA 1: Busca de Perfil
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -335,7 +310,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
+    # TRAVA DE SEGURANÇA 2: Bloqueia Telas se não preencher Perfil
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -344,9 +319,9 @@ def tela_principal():
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
-    # =======================================================================
-    # BOTÃO SALVA-VIDAS (CORREÇÃO DO ERRO DE RETORNO DO STREAMLIT)
-    # =======================================================================
+    # =========================================================
+    # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA NÃO DAR ERRO)
+    # =========================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
@@ -486,7 +461,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO ATUALIZADO)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Meu Perfil e Assinatura")
