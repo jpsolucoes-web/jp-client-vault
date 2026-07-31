@@ -79,33 +79,26 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO: MANTÉM ESQUERDA (>>), OCULTA DIREITA (GITHUB)
+           A. CABEÇALHO NATIVO E LIBERADO PARA MOBILE
            ========================================= */
-        /* Oculta APENAS as ferramentas específicas do Streamlit/GitHub da direita */
-        [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
-        .stDeployButton { visibility: hidden !important; display: none !important; }
-        .viewerBadge_container { visibility: hidden !important; display: none !important; }
-        .viewerBadge_link { visibility: hidden !important; display: none !important; }
+        /* Oculta APENAS o rodapé, o botão deploy e o menu 3 pontinhos */
+        footer { visibility: hidden !important; }
+        #MainMenu { visibility: hidden !important; }
+        .stDeployButton { display: none !important; }
+        [data-testid="stToolbar"] { display: none !important; }
         
-        /* Oculta o rodapé */
-        footer { visibility: hidden !important; display: none !important; }
-        #MainMenu { visibility: hidden !important; display: none !important; }
+        /* OCULTA O GITHUB/FORK (CÍRCULO VERMELHO) E MANTÉM O MENU INTACTO */
+        .viewerBadge_container { display: none !important; }
+        .viewerBadge_link { display: none !important; }
         
-        /* GARENTE QUE O CABEÇALHO NATIVO CONTINUE FUNCIONANDO (Para o Menu não sumir) */
-        header[data-testid="stHeader"] { 
-            background-color: #0f172a !important; 
-            border-bottom: 1px solid #1e293b !important;
-        }
-
-        /* Estiliza o botão esquerdo (>> ou ☰) para ficar destacado */
-        [data-testid="collapsedControl"] { color: #f59e0b !important; }
-        [data-testid="collapsedControl"] svg { fill: #f59e0b !important; color: #f59e0b !important; }
+        /* GARENTE QUE O CABEÇALHO NATIVO (ONDE FICA O MENU ☰) CONTINUE FUNCIONANDO */
+        header { background-color: #0f172a !important; }
 
         /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para não sobrepor o cabeçalho */
-        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container - não pode sobrepor o cabeçalho */
+        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
@@ -199,7 +192,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM ESQUECI A SENHA)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -208,6 +201,8 @@ def tela_login():
         except: st.title("🛡️ JP Client Vault")
             
         st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
+        
+        # ABA DE ESQUECI A SENHA INCLUÍDA AQUI
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -222,7 +217,7 @@ def tela_login():
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        st.error("Falha na autenticação. Verifique seu e-mail e senha.")
+                        st.error(f"Falha na autenticação. Verifique seu e-mail e senha.")
                         
         with aba_cadastro:
             with st.form("cadastro_form"):
@@ -234,8 +229,9 @@ def tela_login():
                         supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error("Erro ao criar conta. Tente novamente.")
+                        st.error(f"Erro ao criar conta. Tente novamente.")
 
+        # LÓGICA DE RECUPERAÇÃO DE SENHA
         with aba_recuperar:
             with st.form("recover_form"):
                 st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
@@ -267,7 +263,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: Busca Perfil
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -311,7 +307,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: Bloqueio de Navegação
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -321,7 +317,7 @@ def tela_principal():
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA EVITAR ERROS)
+    # BOTÃO SALVA-VIDAS (CORREÇÃO DO ERRO DE RETORNO)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
@@ -334,8 +330,7 @@ def tela_principal():
     # 🏠 HOME PAGE (SIMETRIA PERFEITA FLEXBOX E RELÓGIO CENTRAL)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
-        st.markdown(f"<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, {nome_display}! 👋</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
@@ -481,11 +476,11 @@ def tela_principal():
         dp = st.session_state.get('dados_perfil', {})
         
         st.subheader("Informações Básicas")
-        nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", ""))
+        nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", "JP SOLUÇÕES PARTICIPAÇÕES LTDA"))
         empresa = st.text_input("Empresa", placeholder="Nome da empresa (opcional)", value=dp.get("empresa", ""))
-        whatsapp = st.text_input("WhatsApp com DDD (Obrigatório)", value=dp.get("whatsapp", ""))
+        whatsapp = st.text_input("WhatsApp com DDD (Obrigatório)", value=dp.get("whatsapp", "999388222"))
         st.text_input("Email (Login)", value=email_logado, disabled=True)
-        cpf_cnpj = st.text_input("CPF ou CNPJ (Obrigatório)", value=dp.get("cpf_cnpj", ""))
+        cpf_cnpj = st.text_input("CPF ou CNPJ (Obrigatório)", value=dp.get("cpf_cnpj", "55.399.519/0001-86"))
         
         st.subheader("Endereço")
         c1, c2 = st.columns(2)
