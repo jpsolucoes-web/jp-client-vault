@@ -163,7 +163,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN
+# 6. TELA DE LOGIN (COM SANITIZADOR DE E-MAIL PARA CELULAR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -180,12 +180,15 @@ def tela_login():
                 senha = st.text_input("Senha de Acesso", type="password")
                 if st.form_submit_button("Autenticar Conexão", use_container_width=True):
                     try:
-                        resposta = supabase.auth.sign_in_with_password({"email": email, "password": senha})
+                        # O SANITIZADOR: Remove espaços invisíveis e letras maiúsculas geradas pelo teclado do celular
+                        email_limpo = email.strip().lower()
+                        resposta = supabase.auth.sign_in_with_password({"email": email_limpo, "password": senha})
                         st.session_state['usuario_autenticado'] = True
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        st.error("Falha na autenticação. E-mail ou senha inválidos.")
+                        # Exibe o erro exato na tela para sabermos o que o Supabase recusou
+                        st.error(f"Falha na autenticação. Detalhe: {e}")
                         
         with aba_cadastro:
             with st.form("cadastro_form"):
@@ -193,10 +196,11 @@ def tela_login():
                 nova_senha = st.text_input("Crie uma Senha (mínimo 6 caracteres)", type="password")
                 if st.form_submit_button("Criar Minha Conta", use_container_width=True):
                     try:
-                        supabase.auth.sign_up({"email": novo_email, "password": nova_senha})
+                        email_limpo_cadastro = novo_email.strip().lower()
+                        supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error("Erro ao criar conta.")
+                        st.error(f"Erro ao criar conta. Detalhe: {e}")
 
 # ==========================================
 # 7. TELA PRINCIPAL (O MOTOR DO SISTEMA)
