@@ -25,6 +25,7 @@ supabase: Client = init_connection()
 # ==========================================
 # 3. LEITURA BLINDADA DE PARÂMETROS E INICIALIZAÇÃO
 # ==========================================
+# Proteção Anti-Queda: Evita erro se a URL carregar antes do servidor acordar
 try:
     tipo_acesso = st.query_params.get("tipo")
     is_parceiro = (tipo_acesso == "parceiro")
@@ -47,11 +48,14 @@ if 'precos' not in st.session_state:
         }
     }
 
+# Carregar preços salvos no banco de dados (Persistência)
 if 'precos_carregados' not in st.session_state:
     try:
         res_p = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
         if res_p.data:
             st.session_state['precos'] = res_p.data[0]['valor_json']
+            
+            # Injeção retroativa de segurança para as novas variáveis
             if 'reprotocolo' not in st.session_state['precos']['cliente']:
                 st.session_state['precos']['cliente']['reprotocolo'] = 212.50
                 st.session_state['precos']['parceiro']['reprotocolo'] = 127.50
@@ -79,23 +83,26 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO E LIBERADO PARA MOBILE
+           A. CABEÇALHO NATIVO: ESCONDER FORK/GITHUB
            ========================================= */
-        /* Oculta APENAS o rodapé, o botão deploy e o menu 3 pontinhos */
-        footer { visibility: hidden !important; }
-        #MainMenu { visibility: hidden !important; }
-        .stDeployButton { display: none !important; }
+        /* Oculta Rodapé e Botões indesejados da lateral direita do cabeçalho */
+        footer { visibility: hidden !important; display: none !important; }
         
-        /* GARENTE QUE O CABEÇALHO NATIVO (ONDE FICA O MENU ☰) CONTINUE FUNCIONANDO */
-        header { background-color: #0f172a !important; }
+        /* ALVO EXATO: Esconder container do lado direito (Fork, Deploy, Menu) e manter o da esquerda (☰ / >>) */
+        header[data-testid="stHeader"] > div:last-child { display: none !important; visibility: hidden !important; }
+        header[data-testid="stHeader"] .stToolbarActions { display: none !important; visibility: hidden !important; }
+        .viewerBadge_container { display: none !important; visibility: hidden !important; }
+
+        /* GARENTE QUE O CABEÇALHO NATIVO CONTINUE FUNCIONANDO (Para o Menu não sumir) */
+        header { background-color: transparent !important; }
 
         /* Fundo e cores gerais */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container - não pode sobrepor o cabeçalho */
-        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container para dar espaço ao cabeçalho no celular e PC */
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão */
+        /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
@@ -187,7 +194,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM SANITIZADOR)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -196,7 +203,7 @@ def tela_login():
         except: st.title("🛡️ JP Client Vault")
             
         st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
-        aba_login, aba_cadastro = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta"])
+        aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
             with st.form("login_form"):
@@ -210,7 +217,7 @@ def tela_login():
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        st.error(f"Falha na autenticação. Detalhe: {e}")
+                        st.error(f"Falha na autenticação. Verifique seu e-mail e senha.")
                         
         with aba_cadastro:
             with st.form("cadastro_form"):
@@ -222,7 +229,22 @@ def tela_login():
                         supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
                         st.success("✅ Conta criada com sucesso! Você já pode fazer login.")
                     except Exception as e:
-                        st.error(f"Erro ao criar conta. Detalhe: {e}")
+                        st.error(f"Erro ao criar conta. Tente novamente.")
+
+        with aba_recuperar:
+            with st.form("recover_form"):
+                st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
+                email_rec = st.text_input("E-mail Cadastrado para Recuperação")
+                if st.form_submit_button("Enviar Link de Recuperação", use_container_width=True):
+                    try:
+                        email_limpo_rec = email_rec.strip().lower()
+                        try:
+                            supabase.auth.reset_password_for_email(email_limpo_rec)
+                        except AttributeError:
+                            supabase.auth.reset_password_email(email_limpo_rec)
+                        st.success("✅ Se o e-mail existir na plataforma, enviamos um link de recuperação para sua caixa de entrada!")
+                    except Exception as e:
+                        st.error("Falha ao solicitar recuperação de senha.")
 
 # ==========================================
 # 7. TELA PRINCIPAL (O MOTOR DO SISTEMA)
@@ -231,6 +253,7 @@ def tela_principal():
     email_logado = st.session_state['dados_usuario'].email
     is_diretor = (email_logado == "jp.solucoes.sc.diretor@gmail.com")
     
+    # Validação do Usuário Bloqueado
     if email_logado in st.session_state['usuarios_bloqueados'] and not is_diretor:
         st.error("🚫 SEU ACESSO FOI SUSPENSO PELO DIRETOR DA PLATAFORMA.")
         st.info("Entre em contato com o suporte via WhatsApp para regularizar.")
@@ -238,6 +261,24 @@ def tela_principal():
             st.session_state['usuario_autenticado'] = False
             st.rerun()
         return
+
+    # =========================================================
+    # TRAVA DE SEGURANÇA 1: OBRIGA PREENCHIMENTO DO PERFIL
+    # =========================================================
+    if 'perfil_preenchido' not in st.session_state:
+        try:
+            # Tenta buscar no banco de dados a tabela de perfis
+            res_perf = supabase.table("perfis_clientes").select("*").eq("user_id", st.session_state['dados_usuario'].id).execute()
+            if res_perf.data and res_perf.data[0].get('cpf_cnpj') and res_perf.data[0].get('nome_exibicao'):
+                st.session_state['perfil_preenchido'] = True
+                st.session_state['dados_perfil'] = res_perf.data[0]
+            else:
+                st.session_state['perfil_preenchido'] = False
+                st.session_state['dados_perfil'] = {}
+        except:
+            # Se a tabela não existir, libera provisoriamente na memória para não dar erro
+            st.session_state['perfil_preenchido'] = False
+            st.session_state['dados_perfil'] = {}
 
     with st.sidebar:
         try: st.image("logo.png", use_container_width=True)
@@ -267,12 +308,38 @@ def tela_principal():
 
     menu_selecionado = st.session_state['menu_navegacao']
 
+    # =========================================================
+    # TRAVA DE SEGURANÇA 2: EXECUÇÃO DO BLOQUEIO DE TELA
+    # =========================================================
+    if not is_diretor and not st.session_state.get('perfil_preenchido', False):
+        if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
+            st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
+            st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
+            st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
+            return # Interrompe a tela aqui, forçando o cliente a preencher o perfil
+
+    # =======================================================================
+    # BOTÃO SALVA-VIDAS (UX MOBILE) - Aparece em todas as telas menos na Home
+    # =======================================================================
+    if menu_selecionado != "🏠 Home":
+        st.markdown("<br>", unsafe_allow_html=True)
+        c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
+        with c_voltar2:
+            if st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True):
+                st.session_state['menu_navegacao'] = "🏠 Home"
+                st.rerun()
+        st.markdown("---")
+
     # -----------------------------------------
     # 🏠 HOME PAGE (SIMETRIA PERFEITA FLEXBOX E RELÓGIO CENTRAL)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
+        nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
+        st.markdown(f"<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
+
+        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
+            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Meu Perfil'**.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -395,10 +462,14 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO ATUALIZADO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Meu Perfil e Assinatura")
+        
+        if not st.session_state.get('perfil_preenchido', False):
+            st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o restante do sistema.")
+
         st.markdown("""
         <div style='background-color:#064e3b; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #fff; margin-bottom: 20px;'>
             <h3 style='margin-top:0; color:#10b981;'>✅ Sua assinatura está ativa</h3>
@@ -406,21 +477,64 @@ def tela_principal():
             <span style='float:right; background:#047857; padding:5px 10px; border-radius:15px; font-size:12px; margin-top:-45px;'>Período de Teste Grátis</span>
         </div>
         """, unsafe_allow_html=True)
+        
+        dp = st.session_state.get('dados_perfil', {})
+        
         st.subheader("Informações Básicas")
-        st.text_input("Nome de Exibição", value="JP SOLUÇÕES PARTICIPAÇÕES LTDA")
-        st.text_input("Empresa", placeholder="Nome da empresa (opcional)")
-        st.text_input("WhatsApp", value="999388222")
+        nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", ""))
+        empresa = st.text_input("Empresa", placeholder="Nome da empresa (opcional)", value=dp.get("empresa", ""))
+        whatsapp = st.text_input("WhatsApp com DDD (Obrigatório)", value=dp.get("whatsapp", ""))
         st.text_input("Email (Login)", value=email_logado, disabled=True)
-        st.text_input("CPF/CNPJ", value="55.399.519/0001-86")
+        cpf_cnpj = st.text_input("CPF ou CNPJ (Obrigatório)", value=dp.get("cpf_cnpj", ""))
+        
         st.subheader("Endereço")
         c1, c2 = st.columns(2)
-        c1.text_input("CEP")
-        c2.text_input("Rua")
+        cep = c1.text_input("CEP", value=dp.get("cep", ""))
+        rua = c2.text_input("Rua", value=dp.get("rua", ""))
         c3, c4, c5 = st.columns([1, 1, 2])
-        c3.text_input("Número")
-        c4.selectbox("UF", ["SC", "PR", "RS", "SP", "RJ", "MG", "BA", "GO", "DF", "AM", "PE", "CE", "ES"])
-        c5.text_input("Cidade")
-        if st.button("💾 Salvar Alterações", use_container_width=True): st.success("Dados atualizados com sucesso!")
+        numero = c3.text_input("Número", value=dp.get("numero", ""))
+        
+        uf_atual = dp.get("uf", "SC")
+        lista_uf = ["SC", "PR", "RS", "SP", "RJ", "MG", "BA", "GO", "DF", "AM", "PE", "CE", "ES"]
+        idx_uf = lista_uf.index(uf_atual) if uf_atual in lista_uf else 0
+        uf = c4.selectbox("UF", lista_uf, index=idx_uf)
+        
+        cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
+        
+        if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
+            if not nome_exibicao or not cpf_cnpj or not whatsapp:
+                st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
+            else:
+                dados_salvar = {
+                    "user_id": st.session_state['dados_usuario'].id,
+                    "email": email_logado,
+                    "nome_exibicao": nome_exibicao,
+                    "empresa": empresa,
+                    "whatsapp": whatsapp,
+                    "cpf_cnpj": cpf_cnpj,
+                    "cep": cep,
+                    "rua": rua,
+                    "numero": numero,
+                    "uf": uf,
+                    "cidade": cidade
+                }
+                
+                try:
+                    # Tenta verificar se já existe no banco
+                    res_check = supabase.table("perfis_clientes").select("id").eq("user_id", st.session_state['dados_usuario'].id).execute()
+                    if res_check.data:
+                        supabase.table("perfis_clientes").update(dados_salvar).eq("user_id", st.session_state['dados_usuario'].id).execute()
+                    else:
+                        supabase.table("perfis_clientes").insert(dados_salvar).execute()
+                        
+                    st.session_state['perfil_preenchido'] = True
+                    st.session_state['dados_perfil'] = dados_salvar
+                    st.success("✅ Perfil salvo no Banco de Dados! Acesso total liberado.")
+                except Exception as e:
+                    # Fallback (Plano B): Salva apenas na memória da sessão para não travar o cliente caso o DB falhe
+                    st.session_state['perfil_preenchido'] = True
+                    st.session_state['dados_perfil'] = dados_salvar
+                    st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
