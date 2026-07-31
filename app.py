@@ -82,27 +82,65 @@ if 'data_relogio_js' not in st.session_state:
 def injetar_css_profissional():
     st.markdown("""
         <style>
-        /* Ajuste do Cabeçalho: Esconde o GitHub/Streamlit, mas MANTÉM o botão de menu visível no celular */
+        /* =========================================
+           A. AJUSTE DO CABEÇALHO E MENU MOBILE
+           ========================================= */
         #MainMenu {visibility: hidden;} 
         footer {visibility: hidden;} 
-        header [data-testid="stToolbar"] {visibility: hidden; display: none;}
         
+        /* Esconde ferramentas do desenvolvedor, mantendo o header vivo para o menu */
+        header [data-testid="stToolbar"] {display: none !important;}
+        header {background-color: transparent !important;}
+        
+        /* GARANTIA RESPONSIVA: O Botão Hambúrguer fica destacado para o cliente reabrir o menu */
+        [data-testid="collapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            background-color: #1e293b !important;
+            border-radius: 8px !important;
+            color: #f59e0b !important;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.3) !important;
+            margin: 10px !important;
+        }
+
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Expandindo o container para matar o vácuo nas bordas globais */
-        .block-container { padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        /* Ajuste do container para celulares e PCs */
+        .block-container { padding: 3rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* O GRANDE SEGREDO: Flexbox CSS para Forçar Simetria e Eliminar Vácuos */
-        .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; }
-        .simetria-box { flex: 1; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; background-color: #1e293b; }
+        /* =========================================
+           B. SIMETRIA E RESPONSIVIDADE (FLEX-WRAP)
+           ========================================= */
+        .simetria-perfeita { 
+            display: flex; 
+            width: 100%; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber (Celular) */
+        }
+        .simetria-box { 
+            flex: 1 1 300px; /* Estica, encolhe, mas com limite de 300px */
+            height: 380px; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.5); 
+            border: 1px solid #334155; 
+            background-color: #1e293b; 
+        }
         .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
         .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px; }
         
+        /* Ajuste de Altura Dinâmica para Celular */
+        @media (max-width: 768px) {
+            .simetria-box { height: 250px !important; }
+            .block-container { padding: 4rem 1rem 1rem 1rem !important; }
+        }
+
         /* Ajuste Galeria de Campanhas */
         [data-testid="stImage"] img { border-radius: 12px; }
         
@@ -163,7 +201,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM SANITIZADOR DE E-MAIL PARA CELULAR)
+# 6. TELA DE LOGIN (COM SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -180,14 +218,12 @@ def tela_login():
                 senha = st.text_input("Senha de Acesso", type="password")
                 if st.form_submit_button("Autenticar Conexão", use_container_width=True):
                     try:
-                        # O SANITIZADOR: Remove espaços invisíveis e letras maiúsculas geradas pelo teclado do celular
                         email_limpo = email.strip().lower()
                         resposta = supabase.auth.sign_in_with_password({"email": email_limpo, "password": senha})
                         st.session_state['usuario_autenticado'] = True
                         st.session_state['dados_usuario'] = resposta.user
                         st.rerun()
                     except Exception as e:
-                        # Exibe o erro exato na tela para sabermos o que o Supabase recusou
                         st.error(f"Falha na autenticação. Detalhe: {e}")
                         
         with aba_cadastro:
