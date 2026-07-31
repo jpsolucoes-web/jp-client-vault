@@ -88,16 +88,12 @@ def injetar_css_profissional():
            
         /* 1. MANTÉM A BARRA INTEIRA VISÍVEL E COM COR */
         header[data-testid="stHeader"] {
-            visibility: visible !important;
-            display: block !important;
             background-color: #0f172a !important;
             border-bottom: 1px solid #1e293b !important;
         }
 
         /* 2. MANTÉM O BOTÃO ESQUERDO (>> OU ☰) INTACTO E DESTACADO */
         [data-testid="collapsedControl"] {
-            visibility: visible !important;
-            display: flex !important;
             color: #f59e0b !important;
         }
         [data-testid="collapsedControl"] svg {
@@ -105,20 +101,13 @@ def injetar_css_profissional():
             color: #f59e0b !important;
         }
 
-        /* 3. EXTERMINA APENAS OS COMPONENTES DA DIREITA E O RODAPÉ */
-        /* Oculta a barra de ferramentas nativa (onde fica o menu 3 pontinhos) */
-        [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
-        
-        /* Oculta o botão Deploy */
-        .stDeployButton { visibility: hidden !important; display: none !important; }
-        
-        /* Oculta especificamente a "bolha" Fork/GitHub do Streamlit Cloud */
-        .viewerBadge_container { visibility: hidden !important; display: none !important; }
-        .viewerBadge_link { visibility: hidden !important; display: none !important; }
-        
-        /* Oculta o Rodapé e Menu antigo */
-        #MainMenu { visibility: hidden !important; display: none !important; }
-        footer { visibility: hidden !important; display: none !important; }
+        /* 3. EXTERMINA APENAS OS COMPONENTES DA DIREITA E O RODAPÉ (Sem quebrar a barra) */
+        [data-testid="stToolbar"] { display: none !important; visibility: hidden !important; }
+        .stDeployButton { display: none !important; visibility: hidden !important; }
+        .viewerBadge_container { display: none !important; visibility: hidden !important; }
+        .viewerBadge_link { display: none !important; visibility: hidden !important; }
+        #MainMenu { display: none !important; visibility: hidden !important; }
+        footer { display: none !important; visibility: hidden !important; }
 
         /* Fundo e cores gerais do App */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
@@ -138,7 +127,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
