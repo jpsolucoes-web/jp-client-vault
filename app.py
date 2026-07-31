@@ -924,7 +924,7 @@ def tela_principal():
     # -----------------------------------------
     # 💲 FINANCEIRO
     # -----------------------------------------
-    elif menu_selecionado == "💲 Financeiro":
+    elif menu_selecionado == "💲 FINANCEIRO":
         st.header("Financeiro")
         st.markdown("<p style='color: #94a3b8;'>Minhas listas enviadas e valores (Aguardando processamento de pagamentos)</p>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
@@ -1171,4 +1171,154 @@ def tela_principal():
             n_cli_limpa = cc1.number_input("Ação Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['limpa_nome']))
             n_cli_bacen = cc2.number_input("Ação BACEN (R$)", value=float(st.session_state['precos']['cliente']['bacen']))
             n_cli_rating = cc3.number_input("Ação Rating (R$)", value=float(st.session_state['precos']['cliente']['rating']))
-            n_cli_trib = cc4.number_input("Ação Tributária (R$)", value=float
+            n_cli_trib = cc4.number_input("Ação Tributária (R$)", value=float(st.session_state['precos']['cliente']['tributario']))
+            
+            st.subheader("2. PREÇOS DAS AÇÕES - CUSTO PARCEIROS")
+            cp1, cp2, cp3, cp4 = st.columns(4)
+            n_par_limpa = cp1.number_input("Ação Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['limpa_nome']))
+            n_par_bacen = cp2.number_input("Ação BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['bacen']))
+            n_par_rating = cp3.number_input("Ação Rating Parc. (R$)", value=float(st.session_state['precos']['parceiro']['rating']))
+            n_par_trib = cp4.number_input("Ação Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['tributario']))
+
+            st.markdown("---")
+            st.subheader("3. PREÇOS DOS DIAGNÓSTICOS - CLIENTE FINAL")
+            cd1, cd2, cd3, cd4 = st.columns(4)
+            n_cli_diag_limpa = cd1.number_input("Consulta Limpa Nome (R$)", value=float(st.session_state['precos']['cliente']['diag_limpa']))
+            n_cli_diag_bacen = cd2.number_input("Consulta BACEN (R$)", value=float(st.session_state['precos']['cliente']['diag_bacen']))
+            n_cli_diag_rating = cd3.number_input("Consulta Rating (R$)", value=float(st.session_state['precos']['cliente']['diag_rating']))
+            n_cli_diag_trib = cd4.number_input("Consulta Tributária (R$)", value=float(st.session_state['precos']['cliente']['diag_trib']))
+
+            st.subheader("4. PREÇOS DOS DIAGNÓSTICOS - CUSTO PARCEIROS")
+            cdp1, cdp2, cdp3, cdp4 = st.columns(4)
+            n_par_diag_limpa = cdp1.number_input("Consulta Limpa Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_limpa']))
+            n_par_diag_bacen = cdp2.number_input("Consulta BACEN Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_bacen']))
+            n_par_diag_rating = cdp3.number_input("Consulta Rating Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_rating']))
+            n_par_diag_trib = cdp4.number_input("Consulta Tributária Parc. (R$)", value=float(st.session_state['precos']['parceiro']['diag_trib']))
+
+            st.markdown("---")
+            st.subheader("5. TAXA DE REPROTOCOLO E GARANTIA")
+            cr1, cr2, cr3 = st.columns(3)
+            n_cli_reprot = cr1.number_input("Reprotocolo Cliente (R$)", value=float(st.session_state['precos']['cliente']['reprotocolo']))
+            n_par_reprot = cr2.number_input("Reprotocolo Parceiro (R$)", value=float(st.session_state['precos']['parceiro']['reprotocolo']))
+            n_garantia = cr3.number_input("Prazo de Garantia (Dias)", min_value=0, value=int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30)))
+
+            if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
+                novos_precos = {
+                    'cliente': {
+                        'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
+                        'diag_limpa': n_cli_diag_limpa, 'diag_bacen': n_cli_diag_bacen, 'diag_rating': n_cli_diag_rating, 'diag_trib': n_cli_diag_trib,
+                        'reprotocolo': n_cli_reprot, 'prazo_garantia_dias': n_garantia
+                    },
+                    'parceiro': {
+                        'limpa_nome': n_par_limpa, 'bacen': n_par_bacen, 'rating': n_par_rating, 'tributario': n_par_trib,
+                        'diag_limpa': n_par_diag_limpa, 'diag_bacen': n_par_diag_bacen, 'diag_rating': n_par_diag_rating, 'diag_trib': n_par_diag_trib,
+                        'reprotocolo': n_par_reprot, 'prazo_garantia_dias': n_garantia
+                    }
+                }
+                st.session_state['precos'] = novos_precos
+                
+                try:
+                    verificar = supabase.table("configuracoes_sistema").select("*").eq("chave", "tabela_precos").execute()
+                    
+                    if verificar.data:
+                        supabase.table("configuracoes_sistema").update({"valor_json": novos_precos}).eq("chave", "tabela_precos").execute()
+                    else:
+                        supabase.table("configuracoes_sistema").insert({"chave": "tabela_precos", "valor_json": novos_precos}).execute()
+                    
+                    st.success("✅ Tabelas atualizadas e salvas permanentemente no banco de dados!")
+                except Exception as ex:
+                    st.error(f"⚠️ O banco recusou a gravação. O erro exato foi: {ex}")
+                
+        with aba_acesso:
+            st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
+            email_alvo_bloqueio = st.text_input("E-mail do Usuário Alvo")
+            c_btn_blk1, c_btn_blk2 = st.columns(2)
+            if c_btn_blk1.button("🔒 BLOQUEAR ACESSO", type="primary", use_container_width=True):
+                if email_alvo_bloqueio:
+                    if email_alvo_bloqueio not in st.session_state['usuarios_bloqueados']:
+                        st.session_state['usuarios_bloqueados'].append(email_alvo_bloqueio)
+                    st.error(f"O acesso do usuário {email_alvo_bloqueio} foi SUSPENSO.")
+            if c_btn_blk2.button("✅ DESBLOQUEAR ACESSO", use_container_width=True):
+                if email_alvo_bloqueio in st.session_state['usuarios_bloqueados']:
+                    st.session_state['usuarios_bloqueados'].remove(email_alvo_bloqueio)
+                    st.success(f"O acesso de {email_alvo_bloqueio} foi RESTAURADO.")
+                    
+        with aba_relogio:
+            st.markdown("### ⏳ Configurar Data do Próximo Processo")
+            nova_data_rel = st.date_input("Selecione a nova data limite", value=datetime.date(2026, 8, 5))
+            nova_hora_rel = st.time_input("Selecione o horário", value=datetime.time(12, 0))
+            if st.button("💾 Atualizar Relógio em Todo o Sistema", type="primary", use_container_width=True):
+                meses_en = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun", 7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec"}
+                st.session_state['data_relogio_js'] = f"{meses_en[nova_data_rel.month]} {nova_data_rel.day}, {nova_data_rel.year} {nova_hora_rel.strftime('%H:%M:%S')}"
+                st.session_state['data_relogio_br'] = nova_data_rel.strftime('%d/%m/%Y')
+                st.success("Relógio atualizado com sucesso! A Home Page já mostra o novo prazo.")
+                
+        with aba_dossier:
+            st.markdown("### 📥 Baixar Processos e Anexos (Dossiê PDF)")
+            st.write("Digite o CPF/CNPJ do cliente para compilar e baixar todos os formulários e anexos em um único PDF.")
+            cpf_dossier = st.text_input("CPF ou CNPJ do Cliente", key="cpf_dossier")
+            if st.button("📄 Gerar e Baixar Dossiê Completo em PDF", use_container_width=True):
+                if cpf_dossier:
+                    try:
+                        from fpdf import FPDF
+                        import io
+                        pdf = FPDF()
+                        pdf.add_page()
+                        pdf.set_font("Arial", 'B', 16)
+                        pdf.cell(200, 10, txt="DOSSIE DE REABILITACAO - JP SOLUCOES", ln=True, align='C')
+                        pdf.set_font("Arial", size=12)
+                        pdf.ln(10)
+                        pdf.cell(200, 10, txt=f"CPF/CNPJ do Cliente: {cpf_dossier}", ln=True)
+                        pdf.cell(200, 10, txt=f"Data de Emissao: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", ln=True)
+                        pdf.ln(10)
+                        try:
+                            res = supabase.table("nomes_processamento").select("*").eq("cpf_cnpj", cpf_dossier).execute()
+                            if res.data:
+                                for item in res.data:
+                                    pdf.cell(200, 10, txt=f"Nome: {item.get('nome', 'N/A')}", ln=True)
+                                    pdf.cell(200, 10, txt=f"Servicos Solicitados: {item.get('tipo_servico', 'N/A')}", ln=True)
+                                    pdf.cell(200, 10, txt=f"Status: {item.get('numero_processo', 'N/A')}", ln=True)
+                                    pdf.ln(5)
+                            else:
+                                pdf.cell(200, 10, txt="Nenhum registro encontrado no banco de dados.", ln=True)
+                        except:
+                            pdf.cell(200, 10, txt="Erro ao conectar com o banco para puxar dados.", ln=True)
+                        pdf.ln(10)
+                        pdf.set_font("Arial", 'B', 14)
+                        pdf.cell(200, 10, txt="ANEXOS E IMAGENS (COMPROVANTES, CNH, CONTRATOS)", ln=True)
+                        pdf.set_font("Arial", size=12)
+                        pdf.multi_cell(0, 10, txt="O sistema esta programado para puxar as imagens do Supabase Storage. Assim que o Storage for ativado, as imagens enviadas serao impressas diretamente nestas paginas usando a biblioteca de PDF.")
+                        pdf_bytes = pdf.output(dest='S').encode('latin-1')
+                        st.success(f"✅ Dossiê compilado com sucesso!")
+                        st.download_button("📥 Clique aqui para baixar o PDF", data=pdf_bytes, file_name=f"Dossie_{cpf_dossier}.pdf", mime="application/pdf", use_container_width=True)
+                    except ImportError:
+                        st.warning("⚠️ Instale a biblioteca fpdf (pip install fpdf) para gerar PDFs.")
+                        texto_dossie = f"DOSSIE DO CLIENTE: {cpf_dossier}\\n\\nInstale 'pip install fpdf' para ativar a geracao de PDF com imagens."
+                        st.download_button("📥 Baixar Dossiê (TXT)", data=texto_dossie, file_name=f"Dossie_{cpf_dossier}.txt", use_container_width=True)
+                else:
+                    st.warning("Digite o CPF ou CNPJ.")
+                    
+        with aba_vitrine:
+            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Até 12 Mídias Dinâmicas)")
+            st.write("Faça o upload de novas imagens de campanhas ou substitua o vídeo oficial. As mudanças refletem instantaneamente para os clientes.")
+            
+            st.markdown("#### 1. Mídias Principais do Topo e Meio")
+            c_t1, c_t2 = st.columns(2)
+            up_top1 = c_t1.file_uploader("Upload Imagem Topo Esquerda (Substitui Valorte)", type=['png', 'jpg', 'jpeg'])
+            up_top2 = c_t2.file_uploader("Upload Imagem Topo Direita (Substitui Reconstruir)", type=['png', 'jpg', 'jpeg'])
+            
+            c_m1, c_m2 = st.columns(2)
+            up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda", type=['png', 'jpg', 'jpeg'])
+            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Substitui video1.mp4)", type=['mp4', 'mov'])
+            
+            st.markdown("#### 2. Galeria de Campanhas Extra (Até 8 Imagens)")
+            c_up1, c_up2, c_up3, c_up4 = st.columns(4)
+            img1 = c_up1.file_uploader("Upload Imagem Extra 1", type=['png', 'jpg', 'jpeg'])
+            img2 = c_up2.file_uploader("Upload Imagem Extra 2", type=['png', 'jpg', 'jpeg'])
+            img3 = c_up3.file_uploader("Upload Imagem Extra 3", type=['png', 'jpg', 'jpeg'])
+            img4 = c_up4.file_uploader("Upload Imagem Extra 4", type=['png', 'jpg', 'jpeg'])
+            
+            c_up5, c_up6, c_up7, c_up8 = st.columns(4)
+            img5 = c_up5.file_uploader("Upload Imagem Extra 5", type=['png', 'jpg', 'jpeg'])
+            img6 = c_up6.file_uploader("Upload Imagem Extra 6", type=['png', 'jpg', 'jpeg'])
+            img7 = c_up7.file_uploader
