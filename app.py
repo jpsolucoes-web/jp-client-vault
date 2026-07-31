@@ -79,28 +79,56 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO E LIBERADO PARA MOBILE
+           A. MENU FLUTUANTE INFERIOR (IDEIA DO COMANDANTE)
            ========================================= */
-        /* Oculta APENAS o rodapé, o botão deploy e o menu 3 pontinhos */
-        footer { visibility: hidden !important; }
-        #MainMenu { visibility: hidden !important; }
-        .stDeployButton { display: none !important; }
+        /* Oculta as ferramentas indesejadas do topo (GitHub, Deploy) */
         [data-testid="stToolbar"] { display: none !important; }
-        
-        /* OCULTA O GITHUB/FORK (CÍRCULO VERMELHO) E MANTÉM O MENU INTACTO */
+        .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
-        .viewerBadge_link { display: none !important; }
+        footer { display: none !important; }
+        #MainMenu { display: none !important; }
         
-        /* GARENTE QUE O CABEÇALHO NATIVO (ONDE FICA O MENU ☰) CONTINUE FUNCIONANDO */
-        header { background-color: #0f172a !important; }
+        /* Deixa o cabeçalho original invisível para não atrapalhar o topo */
+        header[data-testid="stHeader"] { 
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
 
-        /* Fundo e cores gerais */
+        /* PEGA O BOTÃO DE MENU (☰) E JOGA PARA BAIXO COMO UM APP NATIVO */
+        [data-testid="collapsedControl"] {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 30px !important;
+            top: auto !important;
+            background-color: #f59e0b !important;
+            border-radius: 50% !important;
+            width: 65px !important;
+            height: 65px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.8) !important;
+            z-index: 999999 !important;
+            transition: all 0.3s ease !important;
+        }
+        [data-testid="collapsedControl"] svg {
+            width: 35px !important;
+            height: 35px !important;
+            fill: #000000 !important;
+            color: #000000 !important;
+        }
+        [data-testid="collapsedControl"]:hover {
+            transform: scale(1.1) !important;
+        }
+
+        /* Fundo e cores gerais do App */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container - não pode sobrepor o cabeçalho */
-        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container para subir o conteúdo e dar folga embaixo para os botões */
+        .block-container { padding-top: 2rem !important; padding-bottom: 6rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão */
+        /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
@@ -112,7 +140,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -263,7 +291,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -307,7 +335,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -317,7 +345,7 @@ def tela_principal():
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS (CORREÇÃO DO ERRO DE RETORNO)
+    # BOTÃO SALVA-VIDAS (CORREÇÃO DO ERRO DE RETORNO DO STREAMLIT)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
@@ -330,7 +358,8 @@ def tela_principal():
     # 🏠 HOME PAGE (SIMETRIA PERFEITA FLEXBOX E RELÓGIO CENTRAL)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
-        st.markdown("<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, JP SOLUÇÕES PARTICIPAÇÕES LTDA! 👋</h2>", unsafe_allow_html=True)
+        nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
+        st.markdown(f"<h2 style='color: #f59e0b; margin-bottom: 0px;'>Bom dia, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
@@ -476,11 +505,11 @@ def tela_principal():
         dp = st.session_state.get('dados_perfil', {})
         
         st.subheader("Informações Básicas")
-        nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", "JP SOLUÇÕES PARTICIPAÇÕES LTDA"))
+        nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", ""))
         empresa = st.text_input("Empresa", placeholder="Nome da empresa (opcional)", value=dp.get("empresa", ""))
-        whatsapp = st.text_input("WhatsApp com DDD (Obrigatório)", value=dp.get("whatsapp", "999388222"))
+        whatsapp = st.text_input("WhatsApp com DDD (Obrigatório)", value=dp.get("whatsapp", ""))
         st.text_input("Email (Login)", value=email_logado, disabled=True)
-        cpf_cnpj = st.text_input("CPF ou CNPJ (Obrigatório)", value=dp.get("cpf_cnpj", "55.399.519/0001-86"))
+        cpf_cnpj = st.text_input("CPF ou CNPJ (Obrigatório)", value=dp.get("cpf_cnpj", ""))
         
         st.subheader("Endereço")
         c1, c2 = st.columns(2)
