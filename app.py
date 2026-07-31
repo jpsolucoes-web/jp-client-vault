@@ -83,38 +83,34 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO RESPONSIVO E MENU CELULAR (☰)
+           A. CABEÇALHO NATIVO E MENU CELULAR (☰)
            ========================================= */
-        #MainMenu {visibility: hidden;} 
-        footer {visibility: hidden;} 
+        #MainMenu { display: none !important; } 
+        footer { display: none !important; } 
+        [data-testid="stToolbar"] { display: none !important; }
         
-        /* Esconde as ferramentas do Streamlit (Deploy, GitHub), mas MANTÉM a barra superior */
-        header [data-testid="stToolbar"] {display: none !important; visibility: hidden !important;}
+        /* Deixa o fundo do header transparente para não cortar a tela, mas mantendo o componente vivo */
+        header { background-color: transparent !important; }
         
-        /* FIXA O CABEÇALHO NO CELULAR PARA O BOTÃO HAMBÚRGUER NÃO SUMIR */
-        header {
-            background-color: #0f172a !important; 
-            border-bottom: 1px solid #1e293b !important; 
-            z-index: 999990 !important;
-        }
-        
-        /* ESTILIZA O BOTÃO DE MENU (HAMBÚRGUER) PARA FICAR BEM VISÍVEL NO CELULAR */
+        /* CRIANDO O BOTÃO DESTACADO PARA O MENU MOBILE */
         [data-testid="collapsedControl"] {
-            color: #f59e0b !important; 
-            display: flex !important; 
-            visibility: visible !important;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-            background-color: #1e293b;
-            border-radius: 6px;
-            margin: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            background-color: #1e293b !important;
+            border: 2px solid #f59e0b !important;
+            border-radius: 8px !important;
+            margin-top: 15px !important;
+            margin-left: 10px !important;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.5) !important;
+        }
+        [data-testid="collapsedControl"] svg {
+            fill: #f59e0b !important;
+            color: #f59e0b !important;
+            width: 30px !important;
+            height: 30px !important;
         }
 
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para celulares e PCs */
+        /* Ajuste do container para dar espaço ao botão do menu e não colar nas bordas */
         .block-container { padding: 4rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
@@ -132,7 +128,7 @@ def injetar_css_profissional():
             flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber (Celular) */
         }
         .simetria-box { 
-            flex: 1 1 300px; /* Estica, encolhe, mas com limite de 300px */
+            flex: 1 1 300px; 
             height: 380px; 
             border-radius: 12px; 
             overflow: hidden; 
@@ -288,6 +284,17 @@ def tela_principal():
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
+
+    # =======================================================================
+    # BOTÃO SALVA-VIDAS (UX MOBILE) - Aparece em todas as telas menos na Home
+    # =======================================================================
+    if menu_selecionado != "🏠 Home":
+        c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
+        with c_voltar2:
+            if st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True):
+                st.session_state['menu_navegacao'] = "🏠 Home"
+                st.rerun()
+        st.markdown("---")
 
     # -----------------------------------------
     # 🏠 HOME PAGE (SIMETRIA PERFEITA FLEXBOX E RELÓGIO CENTRAL)
