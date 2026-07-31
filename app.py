@@ -83,36 +83,47 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CIRURGIA DE CABEÇALHO (MANTÉM MENU, APAGA GITHUB)
+           A. CABEÇALHO: CIRURGIA DE PRECISÃO ABSOLUTA
            ========================================= */
-        /* Garante que o cabeçalho não fique transparente. Dá a cor azul escura igual a barra lateral */
+           
+        /* 1. MANTÉM A BARRA INTEIRA VISÍVEL E COM COR */
         header[data-testid="stHeader"] {
+            visibility: visible !important;
+            display: block !important;
             background-color: #0f172a !important;
             border-bottom: 1px solid #1e293b !important;
         }
 
-        /* Oculta APENAS as ferramentas da direita (GitHub, Fork, Deploy, 3 pontinhos) */
-        header[data-testid="stHeader"] .stToolbarActions { display: none !important; visibility: hidden !important; }
-        [data-testid="stToolbar"] { display: none !important; }
-        .stDeployButton { display: none !important; }
-        .viewerBadge_container { display: none !important; }
-        #MainMenu { display: none !important; }
-        
-        /* Garante que o botão de abrir o menu lateral (>>) fique com a cor laranja visível */
+        /* 2. MANTÉM O BOTÃO ESQUERDO (>> OU ☰) INTACTO E DESTACADO */
         [data-testid="collapsedControl"] {
+            visibility: visible !important;
+            display: flex !important;
             color: #f59e0b !important;
         }
         [data-testid="collapsedControl"] svg {
             fill: #f59e0b !important;
+            color: #f59e0b !important;
         }
 
-        /* Oculta o rodapé do Streamlit */
+        /* 3. EXTERMINA APENAS OS COMPONENTES DA DIREITA E O RODAPÉ */
+        /* Oculta a barra de ferramentas nativa (onde fica o menu 3 pontinhos) */
+        [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
+        
+        /* Oculta o botão Deploy */
+        .stDeployButton { visibility: hidden !important; display: none !important; }
+        
+        /* Oculta especificamente a "bolha" Fork/GitHub do Streamlit Cloud */
+        .viewerBadge_container { visibility: hidden !important; display: none !important; }
+        .viewerBadge_link { visibility: hidden !important; display: none !important; }
+        
+        /* Oculta o Rodapé e Menu antigo */
+        #MainMenu { visibility: hidden !important; display: none !important; }
         footer { visibility: hidden !important; display: none !important; }
 
-        /* Fundo e cores gerais */
+        /* Fundo e cores gerais do App */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para o conteúdo começar abaixo da barra do cabeçalho */
+        /* Ajuste do container para o conteúdo não bater na barra superior */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
@@ -127,7 +138,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -1098,7 +1109,7 @@ def tela_principal():
     # -----------------------------------------
     elif menu_selecionado == "📊 Orçamento":
         st.header("Orçamento")
-        st.write("Use a calculadora inteligente e a projeção de ganhos para planear seu orçamento.")
+        st.write("Use a calculadora inteligente e a projeção de ganhos para planejar seu orçamento.")
         col_calc, col_proj = st.columns(2)
         with col_calc:
             st.markdown("<div style='background-color:#1e293b; padding:20px; border-radius:10px; height: 100%; border: 1px solid #334155;'>", unsafe_allow_html=True)
