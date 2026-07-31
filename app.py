@@ -83,30 +83,39 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. AJUSTE DO CABEÇALHO E MENU MOBILE
+           A. CABEÇALHO RESPONSIVO E MENU CELULAR (☰)
            ========================================= */
         #MainMenu {visibility: hidden;} 
         footer {visibility: hidden;} 
         
-        /* Esconde ferramentas do desenvolvedor, mantendo o header vivo para o menu */
-        header [data-testid="stToolbar"] {display: none !important;}
-        header {background-color: transparent !important;}
+        /* Esconde as ferramentas do Streamlit (Deploy, GitHub), mas MANTÉM a barra superior */
+        header [data-testid="stToolbar"] {display: none !important; visibility: hidden !important;}
         
-        /* GARANTIA RESPONSIVA: O Botão Hambúrguer fica destacado para o cliente reabrir o menu */
+        /* FIXA O CABEÇALHO NO CELULAR PARA O BOTÃO HAMBÚRGUER NÃO SUMIR */
+        header {
+            background-color: #0f172a !important; 
+            border-bottom: 1px solid #1e293b !important; 
+            z-index: 999990 !important;
+        }
+        
+        /* ESTILIZA O BOTÃO DE MENU (HAMBÚRGUER) PARA FICAR BEM VISÍVEL NO CELULAR */
         [data-testid="collapsedControl"] {
-            display: flex !important;
+            color: #f59e0b !important; 
+            display: flex !important; 
             visibility: visible !important;
-            background-color: #1e293b !important;
-            border-radius: 8px !important;
-            color: #f59e0b !important;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.3) !important;
-            margin: 10px !important;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            background-color: #1e293b;
+            border-radius: 6px;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
         /* Ajuste do container para celulares e PCs */
-        .block-container { padding: 3rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
+        .block-container { padding: 4rem 1.5rem 1.5rem 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
@@ -138,7 +147,6 @@ def injetar_css_profissional():
         /* Ajuste de Altura Dinâmica para Celular */
         @media (max-width: 768px) {
             .simetria-box { height: 250px !important; }
-            .block-container { padding: 4rem 1rem 1rem 1rem !important; }
         }
 
         /* Ajuste Galeria de Campanhas */
