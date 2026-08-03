@@ -79,37 +79,37 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA (O CÓDIGO DO COMANDANTE)
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
            ========================================= */
         
         /* 1. Mantém a barra e o fundo firmes para não quebrar a navegação no celular */
         header[data-testid="stHeader"] { 
-            background-color: #f8fafc !important; 
+            background-color: #f4f7f6 !important; 
             border-bottom: 1px solid #e2e8f0 !important;
         }
 
-        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor Azul Petróleo */
+        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor exata (Azul Petróleo) */
         [data-testid="collapsedControl"] * { 
-            color: #137077 !important; 
-            fill: #137077 !important; 
+            color: #177b82 !important; 
+            fill: #177b82 !important; 
         }
 
         /* 3. A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
-        .viewerBadge_container { display: none !important; } /* Oculta GitHub/Logo */
+        .viewerBadge_container { display: none !important; } /* Oculta GitHub/Fork/Logo */
         .stDeployButton { display: none !important; } /* Oculta Botão de Deploy */
         [data-testid="stToolbarActions"] { display: none !important; } /* Oculta os 3 pontinhos */
         #MainMenu { display: none !important; }
         footer { display: none !important; } /* Oculta o Rodapé */
 
         /* =========================================
-           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO (TEMA CLARO PREMIUM)
+           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO (TEMA CLARO)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
         
         /* Ajuste do container - não pode sobrepor o cabeçalho */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
-        /* Lateral Azul Petróleo e Segura */
+        /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
@@ -147,11 +147,36 @@ def injetar_css_profissional():
             color: #ffffff !important;
         }
         
-        /* =========================================
-           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
-           ========================================= */
+        /* Simetria e Responsividade (Flex-Wrap) */
+        .simetria-perfeita { 
+            display: flex; 
+            width: 100%; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; 
+        }
+        .simetria-box { 
+            flex: 1 1 300px; 
+            height: 380px; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.05); 
+            border: 1px solid #e2e8f0; 
+            background-color: #ffffff; 
+        }
+        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
+        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
+        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; }
+        
+        @media (max-width: 768px) {
+            .simetria-box { height: 250px !important; }
+        }
+
+        [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
+        
+        /* Textos e Caixas de Entrada */
+        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
         h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
         
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { 
             background-color: #ffffff !important; 
@@ -162,10 +187,7 @@ def injetar_css_profissional():
         .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #177b82 !important; box-shadow: 0 0 5px rgba(23,123,130,0.5) !important; }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
-        /* =========================================
-           E. BOTÕES PROFISSIONAIS (PRIMÁRIO E SECUNDÁRIO)
-           ========================================= */
-        /* Botão Primário (Enviar, Salvar) */
+        /* Botões */
         button[kind="primary"] {
             background: linear-gradient(90deg, #177b82 0%, #0d5257 100%) !important;
             color: white !important;
@@ -178,7 +200,6 @@ def injetar_css_profissional():
         }
         button[kind="primary"]:hover { transform: scale(1.02); }
         
-        /* Botão Secundário (Ações Rápidas, Voltar) */
         button[kind="secondary"] {
             background-color: #ffffff !important;
             color: #334155 !important;
@@ -195,10 +216,9 @@ def injetar_css_profissional():
             color: #10b981 !important;
             box-shadow: 0 4px 10px rgba(16,185,129,0.1) !important;
         }
-        
         hr { border-color: #e2e8f0; }
         
-        /* Cards Brancos nas páginas internas */
+        /* Cards */
         .dashboard-card { background-color: #ffffff; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); height: 100%; }
         .checkout-box { background-color: #f1f5f9; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .card-servico { background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -207,20 +227,13 @@ def injetar_css_profissional():
         .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Simetria das Imagens Superiores */
-        .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .simetria-box { flex: 1 1 300px; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); background-color: #ffffff; border: 1px solid #e2e8f0; }
-        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
-        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
-        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; }
-        
-        @media (max-width: 768px) { .simetria-box { height: 250px !important; } }
-        [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
-
-        /* WhatsApp e Outros */
+        /* Botão WhatsApp Flutuante Minimalista */
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.3); z-index: 99999; transition: all 0.3s ease; }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
+        
+        /* Tabela e Badges */
+        .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
         .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
         .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;}
         </style>
@@ -389,11 +402,18 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE
+    # 🏠 HOME PAGE (COM SAUDAÇÃO INTELIGENTE)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
-        st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>Bom dia, {nome_display}! 👋</h2>", unsafe_allow_html=True)
+        
+        # LÓGICA DE SAUDAÇÃO DINÂMICA (Fuso de Brasília GMT-3)
+        hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
+        if 5 <= hora_brasilia < 12: saudacao_atual = "Bom dia"
+        elif 12 <= hora_brasilia < 18: saudacao_atual = "Boa tarde"
+        else: saudacao_atual = "Boa noite"
+        
+        st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
@@ -1008,7 +1028,7 @@ def tela_principal():
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
     # -----------------------------------------
-    elif menu_selecionado == "📝 Contrato Limpa Nome":
+    elif menu_selecionado == "📝 Contratos para Baixar" or menu_selecionado == "📝 Contrato Limpa Nome":
         st.header("📝 Central de Contratos")
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos (.docx).**")
