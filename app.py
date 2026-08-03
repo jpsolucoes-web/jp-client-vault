@@ -9,7 +9,7 @@ import streamlit.components.v1 as components
 # ==========================================
 # 1. CONFIGURAÇÃO DA PÁGINA MESTRA (Sempre a primeira linha)
 # ==========================================
-st.set_page_config(page_title="Positivo Nacional - Reabilitação", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="JP Soluções - Reabilitação", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
 # 2. CONEXÃO SUPABASE
@@ -79,12 +79,15 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO 100% NATIVO (INTOCÁVEL)
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
+           NÃO tocamos nas cores do cabeçalho ou menu para manter 100% de estabilidade no celular.
            ========================================= */
-        /* Nós NÃO vamos tocar nas cores do cabeçalho ou do botão de menu! */
-        /* Escondemos apenas a logo do GitHub e as ferramentas extras da direita suavemente */
+
+        /* A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
         .viewerBadge_container { display: none !important; } 
+        .stDeployButton { display: none !important; } 
         [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; } 
+        #MainMenu { display: none !important; }
         footer { display: none !important; } 
 
         /* =========================================
@@ -92,18 +95,18 @@ def injetar_css_profissional():
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
         
-        /* Ajuste do container para subir o conteúdo um pouco sem quebrar a barra nativa */
+        /* Ajuste do container */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
-           C. MENU LATERAL (TEAL/AZUL PETRÓLEO) CORRIGIDO
+           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
            ========================================= */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
         /* Menu de rádio clicável suave */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 8px;
             margin-bottom: 4px;
             transition: 0.2s background-color;
@@ -115,6 +118,25 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
+        }
+        /* Esconde a bolinha nativa do radio no menu lateral */
+        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
+            display: none !important;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] p {
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            margin: 0 !important;
+        }
+        
+        /* Garante que o botão Sair tenha texto visível */
+        [data-testid="stSidebar"] button[kind="primary"] {
+            background: rgba(0,0,0,0.2) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: #ffffff !important;
+        }
+        [data-testid="stSidebar"] button[kind="primary"] * {
+            color: #ffffff !important;
         }
         
         /* =========================================
@@ -226,10 +248,11 @@ def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         try: st.image("logo.png", use_container_width=True)
-        except: st.title("🛡️ JP Client Vault")
+        except: st.title("🛡️ JP Soluções")
             
         st.markdown("<h3 style='text-align: center; color: #0f172a;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
+        # ABA DE ESQUECI A SENHA INCLUÍDA
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -320,21 +343,17 @@ def tela_principal():
             
         st.write("---")
         opcoes_menu = [
-            "🏠 Home", "💼 Serviços", "📅 Eventos",
+            "🏠 Home", "👤 Meu Perfil", "💼 Serviços", "📅 Eventos",
             "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
             "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contrato Limpa Nome", 
-            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
-            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
+            "📊 Orçamento", "📝 Contratos para Baixar", "📄 Documentos de Apoio", 
+            "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
-
-    if menu_selecionado == "👤 Assinatura":
-        menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
     # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
@@ -343,22 +362,22 @@ def tela_principal():
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
-            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
+            st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO (COM SETA VISUAL UX)
+    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO (COM SETA INDICATIVA)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
-            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
+            st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE
+    # 🏠 HOME PAGE (NOVO DESIGN LEVE E RELÓGIO LADO-A-LADO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -366,7 +385,7 @@ def tela_principal():
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
+            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Meu Perfil'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -408,7 +427,7 @@ def tela_principal():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
-        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA
+        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA (DESIGN LIMPO LADO A LADO)
         # =========================================================================
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
@@ -535,12 +554,12 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE VERIFICAÇÃO INTELIGENTE)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO INTELIGENTE)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # LÓGICA DE UX E SALVAMENTO DEFINITIVO
+        # VERIFICAÇÃO INTELIGENTE
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o restante do sistema.")
         else:
@@ -613,7 +632,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -835,7 +854,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V3 - GARANTIA DINÂMICA)
@@ -972,12 +991,12 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
     # -----------------------------------------
-    elif menu_selecionado == "📝 Contrato Limpa Nome":
+    elif menu_selecionado == "📝 Contratos para Baixar" or menu_selecionado == "📝 Contrato Limpa Nome":
         st.header("📝 Central de Contratos")
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos (.docx).**")
