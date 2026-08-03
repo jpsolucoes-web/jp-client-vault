@@ -79,7 +79,7 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA (O CÓDIGO DO COMANDANTE)
+           A. CABEÇALHO NATIVO ESCURO - INTOCÁVEL PELO COMANDANTE
            ========================================= */
         
         /* 1. Mantém a barra e o fundo firmes para não quebrar a navegação no celular */
@@ -88,7 +88,7 @@ def injetar_css_profissional():
             border-bottom: 1px solid #1e293b !important;
         }
 
-        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor exata */
+        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor LARANJA */
         [data-testid="collapsedControl"] * { 
             color: #f59e0b !important; 
             fill: #f59e0b !important; 
@@ -100,76 +100,133 @@ def injetar_css_profissional():
         [data-testid="stToolbarActions"] { display: none !important; } /* Oculta os 3 pontinhos */
         #MainMenu { display: none !important; }
         footer { display: none !important; } /* Oculta o Rodapé */
+        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; }
 
         /* =========================================
-           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO
+           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO (TEMA CLARO PREMIUM)
            ========================================= */
-        .stApp { background-color: #0d1117; color: #e2e8f0; }
+        .stApp { background-color: #f4f7f6; color: #334155; }
         
-        /* Ajuste do container - não pode sobrepor o cabeçalho */
-        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container */
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
-        /* Lateral Padrão e Segura */
-        [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
-        [data-testid="stSidebar"] * { color: #f8fafc !important; }
+        /* =========================================
+           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
+           ========================================= */
+        [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
+        [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Simetria e Responsividade (Flex-Wrap) */
-        .simetria-perfeita { 
-            display: flex; 
-            width: 100%; 
-            gap: 20px; 
-            margin-bottom: 20px; 
-            flex-wrap: wrap; 
+        /* Menu de rádio clicável suave */
+        [data-testid="stSidebar"] div[role="radiogroup"] label {
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: 0.2s background-color;
+            cursor: pointer;
         }
-        .simetria-box { 
-            flex: 1 1 300px; 
-            height: 380px; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.5); 
-            border: 1px solid #334155; 
-            background-color: #1e293b; 
+        [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
-        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
-        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px; }
-        
-        @media (max-width: 768px) {
-            .simetria-box { height: 250px !important; }
+        [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            border-left: 4px solid #f59e0b;
         }
-
-        [data-testid="stImage"] img { border-radius: 12px; }
+        /* Esconde a bolinha nativa do radio no menu lateral */
+        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
+            display: none !important;
+        }
+        [data-testid="stSidebar"] div[role="radiogroup"] p {
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            margin: 0 !important;
+        }
         
-        /* Textos e Caixas de Entrada */
-        label, p, .stRadio label, .stSelectbox label, .stTextInput label, .stTextArea label, .stFileUploader label { color: #e2e8f0 !important; font-size: 15px !important; font-weight: 500 !important; }
-        h1, h2, h3, h4 { color: #f59e0b !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Garante que o botão Sair tenha texto visível */
+        [data-testid="stSidebar"] button[kind="primary"] {
+            background: rgba(0,0,0,0.2) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: #ffffff !important;
+        }
+        [data-testid="stSidebar"] button[kind="primary"] * {
+            color: #ffffff !important;
+        }
         
-        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 8px !important; }
-        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #10b981 !important; box-shadow: 0 0 5px #10b981 !important; }
+        /* =========================================
+           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
+           ========================================= */
+        h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
+        
+        .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { 
+            background-color: #ffffff !important; 
+            color: #0f172a !important; 
+            border: 1px solid #cbd5e1 !important; 
+            border-radius: 8px !important; 
+        }
+        .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #177b82 !important; box-shadow: 0 0 5px rgba(23,123,130,0.5) !important; }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
-        /* Botões */
-        .stButton>button { background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); color: black !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; width: 100%; }
-        .stButton>button:hover { transform: scale(1.02); box-shadow: 0px 0px 15px rgba(245, 158, 11, 0.5); }
-        hr { border-color: #334155; }
+        /* =========================================
+           E. BOTÕES PROFISSIONAIS (PRIMÁRIO E SECUNDÁRIO)
+           ========================================= */
+        /* Botão Primário (Enviar, Salvar) */
+        button[kind="primary"] {
+            background: linear-gradient(90deg, #177b82 0%, #0d5257 100%) !important;
+            color: white !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(13, 82, 87, 0.2) !important;
+        }
+        button[kind="primary"]:hover { transform: scale(1.02); }
         
-        /* Cards */
-        .dashboard-card { background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 100%; }
-        .checkout-box { background-color: #1e293b; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        .card-servico { background-color: #1e293b; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 15px; }
-        .metric-card { background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
-        .metric-title { color: #94a3b8; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
+        /* Botão Secundário (Ações Rápidas, Voltar) */
+        button[kind="secondary"] {
+            background-color: #ffffff !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            padding: 15px 20px !important;
+            transition: 0.3s;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+        }
+        button[kind="secondary"]:hover {
+            border-color: #10b981 !important;
+            color: #10b981 !important;
+            box-shadow: 0 4px 10px rgba(16,185,129,0.1) !important;
+        }
+        
+        hr { border-color: #e2e8f0; }
+        
+        /* Cards Brancos nas páginas internas */
+        .dashboard-card { background-color: #ffffff; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); height: 100%; }
+        .checkout-box { background-color: #f1f5f9; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .card-servico { background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-servico h3 { color: #0f172a !important; }
+        .metric-card { background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Botão WhatsApp Flutuante Minimalista */
-        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.5); z-index: 99999; transition: all 0.3s ease; }
+        /* Simetria das Imagens Superiores */
+        .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .simetria-box { flex: 1 1 300px; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); background-color: #ffffff; border: 1px solid #e2e8f0; }
+        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
+        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
+        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; }
+        
+        @media (max-width: 768px) { .simetria-box { height: 250px !important; } }
+        [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
+
+        /* WhatsApp e Outros */
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.3); z-index: 99999; transition: all 0.3s ease; }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
-        
-        /* Tabela e Badges */
-        .pdf-preview { background-color: #ffffff; padding: 40px; border-radius: 10px; color: #000000; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(255,255,255,0.1); margin-top: 20px;}
         .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 15px; width: 150px; text-align: center; color: white;}
-        .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #1e293b; border-radius: 8px;}
+        .status-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -197,7 +254,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
+# 6. TELA DE LOGIN
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -205,16 +262,16 @@ def tela_login():
         try: st.image("logo.png", use_container_width=True)
         except: st.title("🛡️ JP Soluções")
             
-        st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #0f172a;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
-        # ABA DE ESQUECI A SENHA INCLUÍDA AQUI
+        # ABA DE ESQUECI A SENHA INCLUÍDA
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
             with st.form("login_form"):
                 email = st.text_input("E-mail Cadastrado")
                 senha = st.text_input("Senha de Acesso", type="password")
-                if st.form_submit_button("Autenticar Conexão", use_container_width=True):
+                if st.form_submit_button("Autenticar Conexão", type="primary", use_container_width=True):
                     try:
                         email_limpo = email.strip().lower()
                         resposta = supabase.auth.sign_in_with_password({"email": email_limpo, "password": senha})
@@ -228,7 +285,7 @@ def tela_login():
             with st.form("cadastro_form"):
                 novo_email = st.text_input("Seu melhor E-mail")
                 nova_senha = st.text_input("Crie uma Senha (mínimo 6 caracteres)", type="password")
-                if st.form_submit_button("Criar Minha Conta", use_container_width=True):
+                if st.form_submit_button("Criar Minha Conta", type="primary", use_container_width=True):
                     try:
                         email_limpo_cadastro = novo_email.strip().lower()
                         supabase.auth.sign_up({"email": email_limpo_cadastro, "password": nova_senha})
@@ -240,7 +297,7 @@ def tela_login():
             with st.form("recover_form"):
                 st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
                 email_rec = st.text_input("E-mail Cadastrado para Recuperação")
-                if st.form_submit_button("Enviar Link de Recuperação", use_container_width=True):
+                if st.form_submit_button("Enviar Link de Recuperação", type="primary", use_container_width=True):
                     try:
                         email_limpo_rec = email_rec.strip().lower()
                         try:
@@ -284,31 +341,35 @@ def tela_principal():
 
     with st.sidebar:
         try: st.image("logo.png", use_container_width=True)
-        except: st.title("🛡️ JP Soluções")
+        except: st.markdown("<h2 style='color: white; text-align: center;'>JP Soluções</h2>", unsafe_allow_html=True)
             
         if is_diretor: st.error("👑 MODO DIRETOR")
-        else: st.success(f"👤 Cliente: {email_logado}")
+        else: st.markdown(f"<div style='background-color:rgba(0,0,0,0.2); padding:10px; border-radius:8px; margin-bottom:10px;'><span style='color:#a5f3fc;'>👤 Cliente:</span><br><b>{email_logado}</b></div>", unsafe_allow_html=True)
             
         if is_parceiro: st.warning("🤝 MODO PARCEIRO ATIVADO")
         
-        if st.button("Sair do Sistema", use_container_width=True):
+        if st.button("Sair do Sistema", use_container_width=True, type="primary"):
             st.session_state['usuario_autenticado'] = False
             st.session_state['dados_usuario'] = None
             st.rerun()
             
         st.write("---")
         opcoes_menu = [
-            "🏠 Home", "👤 Meu Perfil", "💼 Serviços", "📅 Eventos",
+            "🏠 Home", "💼 Serviços", "📅 Eventos",
             "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
             "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contratos para Baixar", "📄 Documentos de Apoio", 
-            "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
+            "📊 Orçamento", "📝 Contrato Limpa Nome", 
+            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
+            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
+
+    if menu_selecionado == "👤 Assinatura":
+        menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
     # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
@@ -317,22 +378,22 @@ def tela_principal():
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
-            st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
+            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS VOLTAR (COM SETA INDICATIVA) NO TOPO
+    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
+        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
-            st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
+            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (SIMETRIA PERFEITA E SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE (COM SAUDAÇÃO INTELIGENTE)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -343,11 +404,11 @@ def tela_principal():
         elif 12 <= hora_brasilia < 18: saudacao_atual = "Boa tarde"
         else: saudacao_atual = "Boa noite"
         
-        st.markdown(f"<h2 style='color: #f59e0b; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='color: #94a3b8; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Meu Perfil'**.")
+            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -375,11 +436,6 @@ def tela_principal():
         # =========================================================================
         # LINHA 2: Imagem do Meio e Vídeo
         # =========================================================================
-        st.markdown("""<style>
-            div[data-testid="column"] > div { height: 100%; }
-            div[data-testid="column"] img, div[data-testid="column"] video { width: 100% !important; height: 380px !important; object-fit: cover !important; border-radius: 12px !important; border: 1px solid #334155; box-shadow: 0px 4px 15px rgba(0,0,0,0.5); }
-        </style>""", unsafe_allow_html=True)
-        
         col_m1, col_m2 = st.columns(2)
         with col_m1:
             if os.path.exists("custom_meio_1.png"): st.image("custom_meio_1.png", use_container_width=True)
@@ -394,85 +450,137 @@ def tela_principal():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
-        # LINHA 3: O RELÓGIO CENTRAL
+        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA (DESIGN LIMPO LADO A LADO)
         # =========================================================================
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
         
         clock_html = f"""
-        <div style="background-color: #0f172a; border: 2px solid #f59e0b; border-radius: 12px; padding: 25px; text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4); margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
-                <div>
-                    <h3 style="margin: 0; color: #f59e0b; font-size: clamp(18px, 2vw, 24px);">⏳ PRAZO OFICIAL</h3>
-                    <p style="color: #94a3b8; font-size: 16px; margin: 5px 0 0 0;">Data Limite de Envio: {d_br}</p>
+        <style>
+            .light-card {{ background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); flex: 1 1 300px; }}
+            .time-box {{ background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 5px; text-align: center; flex: 1; margin: 0 5px; }}
+            .time-num {{ font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1.2; }}
+            .time-lbl {{ font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: bold; margin-top: 5px; }}
+            .logo-box {{ border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-align: center; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}}
+        </style>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+            
+            <!-- CARD 1: RELÓGIO -->
+            <div class="light-card">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span style="color: #f59e0b; font-size: 18px; margin-right: 8px;">⏱️</span>
+                    <h4 style="margin: 0; color: #0f172a; font-size: 16px; font-weight: bold;">Prazo de Encerramento</h4>
                 </div>
-                <div id="clock_div" style="color: #10b981; font-size: clamp(30px, 4vw, 55px); font-weight: 900; letter-spacing: 2px;">Calculando...</div>
+                <p style="color: #64748b; font-size: 13px; margin-top: 0; margin-bottom: 15px;">Lista <b style="color: #334155;">AÇÃO COLETIVA - ABERTA</b></p>
+                <div style="display: flex; justify-content: space-between; margin: 0 -5px;">
+                    <div class="time-box"><div class="time-num" id="d_days">00</div><div class="time-lbl">DIAS</div></div>
+                    <div class="time-box"><div class="time-num" id="d_hours">00</div><div class="time-lbl">HORAS</div></div>
+                    <div class="time-box"><div class="time-num" id="d_mins">00</div><div class="time-lbl">MIN</div></div>
+                    <div class="time-box"><div class="time-num" id="d_secs">00</div><div class="time-lbl">SEG</div></div>
+                </div>
+                <p style="color: #94a3b8; font-size: 11px; margin-top: 15px; margin-bottom: 0;">Encerra dia {d_br} às 19:00h</p>
             </div>
+            
+            <!-- CARD 2: LISTA ATIVA -->
+            <div class="light-card">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <span style="color: #10b981; font-size: 18px; margin-right: 8px;">📋</span>
+                    <h4 style="margin: 0; color: #0f172a; font-size: 16px; font-weight: bold;">Lista Ativa</h4>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-weight: 800; color: #0f172a; font-size: 14px;">AÇÃO COLETIVA 121 - ABERTA</span>
+                    <span style="background-color: #10b981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;">Aguardando encerramento</span>
+                </div>
+                <div style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap;">
+                    <div class="logo-box" style="color: #e91e63;">Serasa Experian</div>
+                    <div class="logo-box" style="color: #0ea5e9;">BoaVista</div>
+                    <div class="logo-box" style="color: #f59e0b;">SPC Brasil</div>
+                    <div class="logo-box" style="color: #334155;">CENPROT</div>
+                </div>
+                <div style="width: 100%; background-color: #f1f5f9; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+                    <div style="width: 5%; background-color: #10b981; height: 100%;"></div>
+                </div>
+                <p style="color: #94a3b8; font-size: 11px; margin: 0;">0 nomes cadastrados</p>
+            </div>
+            
         </div>
         <script>
             var countDownDate = new Date("{d_js}").getTime();
             setInterval(function() {{
                 var now = new Date().getTime();
                 var distance = countDownDate - now;
-                if(distance < 0) {{ document.getElementById("clock_div").innerHTML = "AÇÃO INICIADA!"; return; }}
+                if(distance < 0) {{
+                    document.getElementById("d_days").innerHTML = "00";
+                    document.getElementById("d_hours").innerHTML = "00";
+                    document.getElementById("d_mins").innerHTML = "00";
+                    document.getElementById("d_secs").innerHTML = "00";
+                    return; 
+                }}
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                hours = hours < 10 ? "0" + hours : hours; minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds;
-                document.getElementById("clock_div").innerHTML = days + " D : " + hours + " h : " + minutes + " m : " + seconds + " s";
+                
+                document.getElementById("d_days").innerHTML = days < 10 ? "0" + days : days;
+                document.getElementById("d_hours").innerHTML = hours < 10 ? "0" + hours : hours;
+                document.getElementById("d_mins").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("d_secs").innerHTML = seconds < 10 ? "0" + seconds : seconds;
             }}, 1000);
         </script>
         """
-        components.html(clock_html, height=150)
+        components.html(clock_html, height=220)
 
         # =========================================================================
         # LINHA 4: A GALERIA DE CAMPANHAS
         # =========================================================================
-        st.markdown("""<style>div[data-testid="column"] img { height: auto !important; max-height: 250px !important; }</style>""", unsafe_allow_html=True)
+        imagens_ativas = [idx for idx in range(1, 9) if os.path.exists(f"custom_home_{idx}.png")]
         
-        imagens_ativas = [i for i in range(1, 9) if os.path.exists(f"custom_home_{i}.png")]
-        
-        if is_diretor or imagens_ativas:
-            st.markdown("<h4 style='color:#f8fafc; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-top:20px;'>🌟 Campanhas e Informativos</h4>", unsafe_allow_html=True)
+        if is_diretor or len(imagens_ativas) > 0:
+            st.markdown("<h4 style='color:#0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top:20px;'>🌟 Campanhas e Informativos</h4>", unsafe_allow_html=True)
             
             if is_diretor:
                 c1, c2, c3, c4 = st.columns(4, gap="small")
-                cols1 = [c1, c2, c3, c4]
-                for i in range(1, 5):
-                    with cols1[i-1]:
-                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                cols_top = [c1, c2, c3, c4]
+                for idx_top in range(1, 5):
+                    with cols_top[idx_top - 1]:
+                        if idx_top in imagens_ativas: 
+                            st.image(f"custom_home_{idx_top}.png", use_container_width=True)
+                        else: 
+                            st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {idx_top} Livre</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 c5, c6, c7, c8 = st.columns(4, gap="small")
-                cols2 = [c5, c6, c7, c8]
-                for i in range(5, 9):
-                    with cols2[i-5]:
-                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                cols_bot = [c5, c6, c7, c8]
+                for idx_bot in range(5, 9):
+                    with cols_bot[idx_bot - 5]:
+                        if idx_bot in imagens_ativas: 
+                            st.image(f"custom_home_{idx_bot}.png", use_container_width=True)
+                        else: 
+                            st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {idx_bot} Livre</div>", unsafe_allow_html=True)
             else:
-                for row_start in range(0, len(imagens_ativas), 4):
-                    cols = st.columns(4, gap="small")
-                    for col_offset in range(4):
-                        if row_start + col_offset < len(imagens_ativas):
-                            with cols[col_offset]:
-                                st.image(f"custom_home_{imagens_ativas[row_start + col_offset]}.png", use_container_width=True)
+                if len(imagens_ativas) > 0:
+                    for row_start in range(0, len(imagens_ativas), 4):
+                        cols = st.columns(4, gap="small")
+                        for col_offset in range(4):
+                            if row_start + col_offset < len(imagens_ativas):
+                                img_idx = imagens_ativas[row_start + col_offset]
+                                with cols[col_offset]:
+                                    st.image(f"custom_home_{img_idx}.png", use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Ações Rápidas
-        st.markdown("<h4 style='color:#f8fafc; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#0f172a; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
-        with c_act1: st.button("📋 Gerenciar Minhas Listas", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
-        with c_act2: st.button("💲 Painel Financeiro", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
-        with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
+        with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
+        with c_act2: st.button("💲 Painel Financeiro", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
+        with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA INTELIGENTE)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO INTELIGENTE)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
-        st.header("👤 Meu Perfil e Assinatura")
+        st.header("👤 Assinatura e Perfil")
         
         # VERIFICAÇÃO INTELIGENTE
         if not st.session_state.get('perfil_preenchido', False):
@@ -481,10 +589,10 @@ def tela_principal():
             st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
 
         st.markdown("""
-        <div style='background-color:#064e3b; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #fff; margin-bottom: 20px;'>
+        <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
             <h3 style='margin-top:0; color:#10b981;'>✅ Sua assinatura está ativa</h3>
             <p style='margin:0; font-size: 16px;'>317 dias restantes<br>Acesso liberado até: 11/06/2027</p>
-            <span style='float:right; background:#047857; padding:5px 10px; border-radius:15px; font-size:12px; margin-top:-45px;'>Período de Teste Grátis</span>
+            <span style='float:right; background:#10b981; color: white; padding:5px 10px; border-radius:15px; font-size:12px; margin-top:-45px; font-weight: bold;'>Período de Teste Grátis</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -544,10 +652,10 @@ def tela_principal():
                     st.session_state['dados_perfil'] = dados_salvar
                     st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
 
-        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -557,17 +665,17 @@ def tela_principal():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="card-servico"><h3>🛡️ Limpa Nome</h3><p>Reabilitação de crédito Padrão.</p></div>', unsafe_allow_html=True)
-            st.button("Acessar Limpa Nome", on_click=ir_para_protocolo_especifico, args=("1 - Ação Limpa Nome (Padrão)",), key="btn_limpa", use_container_width=True)
+            st.button("Acessar Limpa Nome", on_click=ir_para_protocolo_especifico, args=("1 - Ação Limpa Nome (Padrão)",), key="btn_limpa", type="primary", use_container_width=True)
             st.markdown('<div class="card-servico"><h3>🏦 Rating Bancário</h3><p>Aumento de Score e Relacionamento.</p></div>', unsafe_allow_html=True)
-            st.button("Acessar Rating", on_click=ir_para_protocolo_especifico, args=("3 - Rating Bancário",), key="btn_rating", use_container_width=True)
+            st.button("Acessar Rating", on_click=ir_para_protocolo_especifico, args=("3 - Rating Bancário",), key="btn_rating", type="primary", use_container_width=True)
         with col2:
             st.markdown('<div class="card-servico"><h3>🏛️ BACEN</h3><p>Retirada de restrições no Banco Central.</p></div>', unsafe_allow_html=True)
-            st.button("Acessar BACEN", on_click=ir_para_protocolo_especifico, args=("2 - BACEN",), key="btn_bacen", use_container_width=True)
+            st.button("Acessar BACEN", on_click=ir_para_protocolo_especifico, args=("2 - BACEN",), key="btn_bacen", type="primary", use_container_width=True)
             st.markdown('<div class="card-servico"><h3>⚖️ Defesa Tributária</h3><p>Estratégias fiscais e tributárias.</p></div>', unsafe_allow_html=True)
-            st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", use_container_width=True)
+            st.button("Acessar Tributário", on_click=ir_para_protocolo_especifico, args=("4 - Defesa Tributária",), key="btn_trib", type="primary", use_container_width=True)
 
     # -----------------------------------------
-    # 🛡️ ENVIAR PROTOCOLO (SEPARAÇÃO CIRÚRGICA BACEN x RATING)
+    # 🛡️ ENVIAR PROTOCOLO
     # -----------------------------------------
     elif menu_selecionado == "🛡️ Enviar Protocolo":
         st.title("🚀 Central de Protocolos Avançados")
@@ -738,13 +846,13 @@ def tela_principal():
         
         st.markdown(f"""
             <div class="checkout-box">
-                <h3 style="margin-top:0; color: #f59e0b;">Resumo do Carrinho</h3>
+                <h3 style="margin-top:0; color: #10b981;">Resumo do Carrinho</h3>
                 <p>Serviços Selecionados: <b>{texto_servicos_banco}</b></p>
                 <p>Total a Pagar (Seu Custo): <b style="font-size: 24px; color: #10b981;">R$ {total_carrinho:,.2f}</b></p>
             </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🚀 ENVIAR DADOS E GERAR PAGAMENTO"):
+        if st.button("🚀 ENVIAR DADOS E GERAR PAGAMENTO", type="primary"):
             if total_carrinho == 0:
                 st.warning("⚠️ Você precisa marcar pelo menos UM serviço na etapa 1.")
             elif not nome_cliente or not cpf_cnpj: 
@@ -766,13 +874,13 @@ def tela_principal():
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
                 
-        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
+        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
-    # 🔄 REPROTOCOLO
+    # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V3 - GARANTIA DINÂMICA)
     # -----------------------------------------
     elif menu_selecionado == "🔄 Reprotocolo":
         st.header("🔄 Área de Reprotocolo")
@@ -786,13 +894,14 @@ def tela_principal():
                     st.success("Modelo salvo com sucesso!")
             st.markdown("---")
             
+        # Puxando o prazo e o valor dinamicamente do banco de dados (configurado no Admin)
         garantia_dias = int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30))
         valor_reprot_atual = float(st.session_state['precos'][perfil_atual].get('reprotocolo', 212.50))
         
         st.markdown(f"""
-            <div style='background-color: #1e293b; padding: 25px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 30px;'>
-                <p style='margin: 0; color: #e2e8f0; font-size: 16px;'>Selecione nomes já enviados para reprotocolar. Nomes enviados há <b>até {garantia_dias} dias</b> são <b style='color:#10b981;'>gratuitos</b>. Acima de {garantia_dias} dias: <b style='color:#f59e0b;'>R$ {valor_reprot_atual:,.2f}</b> por nome (referente ao custo de processamento).</p>
-                <p style='margin: 10px 0 0 0; color: #94a3b8; font-size: 14px;'>Os nomes reprotocolados serão adicionados à lista vigente: <span style='background-color: #f8fafc; padding: 4px 10px; border-radius: 6px; color: #0f172a; font-weight: bold;'>AÇÃO COLETIVA VIGENTE</span></p>
+            <div style='background-color: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>
+                <p style='margin: 0; color: #334155; font-size: 16px;'>Selecione nomes já enviados para reprotocolar. Nomes enviados há <b>até {garantia_dias} dias</b> são <b style='color:#10b981;'>gratuitos</b>. Acima de {garantia_dias} dias: <b style='color:#f59e0b;'>R$ {valor_reprot_atual:,.2f}</b> por nome (referente ao custo de processamento).</p>
+                <p style='margin: 10px 0 0 0; color: #64748b; font-size: 14px;'>Os nomes reprotocolados serão adicionados à lista vigente: <span style='background-color: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #0f172a; font-weight: bold;'>AÇÃO COLETIVA VIGENTE</span></p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -802,6 +911,7 @@ def tela_principal():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
+        # Puxando os dados REAIS do usuário no banco de dados para a tabela de Reprotocolo
         df_dados_reprot = pd.DataFrame()
         try:
             res_reprot = supabase.table("nomes_processamento").select("*").eq("email_cliente", email_logado).execute()
@@ -809,9 +919,11 @@ def tela_principal():
             
             if res_reprot.data:
                 for item in res_reprot.data:
+                    # Calculando a diferença de dias exata desde que o nome foi enviado ao banco
                     created_at_str = item.get('created_at')
                     if created_at_str:
                         try:
+                            # Limpando a string de data do Supabase para o Python entender
                             time_str = created_at_str.split(".")[0]
                             if "+" in time_str: time_str = time_str.split("+")[0]
                             if "Z" in time_str: time_str = time_str.replace("Z", "")
@@ -841,9 +953,11 @@ def tela_principal():
         except Exception as e:
             pass
             
+        # Se não houver dados, cria uma tabela vazia com as colunas corretas
         if df_dados_reprot.empty:
             df_dados_reprot = pd.DataFrame(columns=["Selecionar", "Nome", "CPF/CNPJ", "Status", "Prazo", "Valor Original", "Valor Reprotocolo"])
         
+        # Exibindo a tabela real para o usuário marcar quem ele quer reprotocolar
         df_editado = st.data_editor(
             df_dados_reprot,
             column_config={
@@ -855,6 +969,7 @@ def tela_principal():
             use_container_width=True
         )
         
+        # Algoritmo de Cálculo Condicional (Soma dos marcados)
         total_pagar_reprot = 0.0
         qtd_selecionados = 0
         
@@ -867,9 +982,9 @@ def tela_principal():
                     
         st.markdown("---")
         st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #0f172a; border-radius: 8px; border-left: 5px solid #10b981;">
-                <div><span style="color:#94a3b8;">Nomes Selecionados:</span> <b style="font-size:18px; color:white;">{qtd_selecionados}</b></div>
-                <div><span style="color:#94a3b8;">Total a Pagar:</span> <b style="font-size:24px; color:#10b981;">R$ {total_pagar_reprot:,.2f}</b></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #f8fafc; border-radius: 8px; border-left: 5px solid #10b981; border: 1px solid #e2e8f0;">
+                <div><span style="color:#64748b;">Nomes Selecionados:</span> <b style="font-size:18px; color:#0f172a;">{qtd_selecionados}</b></div>
+                <div><span style="color:#64748b;">Total a Pagar:</span> <b style="font-size:24px; color:#10b981;">R$ {total_pagar_reprot:,.2f}</b></div>
             </div>
         """, unsafe_allow_html=True)
         
@@ -885,7 +1000,7 @@ def tela_principal():
         with c_up2:
             st.file_uploader("Upload Documento Assinado (.pdf)", type=['pdf', 'jpg', 'png'], label_visibility="collapsed")
             
-        if st.button("🚀 Confirmar Reprotocolo", use_container_width=True):
+        if st.button("🚀 Confirmar Reprotocolo", type="primary", use_container_width=True):
             if qtd_selecionados == 0:
                 st.warning("⚠️ Marque as caixas (checkbox) dos nomes que deseja reprotocolar na tabela acima.")
             else:
@@ -896,15 +1011,15 @@ def tela_principal():
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
                     
-        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
+        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
     # -----------------------------------------
-    elif menu_selecionado == "📝 Contratos para Baixar":
+    elif menu_selecionado == "📝 Contratos para Baixar" or menu_selecionado == "📝 Contrato Limpa Nome":
         st.header("📝 Central de Contratos")
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos (.docx).**")
@@ -948,10 +1063,10 @@ def tela_principal():
         with col2:
             st.subheader("2. Enviar Assinado")
             st.file_uploader("Upload Assinado (.pdf)", type=['pdf'])
-            if st.button("🚀 Enviar ao Cofre"): st.success("✅ Salvo!")
+            if st.button("🚀 Enviar ao Cofre", type="primary"): st.success("✅ Salvo!")
 
     # -----------------------------------------
-    # 📄 DOCUMENTOS DE APOIO
+    # 📄 DOCUMENTOS DE APOIO (COM BLOQUEIO DE CLIENTE FINAL)
     # -----------------------------------------
     elif menu_selecionado == "📄 Documentos de Apoio":
         st.header("📄 Material de Apoio e Educação")
@@ -1002,10 +1117,10 @@ def tela_principal():
         st.write("Guia completo para usar o sistema JP SOLUÇÕES PARTICIPAÇÕES E CONSULTORIA LTDA.")
         
         st.markdown("""
-        <div style='background-color:#0f172a; padding: 25px; border-radius: 10px; border: 1px solid #10b981; margin-bottom: 30px;'>
+        <div style='background-color:#ffffff; padding: 25px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>
             <h3 style='color:#10b981; margin-top:0;'>✨ Bem-vindo à JP SOLUÇÕES</h3>
-            <p>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
-            <ul style='list-style-type: none; padding: 0;'>
+            <p style='color:#334155;'>Nossa plataforma conecta parceiros aos serviços de regularização de CPF/CNPJ de forma ágil.</p>
+            <ul style='list-style-type: none; padding: 0; color:#334155;'>
                 <li>✅ Sistema fácil e intuitivo</li>
                 <li>✅ Acompanhamento em tempo real</li>
                 <li>✅ Suporte dedicado via WhatsApp</li>
@@ -1027,20 +1142,8 @@ def tela_principal():
         with st.expander("5. Anexar Comprovante (OBRIGATÓRIO)"): st.write("O envio do comprovante ao Suporte garante a agilidade no processamento.")
         with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
-        st.subheader("Status Possíveis")
-        st.markdown("""
-        <div class="status-row"><span class="status-badge" style="background:#475569;">Pendente</span> Nome cadastrado, aguardando envio da lista.</div>
-        <div class="status-row"><span class="status-badge" style="background:#3b82f6;">Enviado</span> Lista enviada, aguardando pagamento.</div>
-        <div class="status-row"><span class="status-badge" style="background:#eab308;">Aguardando Pagamento</span> Comprovante em análise.</div>
-        <div class="status-row"><span class="status-badge" style="background:#10b981;">Pago</span> Pagamento confirmado, entrará em processamento.</div>
-        <div class="status-row"><span class="status-badge" style="background:#ef4444;">Reprovado</span> Problema com pagamento, verifique.</div>
-        <div class="status-row"><span class="status-badge" style="background:#f97316;">Aguardando Protocolo</span> Nome sendo preparado.</div>
-        <div class="status-row"><span class="status-badge" style="background:#8b5cf6;">Protocolado</span> Nome protocolado, em processamento.</div>
-        <div class="status-row"><span class="status-badge" style="background:#22c55e;">Baixado</span> Processo finalizado com sucesso!</div>
-        """, unsafe_allow_html=True)
-
     # -----------------------------------------
-    # 📋 MINHAS LISTAS
+    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
@@ -1088,12 +1191,12 @@ def tela_principal():
     # -----------------------------------------
     elif menu_selecionado == "💲 Financeiro":
         st.header("Financeiro")
-        st.markdown("<p style='color: #94a3b8;'>Minhas listas enviadas e valores (Aguardando processamento de pagamentos)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #64748b;'>Minhas listas enviadas e valores (Aguardando processamento de pagamentos)</p>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
-        c1.markdown("<div class='metric-card'><div class='metric-title'>Total Enviado 💲</div><div class='metric-value'>R$ 0,00</div></div>", unsafe_allow_html=True)
+        c1.markdown("<div class='metric-card'><div class='metric-title'>Total Enviado 💲</div><div class='metric-value' style='color:#0f172a;'>R$ 0,00</div></div>", unsafe_allow_html=True)
         c2.markdown("<div class='metric-card'><div class='metric-title'>Aprovados ✅</div><div class='metric-value'>R$ 0,00</div></div>", unsafe_allow_html=True)
         c3.markdown("<div class='metric-card'><div class='metric-title'>Pendentes ⏳</div><div class='metric-value' style='color:#f59e0b;'>R$ 0,00</div></div>", unsafe_allow_html=True)
-        c4.markdown("<div class='metric-card'><div class='metric-title'>Nomes Processados 📈</div><div class='metric-value' style='color:#ffffff;'>0</div></div>", unsafe_allow_html=True)
+        c4.markdown("<div class='metric-card'><div class='metric-title'>Nomes Processados 📈</div><div class='metric-value' style='color:#3b82f6;'>0</div></div>", unsafe_allow_html=True)
 
     # -----------------------------------------
     # ⚠️ RECLAME AQUI
@@ -1104,7 +1207,7 @@ def tela_principal():
             st.selectbox("Motivo da Solicitação", ["Lista concluiu e o nome não baixou", "Ação não aparece em Minhas Listas", "Dúvida sobre andamento", "Outro (Descreva na observação)"])
             st.selectbox("Selecione a Lista (Nº Processo)", ["Selecione...", "AÇÃO 11011", "AÇÃO 11012", "Não sei informar"])
             st.text_area("Observação (opcional)")
-            if st.form_submit_button("🚀 Enviar Solicitação"): st.success("Recebido pela equipe JP Soluções!")
+            if st.form_submit_button("🚀 Enviar Solicitação", type="primary"): st.success("Recebido pela equipe JP Soluções!")
 
     # -----------------------------------------
     # 📊 ORÇAMENTO
@@ -1114,24 +1217,24 @@ def tela_principal():
         st.write("Use a calculadora inteligente e a projeção de ganhos para planejar seu orçamento.")
         col_calc, col_proj = st.columns(2)
         with col_calc:
-            st.markdown("<div style='background-color:#1e293b; padding:20px; border-radius:10px; height: 100%; border: 1px solid #334155;'>", unsafe_allow_html=True)
+            st.markdown("<div style='background-color:#ffffff; padding:20px; border-radius:10px; height: 100%; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>", unsafe_allow_html=True)
             st.subheader("🧮 Calculadora de Orçamento")
             st.number_input("DÍVIDA (R$)", min_value=0.00, value=0.00, format="%.2f")
             st.selectbox("PROCESSO", ["R$ 250,00", "R$ 600,00", "R$ 1.200,00", "R$ 2.000,00"])
             st.markdown("</div>", unsafe_allow_html=True)
         with col_proj:
-            st.markdown("<div style='background-color:#1e293b; padding:20px; border-radius:10px; height: 100%; border: 1px solid #334155;'>", unsafe_allow_html=True)
+            st.markdown("<div style='background-color:#ffffff; padding:20px; border-radius:10px; height: 100%; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>", unsafe_allow_html=True)
             st.subheader("📈 Projeção de Ganhos")
             st.text_input("META MENSAL (R$)", value="10.000,00")
             projecoes = [("R$ 1.000 a R$ 3.000", "R$ 750,00 -> 14 contratos"), ("R$ 3.001 a R$ 5.000", "R$ 1.400,00 -> 8 contratos"), ("R$ 5.001 a R$ 10.000", "R$ 1.700,00 -> 6 contratos"), ("R$ 10.001 a R$ 20.000", "R$ 2.000,00 -> 5 contratos"), ("R$ 20.001 a R$ 30.000", "R$ 2.500,00 -> 4 contratos"), ("R$ 30.001 a R$ 50.000", "R$ 3.000,00 -> 4 contratos")]
-            for p1, p2 in projecoes: st.markdown(f"<div style='border: 1px solid #334155; padding: 10px 15px; border-radius: 20px; margin-bottom: 8px; display: flex; justify-content: space-between;'><span>{p1}</span><span style='color: #10b981; font-weight: bold;'>{p2}</span></div>", unsafe_allow_html=True)
+            for p1, p2 in projecoes: st.markdown(f"<div style='border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 20px; margin-bottom: 8px; display: flex; justify-content: space-between; background: #f8fafc;'><span style='color:#334155;'>{p1}</span><span style='color: #10b981; font-weight: bold;'>{p2}</span></div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<div style='background-color:#1e293b; padding:30px; border-radius:10px; border: 1px solid #334155;'>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color:#ffffff; padding:30px; border-radius:10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>", unsafe_allow_html=True)
         st.subheader("📄 Gerar Orçamento em PDF")
         c_cor, c_logo = st.columns([2, 1])
-        cor_selecionada = c_cor.color_picker("COR DO CARD", "#1e3a8a")
+        cor_selecionada = c_cor.color_picker("COR DO CARD", "#137077")
         c_logo.file_uploader("LOGO DA EMPRESA", type=['png', 'jpg'])
         c_cli1, c_cli2 = st.columns(2)
         nome_cliente_orc = c_cli1.text_input("NOME DO CLIENTE", placeholder="Ex: João da Silva")
@@ -1151,6 +1254,44 @@ def tela_principal():
         if st.button("📥 Gerar Orçamento em PDF", use_container_width=True, type="primary"):
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("<p style='color: #64748b;'>Pré-visualização</p>", unsafe_allow_html=True)
+        nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
+        st.markdown(f"""
+            <div class="pdf-preview">
+                <h1 style="color: {cor_selecionada}; text-align: right; border-bottom: 2px solid {cor_selecionada}; padding-bottom: 10px;">RECUPERE SEU CRÉDITO</h1>
+                <div style="display:flex; justify-content: space-between; margin-top: 20px;">
+                    <div><b>Orçamento para:</b><br>{nome_exibir}</div>
+                    <div style="text-align: right;"><b>Nº:</b> {num_orc}<br><b>Data:</b> {data_orc.strftime('%d/%m/%Y')}</div>
+                </div>
+                <table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
+                    <tr style="background-color: {cor_selecionada}; color: white;">
+                        <th style="padding: 10px; text-align: left;">Nº</th>
+                        <th style="padding: 10px; text-align: left;">Descrição</th>
+                        <th style="padding: 10px; text-align: right;">Preço</th>
+                        <th style="padding: 10px; text-align: center;">Qtd</th>
+                        <th style="padding: 10px; text-align: right;">Total</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px; color: black;">1</td>
+                        <td style="padding: 10px; color: black;">{desc_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {preco_orc:,.2f}</td>
+                        <td style="padding: 10px; text-align: center; color: black;">{qtd_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {(preco_orc * qtd_orc):,.2f}</td>
+                    </tr>
+                </table>
+                <div style="text-align: right; margin-top: 20px; color: black;">
+                    Subtotal: R$ {(preco_orc * qtd_orc):,.2f}<br>
+                    <div style="background-color: {cor_selecionada}; color: white; display: inline-block; padding: 10px 20px; margin-top: 10px; border-radius: 5px;">
+                        <b>Total: R$ {(preco_orc * qtd_orc):,.2f}</b>
+                    </div>
+                </div>
+                <div style="margin-top: 40px; font-size: 12px; color: #666;">
+                    <b>Termos e Condições</b><br>{termos_orc}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -1219,13 +1360,13 @@ def tela_principal():
         
         st.markdown(f"""
             <div class='checkout-box'>
-                <h3>Resumo do Pedido de Diagnóstico</h3>
+                <h3 style='color: #10b981; margin-top:0;'>Resumo do Pedido de Diagnóstico</h3>
                 <p>Consultas Marcadas: <b>{texto_diags_banco}</b></p>
                 <p>Taxa Total (Seu Custo): <b style='font-size: 24px; color: #10b981;'>R$ {total_diag:,.2f}</b></p>
             </div>
         """, unsafe_allow_html=True)
         
-        if st.button("✅ Confirmar Pedido e Gerar PIX", use_container_width=True):
+        if st.button("✅ Confirmar Pedido e Gerar PIX", type="primary", use_container_width=True):
             if total_diag == 0:
                 st.warning("⚠️ Marque pelo menos uma consulta.")
             else:
@@ -1245,7 +1386,7 @@ def tela_principal():
     elif menu_selecionado == "📑 Meus Diagnósticos":
         st.header("🩺 Meus Diagnósticos")
         st.write("Visualize o histórico dos relatórios solicitados e faça o download.")
-        st.markdown("<div style='background-color:#1e293b; padding:25px; border-radius:10px; border: 1px solid #334155;'>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color:#ffffff; padding:25px; border-radius:10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>", unsafe_allow_html=True)
         c1, c2, c3 = st.columns([3, 1, 1])
         c1.markdown("<h4>Histórico</h4>", unsafe_allow_html=True)
         c2.selectbox("Todos os pagamentos", ["Todos os pagamentos", "Pendente", "Pago", "Cancelado"], label_visibility="collapsed")
@@ -1326,7 +1467,7 @@ def tela_principal():
             n_par_reprot = cr2.number_input("Reprotocolo Parceiro (R$)", value=float(st.session_state['precos']['parceiro']['reprotocolo']))
             n_garantia = cr3.number_input("Prazo de Garantia (Dias)", min_value=0, value=int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30)))
 
-            if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
+            if st.button("💾 Salvar Novas Tabelas de Preços", type="primary", use_container_width=True):
                 novos_precos = {
                     'cliente': {
                         'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
@@ -1381,7 +1522,7 @@ def tela_principal():
             st.markdown("### 📥 Baixar Processos e Anexos (Dossiê PDF)")
             st.write("Digite o CPF/CNPJ do cliente para compilar e baixar todos os formulários e anexos em um único PDF.")
             cpf_dossier = st.text_input("CPF ou CNPJ do Cliente", key="cpf_dossier")
-            if st.button("📄 Gerar e Baixar Dossiê Completo em PDF", use_container_width=True):
+            if st.button("📄 Gerar e Baixar Dossiê Completo em PDF", type="primary", use_container_width=True):
                 if cpf_dossier:
                     try:
                         from fpdf import FPDF
