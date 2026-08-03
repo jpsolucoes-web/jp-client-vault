@@ -79,46 +79,41 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO E BOTÃO DE MENU (FORÇA BRUTA NO CELULAR)
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA (O CÓDIGO DO COMANDANTE)
            ========================================= */
-        /* Fundo escuro para a barra superior dar contraste total */
+        
+        /* 1. Mantém a barra e o fundo firmes para não quebrar a navegação no celular */
         header[data-testid="stHeader"] { 
-            background-color: #0f172a !important; 
-            border-bottom: 1px solid #1e293b !important;
+            background-color: #f8fafc !important; 
+            border-bottom: 1px solid #e2e8f0 !important;
         }
 
-        /* HACK DE RESGATE DO MENU: Força a exibição, cor laranja e tamanho fixo */
-        [data-testid="collapsedControl"], [data-testid="collapsedControl"] button { 
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 999999 !important;
-        }
-        [data-testid="collapsedControl"] svg { 
-            color: #f59e0b !important; 
-            fill: #f59e0b !important; 
-            width: 30px !important;
-            height: 30px !important;
+        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor Azul Petróleo */
+        [data-testid="collapsedControl"] * { 
+            color: #137077 !important; 
+            fill: #137077 !important; 
         }
 
-        /* Apaga ferramentas e GitHub do lado direito sem quebrar o layout da barra */
-        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; } 
-        .viewerBadge_container, .stDeployButton { display: none !important; } 
-        #MainMenu, footer { display: none !important; } 
+        /* 3. A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
+        .viewerBadge_container { display: none !important; } /* Oculta GitHub/Logo */
+        .stDeployButton { display: none !important; } /* Oculta Botão de Deploy */
+        [data-testid="stToolbarActions"] { display: none !important; } /* Oculta os 3 pontinhos */
+        #MainMenu { display: none !important; }
+        footer { display: none !important; } /* Oculta o Rodapé */
 
         /* =========================================
-           B. TEMA CLARO PREMIUM (CONTEÚDO)
+           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO (TEMA CLARO PREMIUM)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
-        /* =========================================
-           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
-           ========================================= */
+        /* Ajuste do container - não pode sobrepor o cabeçalho */
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        
+        /* Lateral Azul Petróleo e Segura */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu de rádio clicável suave */
+        /* HACK DE UX NO MENU: Remove a bolinha e cria botões clicáveis elegantes */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 8px 12px;
             border-radius: 8px;
@@ -133,9 +128,8 @@ def injetar_css_profissional():
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
-        /* Esconde a bolinha nativa do radio no menu lateral */
         [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
-            display: none !important;
+            display: none !important; /* Esconde a bolinha do radio */
         }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
