@@ -79,32 +79,41 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO: A TÁTICA DA NÃO-INTERFERÊNCIA
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
            ========================================= */
         
-        /* 1. DEIXAR O BOTÃO ESQUERDO E A BARRA EM PAZ! 
-           Não vamos forçar cores ou posições no botão de menu (>) para não bugar a navegação no celular. */
+        /* 1. Mantém a barra e o fundo firmes para não quebrar a navegação no celular */
+        header[data-testid="stHeader"] { 
+            background-color: #0f172a !important; 
+            border-bottom: 1px solid #1e293b !important;
+        }
 
-        /* 2. OCULTAR O LADO DIREITO (Ferramentas, Deploy) SUAVEMENTE */
-        [data-testid="stToolbar"] { visibility: hidden !important; }
-        
-        /* 3. EXTERMINAR O GITHUB/FORK E RODAPÉ */
-        .viewerBadge_container { display: none !important; }
-        footer { display: none !important; }
+        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor exata */
+        [data-testid="collapsedControl"] * { 
+            color: #f59e0b !important; 
+            fill: #f59e0b !important; 
+        }
 
-        /* Fundo e cores gerais do App */
+        /* 3. A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
+        .viewerBadge_container { display: none !important; } /* Oculta GitHub/Fork/Logo */
+        .stDeployButton { display: none !important; } /* Oculta Botão de Deploy */
+        [data-testid="stToolbarActions"] { display: none !important; } /* Oculta os 3 pontinhos */
+        #MainMenu { display: none !important; }
+        footer { display: none !important; } /* Oculta o Rodapé */
+
+        /* =========================================
+           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO
+           ========================================= */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para subir o conteúdo um pouco sem quebrar a barra */
-        .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container - não pode sobrepor o cabeçalho */
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
         [data-testid="stSidebar"] * { color: #f8fafc !important; }
         
-        /* =========================================
-           B. SIMETRIA E RESPONSIVIDADE (FLEX-WRAP)
-           ========================================= */
+        /* Simetria e Responsividade (Flex-Wrap) */
         .simetria-perfeita { 
             display: flex; 
             width: 100%; 
@@ -125,12 +134,10 @@ def injetar_css_profissional():
         .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #475569; border-radius: 12px; }
         
-        /* Ajuste de Altura Dinâmica para Celular */
         @media (max-width: 768px) {
             .simetria-box { height: 250px !important; }
         }
 
-        /* Ajuste Galeria de Campanhas */
         [data-testid="stImage"] img { border-radius: 12px; }
         
         /* Textos e Caixas de Entrada */
@@ -190,7 +197,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -200,7 +207,7 @@ def tela_login():
             
         st.markdown("<h3 style='text-align: center;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
-        # ABA DE ESQUECI A SENHA INCLUÍDA AQUI
+        # ABA DE ESQUECI A SENHA INCLUÍDA
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -229,7 +236,6 @@ def tela_login():
                     except Exception as e:
                         st.error("Erro ao criar conta. Tente novamente.")
 
-        # LÓGICA DE RECUPERAÇÃO DE SENHA
         with aba_recuperar:
             with st.form("recover_form"):
                 st.markdown("Esqueceu sua senha? Digite o e-mail cadastrado para receber o link de recuperação.")
@@ -261,7 +267,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -305,7 +311,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -314,9 +320,9 @@ def tela_principal():
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
-    # =======================================================================
+    # =========================================================
     # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA NÃO DAR ERRO)
-    # =======================================================================
+    # =========================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
@@ -456,7 +462,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO ATUALIZADO)
+    # 👤 MEU PERFIL E ASSINATURA 
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Meu Perfil e Assinatura")
@@ -528,7 +534,6 @@ def tela_principal():
                     st.session_state['dados_perfil'] = dados_salvar
                     st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
 
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
@@ -742,7 +747,6 @@ def tela_principal():
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
                 
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
@@ -878,7 +882,6 @@ def tela_principal():
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
                     
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
