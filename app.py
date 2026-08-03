@@ -79,29 +79,20 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
+           A. CABEÇALHO 100% NATIVO (INTOCÁVEL)
            ========================================= */
-        header[data-testid="stHeader"] { 
-            background-color: #f8fafc !important; 
-            border-bottom: 1px solid #e2e8f0 !important;
-        }
-
-        /* Mantém o ícone do Menu (>) alinhado à esquerda na cor azul escura */
-        [data-testid="collapsedControl"] * { color: #137077 !important; fill: #137077 !important; }
-
-        /* A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
+        /* Nós NÃO vamos tocar nas cores do cabeçalho ou do botão de menu! */
+        /* Escondemos apenas a logo do GitHub e as ferramentas extras da direita suavemente */
         .viewerBadge_container { display: none !important; } 
-        .stDeployButton { display: none !important; } 
-        [data-testid="stToolbarActions"] { display: none !important; } 
-        #MainMenu { display: none !important; }
+        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; } 
         footer { display: none !important; } 
 
         /* =========================================
-           B. CORES GERAIS - TEMA CLARO PREMIUM
+           B. CORES GERAIS E CONTEÚDO (TEMA CLARO PREMIUM)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
         
-        /* Ajuste do container para subir o conteúdo um pouco sem quebrar a barra */
+        /* Ajuste do container para subir o conteúdo um pouco sem quebrar a barra nativa */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
@@ -110,7 +101,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Ajustes suaves no menu de rádio para destacar o item selecionado */
+        /* Menu de rádio clicável suave */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 5px 10px;
             border-radius: 8px;
@@ -124,16 +115,6 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
-        }
-        
-        /* Garante que o botão Sair tenha texto visível */
-        [data-testid="stSidebar"] button[kind="primary"] {
-            background: rgba(0,0,0,0.2) !important;
-            border: 1px solid rgba(255,255,255,0.2) !important;
-            color: #ffffff !important;
-        }
-        [data-testid="stSidebar"] button[kind="primary"] * {
-            color: #ffffff !important;
         }
         
         /* =========================================
@@ -352,7 +333,6 @@ def tela_principal():
 
     menu_selecionado = st.session_state['menu_navegacao']
 
-    # Redirecionamento lógico se o usuário clicar em Assinatura (que é o Perfil)
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
 
@@ -363,11 +343,11 @@ def tela_principal():
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
-            st.info("👉 Vá no menu **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
+            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
+    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO (COM SETA VISUAL UX)
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
@@ -378,7 +358,7 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (NOVO DESIGN LEVE E RELÓGIO LADO-A-LADO)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -428,7 +408,7 @@ def tela_principal():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
-        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA (DESIGN LIMPO LADO A LADO)
+        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA
         # =========================================================================
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
@@ -509,7 +489,7 @@ def tela_principal():
         components.html(clock_html, height=220)
 
         # =========================================================================
-        # LINHA 4: A GALERIA DE CAMPANHAS (CÓDIGO 100% BLINDADO CONTRA ERROS DE LOOP)
+        # LINHA 4: A GALERIA DE CAMPANHAS
         # =========================================================================
         imagens_ativas = [idx for idx in range(1, 9) if os.path.exists(f"custom_home_{idx}.png")]
         
@@ -547,7 +527,7 @@ def tela_principal():
 
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Ações Rápidas (Estilo Leve e Branco)
+        # Ações Rápidas
         st.markdown("<h4 style='color:#0f172a; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
         with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
@@ -555,12 +535,12 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE VERIFICAÇÃO INTELIGENTE)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # VERIFICAÇÃO INTELIGENTE
+        # LÓGICA DE UX E SALVAMENTO DEFINITIVO
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o restante do sistema.")
         else:
@@ -761,7 +741,6 @@ def tela_principal():
             veiculo_ano = c_vei2.text_input("Ano do Veículo")
             veiculo_valor = c_vei3.text_input("Valor do Veículo (R$)")
 
-            # SEPARAÇÃO BACEN x RATING
             if serv_bacen:
                 st.markdown("#### 🏛️ Acessos e Documentos Exclusivos (BACEN)")
                 doc_scr_bacen = st.file_uploader("Upload do Extrato SCR Completo (Últimos 5 anos)", type=['pdf'])
@@ -793,12 +772,15 @@ def tela_principal():
 
         st.markdown("---")
         st.subheader("4. Anexos e Documentação Oficial Geral")
+        
+        # UX DA CÂMERA DO CELULAR
         st.info("📱 **ESTÁ PELO CELULAR?** Clique no botão abaixo, selecione a opção **'Câmera'**, abra bem o seu documento, foque nas letras e tire a foto sem reflexo de luz. O sistema enviará direto para o nosso cofre.")
+        
         col_arq1, col_arq2 = st.columns(2)
         doc_identificacao = col_arq1.file_uploader("📸 1. Tirar Foto do RG / CNH (Aberto e Legível)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_1")
         doc_endereco = col_arq2.file_uploader("📸 2. Tirar Foto do Comprovante de Endereço", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_2")
         
-        # DIVISÃO CIRÚRGICA DE REQUISITOS 2 (BACEN RECEBE PROCURAÇÕES, RATING NÃO)
+        # SEPARAÇÃO CIRÚRGICA BACEN x RATING
         if serv_bacen:
             st.markdown("#### 🏛️ Documentação Avançada BACEN (Baixe o modelo, assine e faça o upload)")
             c_mod1, c_mod2, c_mod3 = st.columns(3)
@@ -1443,7 +1425,7 @@ def tela_principal():
             n_par_reprot = cr2.number_input("Reprotocolo Parceiro (R$)", value=float(st.session_state['precos']['parceiro']['reprotocolo']))
             n_garantia = cr3.number_input("Prazo de Garantia (Dias)", min_value=0, value=int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30)))
 
-            if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
+            if st.button("💾 Salvar Novas Tabelas de Preços", type="primary", use_container_width=True):
                 novos_precos = {
                     'cliente': {
                         'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
