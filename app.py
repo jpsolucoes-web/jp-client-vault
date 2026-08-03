@@ -79,24 +79,38 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
-           NÃO tocamos nas cores do cabeçalho ou menu para manter 100% de estabilidade no celular.
+           A. CABEÇALHO NATIVO E BOTÃO DE MENU (FORÇA BRUTA NO CELULAR)
            ========================================= */
+        /* Fundo escuro para a barra superior dar contraste total */
+        header[data-testid="stHeader"] { 
+            background-color: #0f172a !important; 
+            border-bottom: 1px solid #1e293b !important;
+        }
 
-        /* A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
-        .viewerBadge_container { display: none !important; } 
-        .stDeployButton { display: none !important; } 
+        /* HACK DE RESGATE DO MENU: Força a exibição, cor laranja e tamanho fixo */
+        [data-testid="collapsedControl"], [data-testid="collapsedControl"] button { 
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 999999 !important;
+        }
+        [data-testid="collapsedControl"] svg { 
+            color: #f59e0b !important; 
+            fill: #f59e0b !important; 
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+        /* Apaga ferramentas e GitHub do lado direito sem quebrar o layout da barra */
         [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; } 
-        #MainMenu { display: none !important; }
-        footer { display: none !important; } 
+        .viewerBadge_container, .stDeployButton { display: none !important; } 
+        #MainMenu, footer { display: none !important; } 
 
         /* =========================================
-           B. CORES GERAIS E CONTEÚDO (TEMA CLARO PREMIUM)
+           B. TEMA CLARO PREMIUM (CONTEÚDO)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        
-        /* Ajuste do container */
-        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
         /* =========================================
            C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
@@ -343,17 +357,21 @@ def tela_principal():
             
         st.write("---")
         opcoes_menu = [
-            "🏠 Home", "👤 Meu Perfil", "💼 Serviços", "📅 Eventos",
+            "🏠 Home", "💼 Serviços", "📅 Eventos",
             "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
             "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contratos para Baixar", "📄 Documentos de Apoio", 
-            "🎓 Academia Limpa Nome", "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos"
+            "📊 Orçamento", "📝 Contrato Limpa Nome", 
+            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
+            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
         ]
         if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
     menu_selecionado = st.session_state['menu_navegacao']
+
+    if menu_selecionado == "👤 Assinatura":
+        menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
     # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
@@ -362,22 +380,22 @@ def tela_principal():
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
             st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
             st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
-            st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
+            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
     # =======================================================================
-    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO (COM SETA INDICATIVA)
+    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
     # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
-            st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
+            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (NOVO DESIGN LEVE E RELÓGIO LADO-A-LADO)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -385,7 +403,7 @@ def tela_principal():
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
         if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Meu Perfil'** no menu lateral.")
+            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -427,7 +445,7 @@ def tela_principal():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
-        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA (DESIGN LIMPO LADO A LADO)
+        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA
         # =========================================================================
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
@@ -554,7 +572,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO INTELIGENTE)
+    # 👤 MEU PERFIL E ASSINATURA
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -632,7 +650,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -996,7 +1014,7 @@ def tela_principal():
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
     # -----------------------------------------
-    elif menu_selecionado == "📝 Contratos para Baixar" or menu_selecionado == "📝 Contrato Limpa Nome":
+    elif menu_selecionado == "📝 Contrato Limpa Nome":
         st.header("📝 Central de Contratos")
         if is_diretor:
             st.warning("👑 **ÁREA DO DIRETOR: Alimente o sistema com os novos modelos (.docx).**")
