@@ -119,7 +119,7 @@ def injetar_css_profissional():
             width: 100%; 
             gap: 20px; 
             margin-bottom: 20px; 
-            flex-wrap: wrap; /* O SEGREDO: Joga pro andar de baixo se não couber no Celular */
+            flex-wrap: wrap; 
         }
         .simetria-box { 
             flex: 1 1 300px; 
@@ -197,7 +197,7 @@ def ir_para_protocolo_especifico(servico):
     st.session_state['menu_navegacao'] = "🛡️ Enviar Protocolo"
 
 # ==========================================
-# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA)
+# 6. TELA DE LOGIN (COM RECUPERAÇÃO DE SENHA E SANITIZADOR)
 # ==========================================
 def tela_login():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -267,7 +267,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -311,7 +311,7 @@ def tela_principal():
     menu_selecionado = st.session_state['menu_navegacao']
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -320,11 +320,12 @@ def tela_principal():
             st.info("👉 Vá no menu **'👤 Meu Perfil'**, preencha os dados obrigatórios e clique em Salvar.")
             return
 
-    # =========================================================
-    # BOTÃO SALVA-VIDAS VOLTAR (COM ON_CLICK PARA NÃO DAR ERRO)
-    # =========================================================
+    # =======================================================================
+    # BOTÃO SALVA-VIDAS VOLTAR NO TOPO (COM SETA INDICATIVA)
+    # =======================================================================
     if menu_selecionado != "🏠 Home":
         st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
             st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
@@ -462,13 +463,16 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA 
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO INTELIGENTE)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Meu Perfil e Assinatura")
         
+        # VERIFICAÇÃO INTELIGENTE: Se já tem os dados, não obriga a salvar de novo
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o restante do sistema.")
+        else:
+            st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
 
         st.markdown("""
         <div style='background-color:#064e3b; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #fff; margin-bottom: 20px;'>
@@ -534,8 +538,10 @@ def tela_principal():
                     st.session_state['dados_perfil'] = dados_salvar
                     st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
 
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -663,6 +669,7 @@ def tela_principal():
             veiculo_ano = c_vei2.text_input("Ano do Veículo")
             veiculo_valor = c_vei3.text_input("Valor do Veículo (R$)")
 
+            # SEPARAÇÃO BACEN x RATING
             if serv_bacen:
                 st.markdown("#### 🏛️ Acessos e Documentos Exclusivos (BACEN)")
                 doc_scr_bacen = st.file_uploader("Upload do Extrato SCR Completo (Últimos 5 anos)", type=['pdf'])
@@ -694,12 +701,14 @@ def tela_principal():
 
         st.markdown("---")
         st.subheader("4. Anexos e Documentação Oficial Geral")
+        st.info("📱 **ESTÁ PELO CELULAR?** Clique no botão abaixo, selecione a opção **'Câmera'**, abra bem o seu documento, foque nas letras e tire a foto sem reflexo de luz. O sistema enviará direto para o nosso cofre.")
         col_arq1, col_arq2 = st.columns(2)
-        doc_identificacao = col_arq1.file_uploader("Upload RG / CNH / CPF (Frente e Verso)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_1")
-        doc_endereco = col_arq2.file_uploader("Comprovante de Endereço (Atualizado)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_2")
+        doc_identificacao = col_arq1.file_uploader("📸 1. Tirar Foto do RG / CNH (Aberto e Legível)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_1")
+        doc_endereco = col_arq2.file_uploader("📸 2. Tirar Foto do Comprovante de Endereço", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_2")
         
-        if serv_bacen or serv_rating:
-            st.markdown("#### Documentação Avançada (Baixe o modelo, assine e faça o upload)")
+        # DIVISÃO CIRÚRGICA DE REQUISITOS 2 (BACEN RECEBE PROCURAÇÕES, RATING NÃO)
+        if serv_bacen:
+            st.markdown("#### 🏛️ Documentação Avançada BACEN (Baixe o modelo, assine e faça o upload)")
             c_mod1, c_mod2, c_mod3 = st.columns(3)
             c_mod1.download_button("📥 Baixar Modelo Procuração", data="Doc", file_name="Procuracao_Modelo.docx")
             c_mod2.download_button("📥 Baixar Hipossuficiência", data="Doc", file_name="Declaracao_Hipo.docx")
@@ -708,7 +717,9 @@ def tela_principal():
             c_up1, c_up2 = st.columns(2)
             doc_procuracao = c_up1.file_uploader("Upload Procuração Assinada", type=['pdf', 'jpg'])
             doc_hipo = c_up2.file_uploader("Upload Declaração de Hipossuficiência", type=['pdf', 'jpg'])
-            
+        
+        if serv_rating:
+            st.markdown("#### 📈 Documentação Bancária (Rating)")
             c_up3, c_up4 = st.columns(2)
             if not serv_bacen: 
                 doc_scr_rat = c_up3.file_uploader("Relatório de Empréstimos SCR (Últimos 5 anos)", type=['pdf'])
@@ -747,8 +758,10 @@ def tela_principal():
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
                 
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
+        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V3 - GARANTIA DINÂMICA)
@@ -882,8 +895,10 @@ def tela_principal():
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
                     
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
-        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
+        st.markdown("<h4 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h4>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
