@@ -105,14 +105,14 @@ def injetar_css_profissional():
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
-           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
+           C. MENU LATERAL (TEAL/AZUL PETRÓLEO) CORRIGIDO
            ========================================= */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* HACK DE UX NO MENU: Remove a bolinha e cria botões clicáveis elegantes */
+        /* Ajustes suaves no menu de rádio para destacar o item selecionado */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
-            padding: 10px 15px;
+            padding: 5px 10px;
             border-radius: 8px;
             margin-bottom: 4px;
             transition: 0.2s background-color;
@@ -122,16 +122,18 @@ def injetar_css_profissional():
             background-color: rgba(255, 255, 255, 0.1);
         }
         [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
-            background-color: rgba(0, 0, 0, 0.15) !important;
+            background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
-            display: none !important; /* Esconde a bolinha do radio */
+        
+        /* Garante que o botão Sair tenha texto visível */
+        [data-testid="stSidebar"] button[kind="primary"] {
+            background: rgba(0,0,0,0.2) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: #ffffff !important;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] p {
-            font-size: 15px !important;
-            font-weight: 500 !important;
-            margin: 0 !important;
+        [data-testid="stSidebar"] button[kind="primary"] * {
+            color: #ffffff !important;
         }
         
         /* =========================================
@@ -330,7 +332,7 @@ def tela_principal():
             
         if is_parceiro: st.warning("🤝 MODO PARCEIRO ATIVADO")
         
-        if st.button("Sair do Sistema", use_container_width=True):
+        if st.button("Sair do Sistema", use_container_width=True, type="primary"):
             st.session_state['usuario_autenticado'] = False
             st.session_state['dados_usuario'] = None
             st.rerun()
@@ -507,33 +509,41 @@ def tela_principal():
         components.html(clock_html, height=220)
 
         # =========================================================================
-        # LINHA 4: A GALERIA DE CAMPANHAS
+        # LINHA 4: A GALERIA DE CAMPANHAS (CÓDIGO 100% BLINDADO CONTRA ERROS DE LOOP)
         # =========================================================================
-        if is_diretor or imagens_ativas:
+        imagens_ativas = [idx for idx in range(1, 9) if os.path.exists(f"custom_home_{idx}.png")]
+        
+        if is_diretor or len(imagens_ativas) > 0:
             st.markdown("<h4 style='color:#0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top:20px;'>🌟 Campanhas e Informativos</h4>", unsafe_allow_html=True)
             
             if is_diretor:
                 c1, c2, c3, c4 = st.columns(4, gap="small")
-                cols1 = [c1, c2, c3, c4]
-                for i in range(1, 5):
-                    with cols1[i-1]:
-                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                cols_top = [c1, c2, c3, c4]
+                for idx_top in range(1, 5):
+                    with cols_top[idx_top - 1]:
+                        if idx_top in imagens_ativas: 
+                            st.image(f"custom_home_{idx_top}.png", use_container_width=True)
+                        else: 
+                            st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {idx_top} Livre</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 c5, c6, c7, c8 = st.columns(4, gap="small")
-                cols2 = [c5, c6, c7, c8]
-                for i in range(5, 9):
-                    with cols2[i-5]:
-                        if i in imagens_ativas: st.image(f"custom_home_{i}.png", use_container_width=True)
-                        else: st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {i} Livre</div>", unsafe_allow_html=True)
+                cols_bot = [c5, c6, c7, c8]
+                for idx_bot in range(5, 9):
+                    with cols_bot[idx_bot - 5]:
+                        if idx_bot in imagens_ativas: 
+                            st.image(f"custom_home_{idx_bot}.png", use_container_width=True)
+                        else: 
+                            st.markdown(f"<div class='espaco-livre' style='height: 200px;'>Espaço {idx_bot} Livre</div>", unsafe_allow_html=True)
             else:
-                for row_start in range(0, len(imagens_ativas), 4):
-                    cols = st.columns(4, gap="small")
-                    for col_offset in range(4):
-                        if row_start + col_offset < len(imagens_ativas):
-                            with cols[col_offset]:
-                                st.image(f"custom_home_{imagens_ativas[row_start + col_offset]}.png", use_container_width=True)
+                if len(imagens_ativas) > 0:
+                    for row_start in range(0, len(imagens_ativas), 4):
+                        cols = st.columns(4, gap="small")
+                        for col_offset in range(4):
+                            if row_start + col_offset < len(imagens_ativas):
+                                img_idx = imagens_ativas[row_start + col_offset]
+                                with cols[col_offset]:
+                                    st.image(f"custom_home_{img_idx}.png", use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -1433,7 +1443,7 @@ def tela_principal():
             n_par_reprot = cr2.number_input("Reprotocolo Parceiro (R$)", value=float(st.session_state['precos']['parceiro']['reprotocolo']))
             n_garantia = cr3.number_input("Prazo de Garantia (Dias)", min_value=0, value=int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30)))
 
-            if st.button("💾 Salvar Novas Tabelas de Preços", type="primary", use_container_width=True):
+            if st.button("💾 Salvar Novas Tabelas de Preços", use_container_width=True):
                 novos_precos = {
                     'cliente': {
                         'limpa_nome': n_cli_limpa, 'bacen': n_cli_bacen, 'rating': n_cli_rating, 'tributario': n_cli_trib,
