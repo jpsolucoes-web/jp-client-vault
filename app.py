@@ -79,50 +79,24 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO: A TÁTICA DO FANTASMA
+           A. CABEÇALHO NATIVO: A TÁTICA DA NÃO-INTERFERÊNCIA
            ========================================= */
         
-        /* 1. A barra de fundo sempre firme e na cor certa */
-        header[data-testid="stHeader"] { 
-            background-color: #0f172a !important; 
-            border-bottom: 1px solid #1e293b !important;
-            z-index: 99999 !important;
-        }
+        /* 1. DEIXAR O BOTÃO ESQUERDO E A BARRA EM PAZ! 
+           Não vamos forçar cores ou posições no botão de menu (>) para não bugar a navegação no celular. */
 
-        /* 2. Garante que o botão de abrir/fechar o Menu (>, ☰) nunca suma */
-        [data-testid="collapsedControl"] { 
-            color: #f59e0b !important; 
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: flex !important;
-        }
-        [data-testid="collapsedControl"] svg { 
-            fill: #f59e0b !important; 
-            color: #f59e0b !important; 
-        }
-
-        /* 3. Transforma o lado direito (GitHub, Deploy) num fantasma.
-           Ele fica lá para segurar a estrutura da barra, mas é 100% invisível e intocável! */
-        [data-testid="stToolbar"] {
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
+        /* 2. OCULTAR O LADO DIREITO (Ferramentas, Deploy) SUAVEMENTE */
+        [data-testid="stToolbar"] { visibility: hidden !important; }
         
-        /* Extermina de vez a logo voadora do Streamlit Cloud */
-        .viewerBadge_container { 
-            display: none !important; 
-        }
-        
-        /* Extermina rodapé */
-        footer { 
-            display: none !important; 
-        }
+        /* 3. EXTERMINAR O GITHUB/FORK E RODAPÉ */
+        .viewerBadge_container { display: none !important; }
+        footer { display: none !important; }
 
-        /* Fundo e cores gerais */
+        /* Fundo e cores gerais do App */
         .stApp { background-color: #0d1117; color: #e2e8f0; }
         
-        /* Ajuste do container para dar espaço ao topo */
-        .block-container { padding-top: 5rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
+        /* Ajuste do container para subir o conteúdo um pouco sem quebrar a barra */
+        .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 1.5rem !important; padding-right: 1.5rem !important; max-width: 100% !important; }
         
         /* Lateral Padrão e Segura */
         [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid #1e293b; }
@@ -554,6 +528,10 @@ def tela_principal():
                     st.session_state['dados_perfil'] = dados_salvar
                     st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
 
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
+        st.markdown("---")
+        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
     # -----------------------------------------
@@ -763,6 +741,10 @@ def tela_principal():
                         st.markdown("**Código Copia e Cola:**")
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
+                
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
+        st.markdown("---")
+        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V3 - GARANTIA DINÂMICA)
@@ -895,6 +877,10 @@ def tela_principal():
                     st.code("jp.solucoes.sc.diretor@gmail.com", language="text")
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
+                    
+        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
+        st.markdown("---")
+        st.button("⬅️ VOLTAR AO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
