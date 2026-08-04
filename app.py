@@ -85,19 +85,11 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO 100% NATIVO (MENU RESGATADO NO PC E CELULAR)
+           A. CABEÇALHO NATIVO - INTOCÁVEL
+           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
-        header[data-testid="stHeader"] { 
-            background-color: #f4f7f6 !important; 
-        }
-
-        /* Colore a seta do menu ou os risquinhos em Azul Petróleo, sem mexer no layout interno do Streamlit */
-        header[data-testid="stHeader"] button * {
-            fill: #177b82 !important;
-            color: #177b82 !important;
-        }
-
-        /* Oculta estritamente o botão do GitHub e ferramentas da direita */
+        
+        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
         [data-testid="stToolbar"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
@@ -105,7 +97,7 @@ def injetar_css_profissional():
         footer { display: none !important; }
 
         /* =========================================
-           B. CORES GERAIS E CONTEÚDO (TEMA CLARO PREMIUM)
+           B. CORES GERAIS - TEMA CLARO PREMIUM
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
         .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
@@ -333,6 +325,16 @@ def tela_principal():
 
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
+
+    # =========================================================
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
+    # =========================================================
+    if not is_diretor and not st.session_state.get('perfil_preenchido', False):
+        if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
+            st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
+            st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
+            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
+            return
 
     # =======================================================================
     # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
@@ -570,7 +572,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE REDIRECIONAMENTO UX)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE REDIRECIONAMENTO UX SEGURO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -625,7 +627,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE REDIRECIONAMENTO E SALVAMENTO INTELIGENTE
+        # 🚀 AÇÃO DE SALVAMENTO BLINDADA (SEM REDIRECIONAMENTO QUE CRASHA)
         if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -662,12 +664,12 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.session_state['menu_navegacao'] = "🏠 Home"  # 🚀 FORÇA O REDIRECIONAMENTO PARA A HOME
-                    st.rerun() # Aplica o redirecionamento na hora
+                    st.success("✅ Perfil salvo com sucesso! O menu lateral foi totalmente liberado à esquerda.")
+                    st.rerun() # Isso apenas recarrega a página atual para liberar o menu magicamente na frente do cliente sem causar erro.
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.session_state['menu_navegacao'] = "🏠 Home"  # 🚀 FORÇA O REDIRECIONAMENTO PARA A HOME
+                    st.success("✅ Perfil salvo temporariamente! O menu lateral foi liberado.")
                     st.rerun()
 
     # -----------------------------------------
@@ -884,6 +886,11 @@ def tela_principal():
                         st.markdown("**Código Copia e Cola:**")
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
+                
+        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
+        st.markdown("---")
+        st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO
@@ -1009,6 +1016,11 @@ def tela_principal():
                     st.code("jp.solucoes.sc.diretor@gmail.com", language="text")
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
+                    
+        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
+        st.markdown("---")
+        st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h5>", unsafe_allow_html=True)
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
