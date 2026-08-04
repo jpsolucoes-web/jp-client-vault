@@ -85,18 +85,16 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - INTOCÁVEL E BLINDADO
+           A. CABEÇALHO NATIVO - INTOCÁVEL
+           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
         
-        /* Oculta APENAS as ferramentas extras da direita (GitHub/Deploy) de forma cirúrgica */
+        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
         [data-testid="stToolbarActions"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
         footer { display: none !important; }
-
-        /* Garante que o botão de abrir/fechar o menu fique na cor do tema (Azul Petróleo) */
-        [data-testid="collapsedControl"] * { color: #177b82 !important; fill: #177b82 !important; }
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
@@ -110,7 +108,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu de rádio clicável suave (TEXTO GARANTIDO) */
+        /* Menu de rádio clicável suave (TEXTO GARANTIDO E VISÍVEL) */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 8px 12px;
             border-radius: 8px;
@@ -129,8 +127,9 @@ def injetar_css_profissional():
             font-size: 15px !important;
             font-weight: 500 !important;
             margin: 0 !important;
+            color: #ffffff !important;
+            visibility: visible !important;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         
         [data-testid="stSidebar"] button[kind="primary"] {
             background: rgba(0,0,0,0.2) !important;
@@ -279,8 +278,7 @@ def tela_principal():
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
-            email_busca = email_logado.strip().lower()
-            res_perf = supabase.table("perfis_clientes").select("*").eq("email", email_busca).execute()
+            res_perf = supabase.table("perfis_clientes").select("*").eq("email", email_logado).execute()
             if res_perf.data and res_perf.data[0].get('cpf_cnpj'):
                 st.session_state['perfil_preenchido'] = True
                 st.session_state['dados_perfil'] = res_perf.data[0]
@@ -307,7 +305,7 @@ def tela_principal():
             
         st.write("---")
         
-        # 🚀 AQUI O MENU APARECE 100% INTEIRO SEMPRE, GARANTINDO O VISUAL DO PC E CELULAR!
+        # 🚀 O MENU SEMPRE MOSTRARÁ TODAS AS OPÇÕES (Sem sumir)
         opcoes_menu = [
             "🏠 Home", "💼 Serviços", "📅 Eventos",
             "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
@@ -326,7 +324,7 @@ def tela_principal():
         menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES SEM PERFIL
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES (Navegação Protegida)
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -347,12 +345,11 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM CARROSSEL E SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -364,63 +361,28 @@ def tela_principal():
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
-        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para acessar os serviços restritos do menu lateral, você precisa preencher os dados na aba **'👤 Assinatura'**.")
-
+        # =========================================================================
+        # LINHA 1: Imagens do Topo
+        # =========================================================================
         def img_to_base64(filepath):
             if os.path.exists(filepath):
                 with open(filepath, "rb") as f: return base64.b64encode(f.read()).decode()
             return ""
 
-        # =========================================================================
-        # LINHA 1: CARROSSEL DE IMAGENS DO TOPO
-        # =========================================================================
-        def render_carousel(image_paths, default_img_path):
-            valid_imgs = [img_to_base64(p) for p in image_paths if os.path.exists(p)]
-            if not valid_imgs and default_img_path:
-                valid_imgs = [img_to_base64(default_img_path)]
-                
-            if not valid_imgs or not valid_imgs[0]:
-                return "<div class='espaco-livre'>Área de Imagem Livre</div>"
-            
-            if len(valid_imgs) == 1:
-                return f"<img src='data:image/png;base64,{valid_imgs[0]}' style='width:100%; height:380px; object-fit:cover; border-radius:12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>"
-            
-            num_imgs = len(valid_imgs)
-            width_pct = num_imgs * 100
-            img_width = 100 / num_imgs
-            
-            if num_imgs == 2:
-                anim_rule = "0%, 45% { transform: translateX(0%); } 50%, 95% { transform: translateX(-50%); } 100% { transform: translateX(0%); }"
-            elif num_imgs == 3:
-                anim_rule = "0%, 28% { transform: translateX(0%); } 33%, 61% { transform: translateX(-33.333%); } 66%, 95% { transform: translateX(-66.666%); } 100% { transform: translateX(0%); }"
-                
-            slides_html = "".join([f"<img src='data:image/png;base64,{img}' style='width:{img_width}%; height:100%; object-fit:cover;'>" for img in valid_imgs])
-            
-            car_html = f"""
-            <style>
-                .slider-wrapper-{num_imgs} {{ width: 100%; height: 380px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); position: relative; }}
-                .slider-track-{num_imgs} {{ display: flex; width: {width_pct}%; height: 100%; animation: slideAnim{num_imgs} {num_imgs*4}s infinite; }}
-                @keyframes slideAnim{num_imgs} {{ {anim_rule} }}
-            </style>
-            <div class="slider-wrapper-{num_imgs}">
-                <div class="slider-track-{num_imgs}">
-                    {slides_html}
-                </div>
+        img_t1 = img_to_base64("custom_topo_1.png") or img_to_base64("valortecpflimpo.png")
+        img_t2 = img_to_base64("custom_topo_2.png") or img_to_base64("RECONSTRUIR.png")
+        
+        html_linha1 = f"""
+        <div class="simetria-perfeita">
+            <div class="simetria-box">
+                {f'<img src="data:image/png;base64,{img_t1}">' if img_t1 else '<div class="espaco-livre">Topo Esquerda (Upload no Admin)</div>'}
             </div>
-            """
-            return car_html
-
-        col_carr1, col_carr2 = st.columns(2)
-        with col_carr1:
-            imgs_esq = ["custom_esq_1.png", "custom_esq_2.png", "custom_esq_3.png"]
-            st.markdown(render_carousel(imgs_esq, "valortecpflimpo.png"), unsafe_allow_html=True)
-            
-        with col_carr2:
-            imgs_dir = ["custom_dir_1.png", "custom_dir_2.png", "custom_dir_3.png"]
-            st.markdown(render_carousel(imgs_dir, "RECONSTRUIR.png"), unsafe_allow_html=True)
-            
-        st.markdown("<br>", unsafe_allow_html=True)
+            <div class="simetria-box">
+                {f'<img src="data:image/png;base64,{img_t2}">' if img_t2 else '<div class="espaco-livre">Topo Direita (Upload no Admin)</div>'}
+            </div>
+        </div>
+        """
+        st.markdown(html_linha1, unsafe_allow_html=True)
 
         # =========================================================================
         # LINHA 2: Imagem do Meio e Vídeo
@@ -571,12 +533,11 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (UX LIMPA SEM BUG DE REDIRECIONAMENTO)
+    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO GIGANTE FINAL PARA A HOME)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # AVISO INICIAL OU SUCESSO GIGANTE APÓS SALVAR
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
@@ -634,7 +595,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO SEGURA (Sem tela vermelha no celular)
+        # 🚀 AÇÃO DE SALVAMENTO SEGURA E MACIA
         if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -1594,7 +1555,7 @@ def tela_principal():
             st.markdown("---")
             c_m1, c_m2 = st.columns(2)
             up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda (Banner Fixo)", type=['png', 'jpg', 'jpeg'])
-            up_vid = c_m2.file_uploader("Upload Ví Principal (Banner Fixo)", type=['mp4', 'mov'])
+            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Banner Fixo)", type=['mp4', 'mov'])
             
             st.markdown("#### Galeria de Campanhas Extra (Até 8 Imagens)")
             c_up1, c_up2, c_up3, c_up4 = st.columns(4)
