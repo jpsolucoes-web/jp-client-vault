@@ -352,6 +352,7 @@ def tela_principal():
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
+        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -567,16 +568,16 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA 
+    # 👤 MEU PERFIL E ASSINATURA (REDIRECIONAMENTO FORÇADO E SEGURO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # O AVISO NO TOPO
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
-            st.success("✅ Seu perfil está completo e salvo! O menu lateral está liberado.")
+            st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
+            st.button("➡️ IR PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
 
         st.markdown("""
         <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
@@ -623,8 +624,8 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO LISO (Sem tela vermelha)
-        if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
+        # 🚀 AÇÃO DE SALVAMENTO E REDIRECIONAMENTO AUTOMÁTICO
+        if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
             else:
@@ -660,22 +661,17 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.rerun() 
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME E ABERTURA DO MENU
+                    st.session_state['menu_navegacao'] = "🏠 Home"
+                    st.rerun()
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME (Caso caia no bloco de segurança)
+                    st.session_state['menu_navegacao'] = "🏠 Home"
                     st.rerun()
-
-        # 🚀 A PLACA GIGANTE QUE APARECE NO FINAL DA TELA ASSIM QUE SALVA
-        if st.session_state.get('perfil_preenchido', False):
-            st.markdown("""
-                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
-                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.button("🚀 ENTRAR NO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_ir_home_gigante")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -1610,6 +1606,7 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
+                # Salvando Carrossel Esquerda
                 if up_top_e1:
                     with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
                 if up_top_e2:
@@ -1617,6 +1614,7 @@ def tela_principal():
                 if up_top_e3:
                     with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
                     
+                # Salvando Carrossel Direita
                 if up_top_d1:
                     with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
                 if up_top_d2:
@@ -1624,6 +1622,7 @@ def tela_principal():
                 if up_top_d3:
                     with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
                     
+                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
