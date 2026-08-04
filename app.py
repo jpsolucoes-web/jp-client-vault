@@ -4,6 +4,7 @@ from supabase import create_client, Client
 import datetime
 import os
 import base64
+import random
 import streamlit.components.v1 as components
 
 # ==========================================
@@ -23,11 +24,16 @@ def init_connection():
 supabase: Client = init_connection()
 
 # ==========================================
-# 3. LEITURA BLINDADA DE PARÂMETROS E INICIALIZAÇÃO
+# 3. LEITURA BLINDADA DE PARÂMETROS E AFILIADOS
 # ==========================================
 try:
     tipo_acesso = st.query_params.get("tipo")
     is_parceiro = (tipo_acesso == "parceiro")
+    
+    # 🕵️ CAPTURA O LINK DE INDICAÇÃO INVISÍVEL
+    ref_code = st.query_params.get("ref")
+    if ref_code and 'ref_codigo_afiliado' not in st.session_state:
+        st.session_state['ref_codigo_afiliado'] = ref_code
 except Exception:
     is_parceiro = False
 
@@ -86,8 +92,21 @@ def injetar_css_profissional():
             border-bottom: 1px solid #1e293b !important;
         }
 
-        /* Mantém o ícone do Menu (>) alinhado à esquerda na cor Laranja */
-        [data-testid="collapsedControl"] * { color: #f59e0b !important; fill: #f59e0b !important; }
+        /* 🚀 HACK DE RESGATE DO MENU NO PC E CELULAR (O botão Laranja >) */
+        [data-testid="collapsedControl"], [data-testid="stSidebarCollapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 999999 !important;
+        }
+        [data-testid="collapsedControl"] *, [data-testid="stSidebarCollapsedControl"] * {
+            color: #f59e0b !important; 
+            fill: #f59e0b !important; 
+        }
+        [data-testid="collapsedControl"] svg, [data-testid="stSidebarCollapsedControl"] svg {
+            width: 30px !important;
+            height: 30px !important;
+        }
 
         /* Oculta apenas as ferramentas extras da direita suavemente */
         .viewerBadge_container { display: none !important; } 
@@ -95,22 +114,23 @@ def injetar_css_profissional():
         [data-testid="stToolbarActions"] { display: none !important; } 
         #MainMenu { display: none !important; }
         footer { display: none !important; } 
+        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; }
 
         /* =========================================
-           B. CORES GERAIS - TEMA CLARO PREMIUM (CORPO DA PÁGINA)
+           B. CORES GERAIS - TEMA CLARO PREMIUM
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
-           C. MENU LATERAL (TEAL/AZUL PETRÓLEO) - TEXTO 100% VISÍVEL
+           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
            ========================================= */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu Lateral Estilizado - Textos garantidos de aparecer */
+        /* Menu de rádio clicável suave */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
-            padding: 8px 10px;
+            padding: 8px 12px;
             border-radius: 8px;
             margin-bottom: 4px;
             transition: 0.2s background-color;
@@ -123,74 +143,40 @@ def injetar_css_profissional():
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
+        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
             font-weight: 500 !important;
             margin: 0 !important;
         }
         
-        /* Garante que o botão Sair tenha texto visível */
         [data-testid="stSidebar"] button[kind="primary"] {
             background: rgba(0,0,0,0.2) !important;
             border: 1px solid rgba(255,255,255,0.2) !important;
             color: #ffffff !important;
         }
-        [data-testid="stSidebar"] button[kind="primary"] * {
-            color: #ffffff !important;
-        }
+        [data-testid="stSidebar"] button[kind="primary"] * { color: #ffffff !important; }
         
         /* =========================================
-           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
+           D. TEXTOS E CAIXAS
            ========================================= */
         h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
-        
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { 
-            background-color: #ffffff !important; 
-            color: #0f172a !important; 
-            border: 1px solid #cbd5e1 !important; 
-            border-radius: 8px !important; 
+            background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; 
         }
         .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus, .stDateInput>div>div>input:focus { border-color: #177b82 !important; box-shadow: 0 0 5px rgba(23,123,130,0.5) !important; }
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
         /* =========================================
-           E. BOTÕES PROFISSIONAIS (PRIMÁRIO E SECUNDÁRIO)
+           E. BOTÕES E CARDS
            ========================================= */
-        /* Botão Primário (Enviar, Salvar) */
-        button[kind="primary"] {
-            background: linear-gradient(90deg, #177b82 0%, #0d5257 100%) !important;
-            color: white !important;
-            font-weight: bold !important;
-            border: none !important;
-            border-radius: 8px !important;
-            padding: 10px 20px !important;
-            transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(13, 82, 87, 0.2) !important;
-        }
+        button[kind="primary"] { background: linear-gradient(90deg, #177b82 0%, #0d5257 100%) !important; color: white !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; box-shadow: 0 4px 10px rgba(13, 82, 87, 0.2) !important; }
         button[kind="primary"]:hover { transform: scale(1.02); }
-        
-        /* Botão Secundário (Ações Rápidas, Voltar) */
-        button[kind="secondary"] {
-            background-color: #ffffff !important;
-            color: #334155 !important;
-            font-weight: 600 !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 10px !important;
-            padding: 15px 20px !important;
-            transition: 0.3s;
-            width: 100%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
-        }
-        button[kind="secondary"]:hover {
-            border-color: #10b981 !important;
-            color: #10b981 !important;
-            box-shadow: 0 4px 10px rgba(16,185,129,0.1) !important;
-        }
-        
+        button[kind="secondary"] { background-color: #ffffff !important; color: #334155 !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 15px 20px !important; transition: 0.3s; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; }
+        button[kind="secondary"]:hover { border-color: #10b981 !important; color: #10b981 !important; box-shadow: 0 4px 10px rgba(16,185,129,0.1) !important; }
         hr { border-color: #e2e8f0; }
         
-        /* Cards Brancos nas páginas internas */
         .dashboard-card { background-color: #ffffff; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); height: 100%; }
         .checkout-box { background-color: #f1f5f9; border-left: 5px solid #10b981; padding: 20px; border-radius: 8px; margin-top: 20px; }
         .card-servico { background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -199,17 +185,14 @@ def injetar_css_profissional():
         .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Simetria das Imagens Superiores */
         .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
         .simetria-box { flex: 1 1 300px; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); background-color: #ffffff; border: 1px solid #e2e8f0; }
         .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
         .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; }
-        
         @media (max-width: 768px) { .simetria-box { height: 250px !important; } }
         [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
 
-        /* WhatsApp e Outros */
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.3); z-index: 99999; transition: all 0.3s ease; }
         .whatsapp-float svg { width: 35px; height: 35px; }
         .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
@@ -252,7 +235,6 @@ def tela_login():
             
         st.markdown("<h3 style='text-align: center; color: #0f172a;'>Portal do Cliente</h3>", unsafe_allow_html=True)
         
-        # ABA DE ESQUECI A SENHA INCLUÍDA
         aba_login, aba_cadastro, aba_recuperar = st.tabs(["🔐 Já tenho conta", "📝 Criar nova conta", "🔑 Esqueci a Senha"])
         
         with aba_login:
@@ -342,15 +324,21 @@ def tela_principal():
             st.rerun()
             
         st.write("---")
-        opcoes_menu = [
-            "🏠 Home", "💼 Serviços", "📅 Eventos",
-            "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
-            "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contrato Limpa Nome", 
-            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
-            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
-        ]
-        if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
+        
+        # 🚀 A TRAVA DO COFRE NO MENU LATERAL
+        if not is_diretor and not st.session_state.get('perfil_preenchido', False):
+            opcoes_menu = ["👤 Assinatura"]
+            st.markdown("<div style='padding: 10px; background-color: #fef08a; color: #b45309; border-radius: 8px; margin-bottom: 10px; font-weight: bold;'>⚠️ Preencha seus dados para liberar o acesso ao sistema.</div>", unsafe_allow_html=True)
+        else:
+            opcoes_menu = [
+                "🏠 Home", "💼 Serviços", "📅 Eventos",
+                "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
+                "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
+                "📊 Orçamento", "📝 Contrato Limpa Nome", 
+                "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
+                "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
+            ]
+            if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
@@ -372,7 +360,7 @@ def tela_principal():
     # =======================================================================
     # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
     # =======================================================================
-    if menu_selecionado != "🏠 Home":
+    if menu_selecionado != "🏠 Home" and menu_selecionado != "👤 Meu Perfil":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
@@ -381,12 +369,12 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM SAUDAÇÃO INTELIGENTE PELO FUSO)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # RELÓGIO INTELIGENTE: Puxa o fuso de Brasília (GMT-3) garantido
+        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -397,9 +385,6 @@ def tela_principal():
             
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
-
-        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -568,14 +553,13 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE AFILIADO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # VERIFICAÇÃO INTELIGENTE
         if not st.session_state.get('perfil_preenchido', False):
-            st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o restante do sistema.")
+            st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
             st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
 
@@ -589,6 +573,20 @@ def tela_principal():
         
         dp = st.session_state.get('dados_perfil', {})
         
+        # 🔗 SEÇÃO DO LINK DE INDICAÇÃO (Visível apenas após salvar o perfil)
+        if st.session_state.get('perfil_preenchido', False):
+            meu_codigo = dp.get("codigo_afiliado", "")
+            if meu_codigo:
+                link_afiliado = f"https://seusite.com.br/?ref={meu_codigo}" # Trocar pela URL real do seu sistema
+                st.markdown(f"""
+                <div style='background-color:#e0f2fe; border: 1px solid #0284c7; padding: 20px; border-radius: 10px; color: #075985; margin-bottom: 20px;'>
+                    <h4 style='margin-top:0; color:#0284c7;'>🤝 Seu Link Exclusivo de Indicação</h4>
+                    <p style='margin-bottom:10px; font-size: 15px;'>Compartilhe este link com seus clientes e parceiros. Todas as vendas feitas por ele aparecerão na sua rede!</p>
+                </div>
+                """, unsafe_allow_html=True)
+                st.code(link_afiliado, language="text")
+                st.markdown("<br>", unsafe_allow_html=True)
+
         st.subheader("Informações Básicas")
         nome_exibicao = st.text_input("Nome Completo ou Nome de Exibição (Obrigatório)", value=dp.get("nome_exibicao", ""))
         empresa = st.text_input("Empresa", placeholder="Nome da empresa (opcional)", value=dp.get("empresa", ""))
@@ -628,6 +626,16 @@ def tela_principal():
                     "cidade": cidade
                 }
                 
+                # ⚙️ GERAÇÃO DO CÓDIGO DE AFILIADO SE NÃO EXISTIR
+                if not dp.get('codigo_afiliado'):
+                    primeiro_nome = nome_exibicao.split()[0].upper().replace(" ", "")
+                    codigo_novo = f"{primeiro_nome}-{random.randint(1000, 9999)}"
+                    dados_salvar["codigo_afiliado"] = codigo_novo
+                    dados_salvar["indicado_por"] = st.session_state.get('ref_codigo_afiliado', '')
+                else:
+                    dados_salvar["codigo_afiliado"] = dp.get('codigo_afiliado')
+                    dados_salvar["indicado_por"] = dp.get('indicado_por')
+                
                 try:
                     res_check = supabase.table("perfis_clientes").select("id").eq("user_id", st.session_state['dados_usuario'].id).execute()
                     if res_check.data:
@@ -637,16 +645,13 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo no Banco de Dados! Acesso total liberado.")
+                    st.success("✅ Perfil salvo com sucesso! O menu lateral foi totalmente liberado.")
+                    st.rerun()
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo na sessão atual! Acesso total liberado temporariamente.")
-
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
-        st.markdown("---")
-        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+                    st.success("✅ Perfil salvo temporariamente! O menu lateral foi liberado.")
+                    st.rerun()
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -806,14 +811,12 @@ def tela_principal():
         st.markdown("---")
         st.subheader("4. Anexos e Documentação Oficial Geral")
         
-        # UX DA CÂMERA DO CELULAR
         st.info("📱 **ESTÁ PELO CELULAR?** Clique no botão abaixo, selecione a opção **'Câmera'**, abra bem o seu documento, foque nas letras e tire a foto sem reflexo de luz. O sistema enviará direto para o nosso cofre.")
         
         col_arq1, col_arq2 = st.columns(2)
         doc_identificacao = col_arq1.file_uploader("📸 1. Tirar Foto do RG / CNH (Aberto e Legível)", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_1")
         doc_endereco = col_arq2.file_uploader("📸 2. Tirar Foto do Comprovante de Endereço", type=['png', 'jpg', 'jpeg', 'pdf'], key="doc_geral_2")
         
-        # SEPARAÇÃO CIRÚRGICA BACEN x RATING
         if serv_bacen:
             st.markdown("#### 🏛️ Documentação Avançada BACEN (Baixe o modelo, assine e faça o upload)")
             c_mod1, c_mod2, c_mod3 = st.columns(3)
@@ -864,14 +867,9 @@ def tela_principal():
                         st.markdown("**Código Copia e Cola:**")
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
-                
-        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
-        st.markdown("---")
-        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
-    # 🔄 REPROTOCOLO (MOTOR ATUALIZADO V3 - GARANTIA DINÂMICA)
+    # 🔄 REPROTOCOLO
     # -----------------------------------------
     elif menu_selecionado == "🔄 Reprotocolo":
         st.header("🔄 Área de Reprotocolo")
@@ -994,11 +992,6 @@ def tela_principal():
                     st.code("jp.solucoes.sc.diretor@gmail.com", language="text")
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
-                    
-        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
-        st.markdown("---")
-        st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
@@ -1383,7 +1376,7 @@ def tela_principal():
     # -----------------------------------------
     elif menu_selecionado == "⚙️ Painel do Diretor":
         st.header("👑 Central de Comando (Admin)")
-        aba_processos, aba_precos, aba_acesso, aba_relogio, aba_dossier, aba_vitrine = st.tabs(["📝 Vincular Processos", "💲 Tabela de Preços", "🚫 Controle de Acesso", "⏳ Relógio", "📥 Dossiê PDF", "🖼️ Vitrine Home"])
+        aba_processos, aba_precos, aba_acesso, aba_relogio, aba_dossier, aba_vitrine, aba_afiliados = st.tabs(["📝 Vincular Processos", "💲 Tabela de Preços", "🚫 Controle de Acesso", "⏳ Relógio", "📥 Dossiê PDF", "🖼️ Vitrine Home", "🌳 Rede de Afiliados"])
         
         with aba_processos:
             st.markdown("### Atualizar Dados do Processo e Birôs")
@@ -1607,6 +1600,26 @@ def tela_principal():
                     if os.path.exists(file_path):
                         os.remove(file_path)
                 st.success("Toda a vitrine foi limpa e as imagens/vídeos originais retornaram.")
+
+        with aba_afiliados:
+            st.markdown("### 🌳 Rede de Parceiros e Indicações")
+            st.write("Veja quem indicou quem dentro do sistema.")
+            try:
+                res_rede = supabase.table("perfis_clientes").select("nome_exibicao, email, whatsapp, codigo_afiliado, indicado_por").execute()
+                if res_rede.data:
+                    df_rede = pd.DataFrame(res_rede.data)
+                    df_rede = df_rede.rename(columns={
+                        "nome_exibicao": "Nome / Cliente",
+                        "email": "E-mail",
+                        "whatsapp": "WhatsApp",
+                        "codigo_afiliado": "Código Gerado",
+                        "indicado_por": "Indicado Por (Ref)"
+                    })
+                    st.dataframe(df_rede, use_container_width=True, hide_index=True)
+                else:
+                    st.info("Nenhuma rede formada ainda.")
+            except Exception as e:
+                st.error(f"Erro ao buscar rede: {e}")
 
     else:
         st.header(menu_selecionado[2:])
