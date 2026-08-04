@@ -85,29 +85,22 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
-           O CÓDIGO ORIGINAL QUE O COMANDANTE APROVOU!
+           A. CABEÇALHO NATIVO - INTOCÁVEL
+           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
-        header[data-testid="stHeader"] { 
-            background-color: #f8fafc !important; 
-            border-bottom: 1px solid #e2e8f0 !important;
-        }
-
-        /* Mantém o ícone do Menu (>) alinhado à esquerda na cor Azul Petróleo Escuro */
-        [data-testid="collapsedControl"] * { color: #137077 !important; fill: #137077 !important; }
-
-        /* A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout do menu */
-        .viewerBadge_container { display: none !important; } 
-        .stDeployButton { display: none !important; } 
-        [data-testid="stToolbarActions"] { display: none !important; } 
+        
+        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
+        [data-testid="stToolbar"] { display: none !important; }
+        .stDeployButton { display: none !important; }
+        .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
-        footer { display: none !important; } 
+        footer { display: none !important; }
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
            C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
@@ -115,7 +108,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* HACK DE UX NO MENU: Remove a bolinha e cria botões clicáveis elegantes */
+        /* Menu de rádio clicável suave (TEXTO GARANTIDO) */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 8px 12px;
             border-radius: 8px;
@@ -130,14 +123,12 @@ def injetar_css_profissional():
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
             font-weight: 500 !important;
             margin: 0 !important;
         }
         
-        /* Garante que o botão Sair tenha texto visível */
         [data-testid="stSidebar"] button[kind="primary"] {
             background: rgba(0,0,0,0.2) !important;
             border: 1px solid rgba(255,255,255,0.2) !important;
@@ -146,7 +137,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] button[kind="primary"] * { color: #ffffff !important; }
         
         /* =========================================
-           D. TEXTOS E CAIXAS DE ENTRADA
+           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
            ========================================= */
         h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
@@ -175,6 +166,7 @@ def injetar_css_profissional():
         .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
+        /* Flex-Wrap e Simetria do Carrossel */
         .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; min-height: 380px;}
         [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
@@ -281,11 +273,9 @@ def tela_principal():
 
     # =========================================================
     # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO PELA CHAVE "E-MAIL"
-    # (Garante que vai achar o perfil e não pedir toda hora)
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
-            # Busca forte pelo e-mail, resolve o problema de pedir cadastro duplo!
             res_perf = supabase.table("perfis_clientes").select("*").eq("email", email_logado).execute()
             if res_perf.data and res_perf.data[0].get('cpf_cnpj'):
                 st.session_state['perfil_preenchido'] = True
@@ -357,7 +347,7 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM CARROSSEL E SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -578,7 +568,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE REDIRECIONAMENTO UX SEGURO)
+    # 👤 MEU PERFIL E ASSINATURA (REDIRECIONAMENTO FORÇADO E SEGURO)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -587,6 +577,7 @@ def tela_principal():
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
             st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
+            st.button("➡️ IR PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
 
         st.markdown("""
         <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
@@ -633,7 +624,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO BLINDADA E REDIRECIONAMENTO SEGURO
+        # 🚀 AÇÃO DE SALVAMENTO E REDIRECIONAMENTO AUTOMÁTICO
         if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -670,12 +661,16 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo com sucesso! O menu foi liberado.")
-                    st.rerun() # Reinicia a página e aplica tudo sem dar tela vermelha
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME E ABERTURA DO MENU
+                    st.session_state['menu_navegacao'] = "🏠 Home"
+                    st.rerun()
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo temporariamente! O menu foi liberado.")
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME (Caso caia no bloco de segurança)
+                    st.session_state['menu_navegacao'] = "🏠 Home"
                     st.rerun()
 
     # -----------------------------------------
@@ -1611,6 +1606,7 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
+                # Salvando Carrossel Esquerda
                 if up_top_e1:
                     with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
                 if up_top_e2:
@@ -1618,6 +1614,7 @@ def tela_principal():
                 if up_top_e3:
                     with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
                     
+                # Salvando Carrossel Direita
                 if up_top_d1:
                     with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
                 if up_top_d2:
@@ -1625,6 +1622,7 @@ def tela_principal():
                 if up_top_d3:
                     with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
                     
+                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
