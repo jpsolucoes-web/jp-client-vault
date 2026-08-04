@@ -85,42 +85,30 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
+           A. CABEÇALHO 100% NATIVO (MENU RESGATADO NO PC E CELULAR)
            ========================================= */
         header[data-testid="stHeader"] { 
-            background-color: #0f172a !important; 
-            border-bottom: 1px solid #1e293b !important;
+            background-color: #f4f7f6 !important; 
         }
 
-        /* 🚀 HACK DE RESGATE DO MENU NO PC E CELULAR (O botão Laranja >) */
-        [data-testid="collapsedControl"], [data-testid="stSidebarCollapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 999999 !important;
-        }
-        [data-testid="collapsedControl"] *, [data-testid="stSidebarCollapsedControl"] * {
-            color: #f59e0b !important; 
-            fill: #f59e0b !important; 
-        }
-        [data-testid="collapsedControl"] svg, [data-testid="stSidebarCollapsedControl"] svg {
-            width: 30px !important;
-            height: 30px !important;
+        /* Colore a seta do menu ou os risquinhos em Azul Petróleo, sem mexer no layout interno do Streamlit */
+        header[data-testid="stHeader"] button * {
+            fill: #177b82 !important;
+            color: #177b82 !important;
         }
 
-        /* Oculta apenas as ferramentas extras da direita suavemente */
-        .viewerBadge_container { display: none !important; } 
-        .stDeployButton { display: none !important; } 
-        [data-testid="stToolbarActions"] { display: none !important; } 
+        /* Oculta estritamente o botão do GitHub e ferramentas da direita */
+        [data-testid="stToolbar"] { display: none !important; }
+        .stDeployButton { display: none !important; }
+        .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
-        footer { display: none !important; } 
-        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; }
+        footer { display: none !important; }
 
         /* =========================================
-           B. CORES GERAIS - TEMA CLARO PREMIUM
+           B. CORES GERAIS E CONTEÚDO (TEMA CLARO PREMIUM)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
            C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
@@ -158,10 +146,11 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] button[kind="primary"] * { color: #ffffff !important; }
         
         /* =========================================
-           D. TEXTOS E CAIXAS
+           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
            ========================================= */
         h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
+        
         .stTextInput>div>div>input, .stSelectbox>div>div>div, .stTextArea>div>div>textarea, .stDateInput>div>div>input { 
             background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; 
         }
@@ -169,10 +158,11 @@ def injetar_css_profissional():
         ::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
         
         /* =========================================
-           E. BOTÕES E CARDS
+           E. BOTÕES PROFISSIONAIS E CARDS
            ========================================= */
         button[kind="primary"] { background: linear-gradient(90deg, #177b82 0%, #0d5257 100%) !important; color: white !important; font-weight: bold !important; border: none !important; border-radius: 8px !important; padding: 10px 20px !important; transition: 0.3s; box-shadow: 0 4px 10px rgba(13, 82, 87, 0.2) !important; }
         button[kind="primary"]:hover { transform: scale(1.02); }
+        
         button[kind="secondary"] { background-color: #ffffff !important; color: #334155 !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 15px 20px !important; transition: 0.3s; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; }
         button[kind="secondary"]:hover { border-color: #10b981 !important; color: #10b981 !important; box-shadow: 0 4px 10px rgba(16,185,129,0.1) !important; }
         hr { border-color: #e2e8f0; }
@@ -185,12 +175,9 @@ def injetar_css_profissional():
         .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
+        /* Flex-Wrap e Simetria do Carrossel */
         .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .simetria-box { flex: 1 1 300px; height: 380px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); background-color: #ffffff; border: 1px solid #e2e8f0; }
-        .simetria-box img { width: 100%; height: 100%; object-fit: cover; }
-        .simetria-box video { width: 100%; height: 100%; object-fit: cover; }
-        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; }
-        @media (max-width: 768px) { .simetria-box { height: 250px !important; } }
+        .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; min-height: 380px;}
         [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
 
         .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: #ffffff !important; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 4px 15px rgba(0,0,0,0.3); z-index: 99999; transition: all 0.3s ease; }
@@ -347,16 +334,6 @@ def tela_principal():
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
 
-    # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
-    # =========================================================
-    if not is_diretor and not st.session_state.get('perfil_preenchido', False):
-        if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
-            st.error("⚠️ ACESSO BLOQUEADO: Preenchimento de Perfil Obrigatório.")
-            st.warning("Você precisa completar suas **Informações Básicas** antes de acessar esta área do sistema.")
-            st.info("👉 Vá no menu lateral em **'👤 Assinatura'**, preencha os dados obrigatórios e clique em Salvar.")
-            return
-
     # =======================================================================
     # BOTÃO SALVA-VIDAS VOLTAR NO TOPO
     # =======================================================================
@@ -369,7 +346,7 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE
+    # 🏠 HOME PAGE (COM CARROSSEL E SAUDAÇÃO INTELIGENTE)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -386,32 +363,72 @@ def tela_principal():
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
+        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
+            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
+
         def img_to_base64(filepath):
             if os.path.exists(filepath):
                 with open(filepath, "rb") as f: return base64.b64encode(f.read()).decode()
             return ""
 
         # =========================================================================
-        # LINHA 1: Imagens do Topo
+        # LINHA 1: CARROSSEL DE IMAGENS DO TOPO
         # =========================================================================
-        img_t1 = img_to_base64("custom_topo_1.png") or img_to_base64("valortecpflimpo.png")
-        img_t2 = img_to_base64("custom_topo_2.png") or img_to_base64("RECONSTRUIR.png")
-        
-        html_linha1 = f"""
-        <div class="simetria-perfeita">
-            <div class="simetria-box">
-                {f'<img src="data:image/png;base64,{img_t1}">' if img_t1 else '<div class="espaco-livre">Topo Esquerda (Upload no Admin)</div>'}
+        def render_carousel(image_paths, default_img_path):
+            valid_imgs = [img_to_base64(p) for p in image_paths if os.path.exists(p)]
+            if not valid_imgs and default_img_path:
+                valid_imgs = [img_to_base64(default_img_path)]
+                
+            if not valid_imgs or not valid_imgs[0]:
+                return "<div class='espaco-livre'>Área de Imagem Livre</div>"
+            
+            if len(valid_imgs) == 1:
+                return f"<img src='data:image/png;base64,{valid_imgs[0]}' style='width:100%; height:380px; object-fit:cover; border-radius:12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>"
+            
+            num_imgs = len(valid_imgs)
+            width_pct = num_imgs * 100
+            img_width = 100 / num_imgs
+            
+            if num_imgs == 2:
+                anim_rule = "0%, 45% { transform: translateX(0%); } 50%, 95% { transform: translateX(-50%); } 100% { transform: translateX(0%); }"
+            elif num_imgs == 3:
+                anim_rule = "0%, 28% { transform: translateX(0%); } 33%, 61% { transform: translateX(-33.333%); } 66%, 95% { transform: translateX(-66.666%); } 100% { transform: translateX(0%); }"
+                
+            slides_html = "".join([f"<img src='data:image/png;base64,{img}' style='width:{img_width}%; height:100%; object-fit:cover;'>" for img in valid_imgs])
+            
+            car_html = f"""
+            <style>
+                .slider-wrapper-{num_imgs} {{ width: 100%; height: 380px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); position: relative; }}
+                .slider-track-{num_imgs} {{ display: flex; width: {width_pct}%; height: 100%; animation: slideAnim{num_imgs} {num_imgs*4}s infinite; }}
+                @keyframes slideAnim{num_imgs} {{ {anim_rule} }}
+            </style>
+            <div class="slider-wrapper-{num_imgs}">
+                <div class="slider-track-{num_imgs}">
+                    {slides_html}
+                </div>
             </div>
-            <div class="simetria-box">
-                {f'<img src="data:image/png;base64,{img_t2}">' if img_t2 else '<div class="espaco-livre">Topo Direita (Upload no Admin)</div>'}
-            </div>
-        </div>
-        """
-        st.markdown(html_linha1, unsafe_allow_html=True)
+            """
+            return car_html
+
+        col_carr1, col_carr2 = st.columns(2)
+        with col_carr1:
+            imgs_esq = ["custom_esq_1.png", "custom_esq_2.png", "custom_esq_3.png"]
+            st.markdown(render_carousel(imgs_esq, "valortecpflimpo.png"), unsafe_allow_html=True)
+            
+        with col_carr2:
+            imgs_dir = ["custom_dir_1.png", "custom_dir_2.png", "custom_dir_3.png"]
+            st.markdown(render_carousel(imgs_dir, "RECONSTRUIR.png"), unsafe_allow_html=True)
+            
+        st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
         # LINHA 2: Imagem do Meio e Vídeo
         # =========================================================================
+        st.markdown("""<style>
+            div[data-testid="column"] > div { height: 100%; }
+            div[data-testid="column"] img, div[data-testid="column"] video { width: 100% !important; height: 380px !important; object-fit: cover !important; border-radius: 12px !important; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
+        </style>""", unsafe_allow_html=True)
+        
         col_m1, col_m2 = st.columns(2)
         with col_m1:
             if os.path.exists("custom_meio_1.png"): st.image("custom_meio_1.png", use_container_width=True)
@@ -553,7 +570,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE AFILIADO)
+    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE REDIRECIONAMENTO UX)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -573,11 +590,11 @@ def tela_principal():
         
         dp = st.session_state.get('dados_perfil', {})
         
-        # 🔗 SEÇÃO DO LINK DE INDICAÇÃO (Visível apenas após salvar o perfil)
+        # 🔗 SEÇÃO DO LINK DE INDICAÇÃO
         if st.session_state.get('perfil_preenchido', False):
             meu_codigo = dp.get("codigo_afiliado", "")
             if meu_codigo:
-                link_afiliado = f"https://seusite.com.br/?ref={meu_codigo}" # Trocar pela URL real do seu sistema
+                link_afiliado = f"https://seusite.com.br/?ref={meu_codigo}"
                 st.markdown(f"""
                 <div style='background-color:#e0f2fe; border: 1px solid #0284c7; padding: 20px; border-radius: 10px; color: #075985; margin-bottom: 20px;'>
                     <h4 style='margin-top:0; color:#0284c7;'>🤝 Seu Link Exclusivo de Indicação</h4>
@@ -608,6 +625,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
+        # 🚀 AÇÃO DE REDIRECIONAMENTO E SALVAMENTO INTELIGENTE
         if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -626,7 +644,6 @@ def tela_principal():
                     "cidade": cidade
                 }
                 
-                # ⚙️ GERAÇÃO DO CÓDIGO DE AFILIADO SE NÃO EXISTIR
                 if not dp.get('codigo_afiliado'):
                     primeiro_nome = nome_exibicao.split()[0].upper().replace(" ", "")
                     codigo_novo = f"{primeiro_nome}-{random.randint(1000, 9999)}"
@@ -645,12 +662,12 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo com sucesso! O menu lateral foi totalmente liberado.")
-                    st.rerun()
+                    st.session_state['menu_navegacao'] = "🏠 Home"  # 🚀 FORÇA O REDIRECIONAMENTO PARA A HOME
+                    st.rerun() # Aplica o redirecionamento na hora
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo temporariamente! O menu lateral foi liberado.")
+                    st.session_state['menu_navegacao'] = "🏠 Home"  # 🚀 FORÇA O REDIRECIONAMENTO PARA A HOME
                     st.rerun()
 
     # -----------------------------------------
@@ -1231,44 +1248,6 @@ def tela_principal():
         if st.button("📥 Gerar Orçamento em PDF", use_container_width=True, type="primary"):
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.markdown("<p style='color: #64748b;'>Pré-visualização</p>", unsafe_allow_html=True)
-        nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
-        st.markdown(f"""
-            <div class="pdf-preview">
-                <h1 style="color: {cor_selecionada}; text-align: right; border-bottom: 2px solid {cor_selecionada}; padding-bottom: 10px;">RECUPERE SEU CRÉDITO</h1>
-                <div style="display:flex; justify-content: space-between; margin-top: 20px;">
-                    <div><b>Orçamento para:</b><br>{nome_exibir}</div>
-                    <div style="text-align: right;"><b>Nº:</b> {num_orc}<br><b>Data:</b> {data_orc.strftime('%d/%m/%Y')}</div>
-                </div>
-                <table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
-                    <tr style="background-color: {cor_selecionada}; color: white;">
-                        <th style="padding: 10px; text-align: left;">Nº</th>
-                        <th style="padding: 10px; text-align: left;">Descrição</th>
-                        <th style="padding: 10px; text-align: right;">Preço</th>
-                        <th style="padding: 10px; text-align: center;">Qtd</th>
-                        <th style="padding: 10px; text-align: right;">Total</th>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #ddd;">
-                        <td style="padding: 10px; color: black;">1</td>
-                        <td style="padding: 10px; color: black;">{desc_orc}</td>
-                        <td style="padding: 10px; text-align: right; color: black;">R$ {preco_orc:,.2f}</td>
-                        <td style="padding: 10px; text-align: center; color: black;">{qtd_orc}</td>
-                        <td style="padding: 10px; text-align: right; color: black;">R$ {(preco_orc * qtd_orc):,.2f}</td>
-                    </tr>
-                </table>
-                <div style="text-align: right; margin-top: 20px; color: black;">
-                    Subtotal: R$ {(preco_orc * qtd_orc):,.2f}<br>
-                    <div style="background-color: {cor_selecionada}; color: white; display: inline-block; padding: 10px 20px; margin-top: 10px; border-radius: 5px;">
-                        <b>Total: R$ {(preco_orc * qtd_orc):,.2f}</b>
-                    </div>
-                </div>
-                <div style="margin-top: 40px; font-size: 12px; color: #666;">
-                    <b>Termos e Condições</b><br>{termos_orc}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -1541,19 +1520,28 @@ def tela_principal():
                     st.warning("Digite o CPF ou CNPJ.")
                     
         with aba_vitrine:
-            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Até 12 Mídias Dinâmicas)")
-            st.write("Faça o upload de novas imagens de campanhas ou substitua o vídeo oficial. As mudanças refletem instantaneamente para os clientes.")
+            st.markdown("### 🖼️ Gerenciador da Vitrine Home (Sistema de Carrossel Animado)")
+            st.write("Faça o upload de até 3 imagens por bloco. Elas vão deslizar automaticamente como num aplicativo real.")
             
-            st.markdown("#### 1. Mídias Principais do Topo e Meio")
             c_t1, c_t2 = st.columns(2)
-            up_top1 = c_t1.file_uploader("Upload Imagem Topo Esquerda (Substitui Valorte)", type=['png', 'jpg', 'jpeg'])
-            up_top2 = c_t2.file_uploader("Upload Imagem Topo Direita (Substitui Reconstruir)", type=['png', 'jpg', 'jpeg'])
+            with c_t1:
+                st.markdown("#### Topo Esquerda (Carrossel)")
+                up_top_e1 = st.file_uploader("Upload Imagem Esquerda 1", type=['png', 'jpg', 'jpeg'], key="ute1")
+                up_top_e2 = st.file_uploader("Upload Imagem Esquerda 2", type=['png', 'jpg', 'jpeg'], key="ute2")
+                up_top_e3 = st.file_uploader("Upload Imagem Esquerda 3", type=['png', 'jpg', 'jpeg'], key="ute3")
+                
+            with c_t2:
+                st.markdown("#### Topo Direita (Carrossel)")
+                up_top_d1 = st.file_uploader("Upload Imagem Direita 1", type=['png', 'jpg', 'jpeg'], key="utd1")
+                up_top_d2 = st.file_uploader("Upload Imagem Direita 2", type=['png', 'jpg', 'jpeg'], key="utd2")
+                up_top_d3 = st.file_uploader("Upload Imagem Direita 3", type=['png', 'jpg', 'jpeg'], key="utd3")
             
+            st.markdown("---")
             c_m1, c_m2 = st.columns(2)
-            up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda", type=['png', 'jpg', 'jpeg'])
-            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Substitui video1.mp4)", type=['mp4', 'mov'])
+            up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda (Banner Fixo)", type=['png', 'jpg', 'jpeg'])
+            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Banner Fixo)", type=['mp4', 'mov'])
             
-            st.markdown("#### 2. Galeria de Campanhas Extra (Até 8 Imagens)")
+            st.markdown("#### Galeria de Campanhas Extra (Até 8 Imagens)")
             c_up1, c_up2, c_up3, c_up4 = st.columns(4)
             img1 = c_up1.file_uploader("Upload Imagem Extra 1", type=['png', 'jpg', 'jpeg'])
             img2 = c_up2.file_uploader("Upload Imagem Extra 2", type=['png', 'jpg', 'jpeg'])
@@ -1566,11 +1554,24 @@ def tela_principal():
             img7 = c_up7.file_uploader("Upload Imagem Extra 7", type=['png', 'jpg', 'jpeg'])
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
-            if st.button("💾 Salvar/Atualizar Todas as Mídias na Home", type="primary", use_container_width=True):
-                if up_top1:
-                    with open("custom_topo_1.png", "wb") as f: f.write(up_top1.getbuffer())
-                if up_top2:
-                    with open("custom_topo_2.png", "wb") as f: f.write(up_top2.getbuffer())
+            if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
+                # Salvando Carrossel Esquerda
+                if up_top_e1:
+                    with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
+                if up_top_e2:
+                    with open("custom_esq_2.png", "wb") as f: f.write(up_top_e2.getbuffer())
+                if up_top_e3:
+                    with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
+                    
+                # Salvando Carrossel Direita
+                if up_top_d1:
+                    with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
+                if up_top_d2:
+                    with open("custom_dir_2.png", "wb") as f: f.write(up_top_d2.getbuffer())
+                if up_top_d3:
+                    with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
+                    
+                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
@@ -1592,10 +1593,10 @@ def tela_principal():
                     with open("custom_home_7.png", "wb") as f: f.write(img7.getbuffer())
                 if img8:
                     with open("custom_home_8.png", "wb") as f: f.write(img8.getbuffer())
-                st.success("Vitrine 100% atualizada! Os clientes já estão vendo as novas mídias.")
+                st.success("Carrossel e Mídias 100% atualizados! Os clientes já estão vendo as animações.")
                 
             if st.button("🗑️ Restaurar Padrões e Limpar Toda a Vitrine", use_container_width=True):
-                files_to_remove = ["custom_topo_1.png", "custom_topo_2.png", "custom_meio_1.png", "custom_video.mp4"] + [f"custom_home_{i}.png" for i in range(1, 9)]
+                files_to_remove = ["custom_esq_1.png", "custom_esq_2.png", "custom_esq_3.png", "custom_dir_1.png", "custom_dir_2.png", "custom_dir_3.png", "custom_meio_1.png", "custom_video.mp4"] + [f"custom_home_{i}.png" for i in range(1, 9)]
                 for file_path in files_to_remove:
                     if os.path.exists(file_path):
                         os.remove(file_path)
