@@ -79,46 +79,38 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO ESCURO - INTOCÁVEL PELO COMANDANTE
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
            ========================================= */
-        
-        /* 1. Mantém a barra e o fundo firmes para não quebrar a navegação no celular */
         header[data-testid="stHeader"] { 
             background-color: #0f172a !important; 
             border-bottom: 1px solid #1e293b !important;
         }
 
-        /* 2. Mantém o ícone do Menu (>) alinhado à esquerda com a cor LARANJA */
-        [data-testid="collapsedControl"] * { 
-            color: #f59e0b !important; 
-            fill: #f59e0b !important; 
-        }
+        /* Mantém o ícone do Menu (>) alinhado à esquerda na cor Laranja */
+        [data-testid="collapsedControl"] * { color: #f59e0b !important; fill: #f59e0b !important; }
 
-        /* 3. A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout */
-        .viewerBadge_container { display: none !important; } /* Oculta GitHub/Fork/Logo */
-        .stDeployButton { display: none !important; } /* Oculta Botão de Deploy */
-        [data-testid="stToolbarActions"] { display: none !important; } /* Oculta os 3 pontinhos */
+        /* Oculta apenas as ferramentas extras da direita suavemente */
+        .viewerBadge_container { display: none !important; } 
+        .stDeployButton { display: none !important; } 
+        [data-testid="stToolbarActions"] { display: none !important; } 
         #MainMenu { display: none !important; }
-        footer { display: none !important; } /* Oculta o Rodapé */
-        [data-testid="stToolbar"] { visibility: hidden !important; pointer-events: none !important; }
+        footer { display: none !important; } 
 
         /* =========================================
-           B. CONFIGURAÇÕES GERAIS DE CONTEÚDO (TEMA CLARO PREMIUM)
+           B. CORES GERAIS - TEMA CLARO PREMIUM (CORPO DA PÁGINA)
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        
-        /* Ajuste do container */
         .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
-           C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
+           C. MENU LATERAL (TEAL/AZUL PETRÓLEO) - TEXTO 100% VISÍVEL
            ========================================= */
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu de rádio clicável suave */
+        /* Menu Lateral Estilizado - Textos garantidos de aparecer */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 8px;
             margin-bottom: 4px;
             transition: 0.2s background-color;
@@ -130,10 +122,6 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
-        }
-        /* Esconde a bolinha nativa do radio no menu lateral */
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
-            display: none !important;
         }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
@@ -393,17 +381,20 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE (COM SAUDAÇÃO INTELIGENTE PELO FUSO)
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # LÓGICA DE SAUDAÇÃO DINÂMICA (Fuso de Brasília GMT-3)
+        # RELÓGIO INTELIGENTE: Puxa o fuso de Brasília (GMT-3) garantido
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
-        if 5 <= hora_brasilia < 12: saudacao_atual = "Bom dia"
-        elif 12 <= hora_brasilia < 18: saudacao_atual = "Boa tarde"
-        else: saudacao_atual = "Boa noite"
-        
+        if 5 <= hora_brasilia < 12: 
+            saudacao_atual = "Bom dia"
+        elif 12 <= hora_brasilia < 18: 
+            saudacao_atual = "Boa tarde"
+        else: 
+            saudacao_atual = "Boa noite"
+            
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
@@ -450,7 +441,7 @@ def tela_principal():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
-        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA (DESIGN LIMPO LADO A LADO)
+        # LINHA 3: O RELÓGIO CENTRAL E LISTA ATIVA
         # =========================================================================
         d_js = st.session_state['data_relogio_js']
         d_br = st.session_state['data_relogio_br']
@@ -577,7 +568,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (SISTEMA DE SALVAMENTO INTELIGENTE)
+    # 👤 MEU PERFIL E ASSINATURA
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -655,7 +646,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_perfil")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -874,7 +865,7 @@ def tela_principal():
                         st.code("00020126540014br.gov.bcb.pix0132jp.solucoes.sc.diretor@gmail.com5204000053039865802BR5925JP SOLUCOES PARTICIPACOES6007CHAPECO62250521bBOkVhq3TKa8lHpaMavJi63044A0E", language="text")
                 except: st.error("Erro no sistema.")
                 
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
+        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
@@ -894,7 +885,6 @@ def tela_principal():
                     st.success("Modelo salvo com sucesso!")
             st.markdown("---")
             
-        # Puxando o prazo e o valor dinamicamente do banco de dados (configurado no Admin)
         garantia_dias = int(st.session_state['precos']['cliente'].get('prazo_garantia_dias', 30))
         valor_reprot_atual = float(st.session_state['precos'][perfil_atual].get('reprotocolo', 212.50))
         
@@ -911,7 +901,6 @@ def tela_principal():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Puxando os dados REAIS do usuário no banco de dados para a tabela de Reprotocolo
         df_dados_reprot = pd.DataFrame()
         try:
             res_reprot = supabase.table("nomes_processamento").select("*").eq("email_cliente", email_logado).execute()
@@ -919,11 +908,9 @@ def tela_principal():
             
             if res_reprot.data:
                 for item in res_reprot.data:
-                    # Calculando a diferença de dias exata desde que o nome foi enviado ao banco
                     created_at_str = item.get('created_at')
                     if created_at_str:
                         try:
-                            # Limpando a string de data do Supabase para o Python entender
                             time_str = created_at_str.split(".")[0]
                             if "+" in time_str: time_str = time_str.split("+")[0]
                             if "Z" in time_str: time_str = time_str.replace("Z", "")
@@ -953,11 +940,9 @@ def tela_principal():
         except Exception as e:
             pass
             
-        # Se não houver dados, cria uma tabela vazia com as colunas corretas
         if df_dados_reprot.empty:
             df_dados_reprot = pd.DataFrame(columns=["Selecionar", "Nome", "CPF/CNPJ", "Status", "Prazo", "Valor Original", "Valor Reprotocolo"])
         
-        # Exibindo a tabela real para o usuário marcar quem ele quer reprotocolar
         df_editado = st.data_editor(
             df_dados_reprot,
             column_config={
@@ -969,7 +954,6 @@ def tela_principal():
             use_container_width=True
         )
         
-        # Algoritmo de Cálculo Condicional (Soma dos marcados)
         total_pagar_reprot = 0.0
         qtd_selecionados = 0
         
@@ -1011,7 +995,7 @@ def tela_principal():
                 else:
                     st.success("✅ Reprotocolo em Garantia solicitado com sucesso! O processo está isento de taxas.")
                     
-        # BOTÃO SALVA-VIDAS VOLTAR (RODAPÉ)
+        # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
@@ -1066,7 +1050,7 @@ def tela_principal():
             if st.button("🚀 Enviar ao Cofre", type="primary"): st.success("✅ Salvo!")
 
     # -----------------------------------------
-    # 📄 DOCUMENTOS DE APOIO (COM BLOQUEIO DE CLIENTE FINAL)
+    # 📄 DOCUMENTOS DE APOIO
     # -----------------------------------------
     elif menu_selecionado == "📄 Documentos de Apoio":
         st.header("📄 Material de Apoio e Educação")
@@ -1143,7 +1127,7 @@ def tela_principal():
         with st.expander("6. Acompanhar Status"): st.write("Acompanhe a mudança de status na aba 'Minhas Listas'. Os status são atualizados conforme o processamento avança.")
 
     # -----------------------------------------
-    # 📋 MINHAS LISTAS (TABELA 13 COLUNAS)
+    # 📋 MINHAS LISTAS
     # -----------------------------------------
     elif menu_selecionado == "📋 Minhas Listas":
         c_tit, c_btn = st.columns([4, 1])
