@@ -85,22 +85,29 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - INTOCÁVEL
-           (Não vamos colocar cores forçadas para não bugar a seta no PC)
+           A. CABEÇALHO NATIVO - ESTABILIDADE MÁXIMA
+           O CÓDIGO ORIGINAL QUE O COMANDANTE APROVOU!
            ========================================= */
-        
-        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
-        [data-testid="stToolbar"] { display: none !important; }
-        .stDeployButton { display: none !important; }
-        .viewerBadge_container { display: none !important; }
+        header[data-testid="stHeader"] { 
+            background-color: #f8fafc !important; 
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+
+        /* Mantém o ícone do Menu (>) alinhado à esquerda na cor Azul Petróleo Escuro */
+        [data-testid="collapsedControl"] * { color: #137077 !important; fill: #137077 !important; }
+
+        /* A LÂMINA DE PRECISÃO: Apaga um por um os ícones da direita sem destruir o layout do menu */
+        .viewerBadge_container { display: none !important; } 
+        .stDeployButton { display: none !important; } 
+        [data-testid="stToolbarActions"] { display: none !important; } 
         #MainMenu { display: none !important; }
-        footer { display: none !important; }
+        footer { display: none !important; } 
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
            ========================================= */
         .stApp { background-color: #f4f7f6; color: #334155; }
-        .block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
+        .block-container { padding-top: 4rem !important; padding-bottom: 2rem !important; padding-left: 2rem !important; padding-right: 2rem !important; max-width: 100% !important; }
         
         /* =========================================
            C. MENU LATERAL (TEAL/AZUL PETRÓLEO)
@@ -108,7 +115,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu de rádio clicável suave */
+        /* HACK DE UX NO MENU: Remove a bolinha e cria botões clicáveis elegantes */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 8px 12px;
             border-radius: 8px;
@@ -130,6 +137,7 @@ def injetar_css_profissional():
             margin: 0 !important;
         }
         
+        /* Garante que o botão Sair tenha texto visível */
         [data-testid="stSidebar"] button[kind="primary"] {
             background: rgba(0,0,0,0.2) !important;
             border: 1px solid rgba(255,255,255,0.2) !important;
@@ -138,7 +146,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] button[kind="primary"] * { color: #ffffff !important; }
         
         /* =========================================
-           D. TEXTOS, CAIXAS DE ENTRADA E CARDS CLAROS
+           D. TEXTOS E CAIXAS DE ENTRADA
            ========================================= */
         h1, h2, h3, h4 { color: #0f172a !important; font-weight: 800 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         label, p, .stRadio label, .stSelectbox label, .stFileUploader label { color: #334155 !important; font-size: 15px !important; font-weight: 500 !important; }
@@ -167,7 +175,6 @@ def injetar_css_profissional():
         .metric-title { color: #64748b; font-size: 14px; margin-bottom: 5px; font-weight: 600; }
         .metric-value { color: #10b981; font-size: 28px; font-weight: bold; margin: 0; }
         
-        /* Flex-Wrap e Simetria do Carrossel */
         .simetria-perfeita { display: flex; width: 100%; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
         .espaco-livre { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: #94a3b8; font-weight: bold; border: 2px dashed #cbd5e1; border-radius: 12px; min-height: 380px;}
         [data-testid="stImage"] img { border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); }
@@ -273,12 +280,14 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO PELA CHAVE "E-MAIL"
+    # (Garante que vai achar o perfil e não pedir toda hora)
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
-            res_perf = supabase.table("perfis_clientes").select("*").eq("user_id", st.session_state['dados_usuario'].id).execute()
-            if res_perf.data and res_perf.data[0].get('cpf_cnpj') and res_perf.data[0].get('nome_exibicao'):
+            # Busca forte pelo e-mail, resolve o problema de pedir cadastro duplo!
+            res_perf = supabase.table("perfis_clientes").select("*").eq("email", email_logado).execute()
+            if res_perf.data and res_perf.data[0].get('cpf_cnpj'):
                 st.session_state['perfil_preenchido'] = True
                 st.session_state['dados_perfil'] = res_perf.data[0]
             else:
@@ -321,7 +330,7 @@ def tela_principal():
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
-    menu_selecionado = st.session_state['menu_navegacao']
+    menu_selecionado = st.session_state.get('menu_navegacao', "🏠 Home")
 
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
@@ -364,9 +373,6 @@ def tela_principal():
             
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
-
-        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -627,7 +633,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO BLINDADA (SEM REDIRECIONAMENTO QUE CRASHA)
+        # 🚀 AÇÃO DE SALVAMENTO BLINDADA E REDIRECIONAMENTO SEGURO
         if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -656,20 +662,20 @@ def tela_principal():
                     dados_salvar["indicado_por"] = dp.get('indicado_por')
                 
                 try:
-                    res_check = supabase.table("perfis_clientes").select("id").eq("user_id", st.session_state['dados_usuario'].id).execute()
+                    res_check = supabase.table("perfis_clientes").select("id").eq("email", email_logado).execute()
                     if res_check.data:
-                        supabase.table("perfis_clientes").update(dados_salvar).eq("user_id", st.session_state['dados_usuario'].id).execute()
+                        supabase.table("perfis_clientes").update(dados_salvar).eq("email", email_logado).execute()
                     else:
                         supabase.table("perfis_clientes").insert(dados_salvar).execute()
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo com sucesso! O menu lateral foi totalmente liberado à esquerda.")
-                    st.rerun() # Isso apenas recarrega a página atual para liberar o menu magicamente na frente do cliente sem causar erro.
+                    st.success("✅ Perfil salvo com sucesso! O menu foi liberado.")
+                    st.rerun() # Reinicia a página e aplica tudo sem dar tela vermelha
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.success("✅ Perfil salvo temporariamente! O menu lateral foi liberado.")
+                    st.success("✅ Perfil salvo temporariamente! O menu foi liberado.")
                     st.rerun()
 
     # -----------------------------------------
@@ -1019,7 +1025,7 @@ def tela_principal():
                     
         # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
-        st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU ⬇️</h5>", unsafe_allow_html=True)
+        st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
@@ -1260,6 +1266,44 @@ def tela_principal():
         if st.button("📥 Gerar Orçamento em PDF", use_container_width=True, type="primary"):
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("<p style='color: #64748b;'>Pré-visualização</p>", unsafe_allow_html=True)
+        nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
+        st.markdown(f"""
+            <div class="pdf-preview">
+                <h1 style="color: {cor_selecionada}; text-align: right; border-bottom: 2px solid {cor_selecionada}; padding-bottom: 10px;">RECUPERE SEU CRÉDITO</h1>
+                <div style="display:flex; justify-content: space-between; margin-top: 20px;">
+                    <div><b>Orçamento para:</b><br>{nome_exibir}</div>
+                    <div style="text-align: right;"><b>Nº:</b> {num_orc}<br><b>Data:</b> {data_orc.strftime('%d/%m/%Y')}</div>
+                </div>
+                <table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
+                    <tr style="background-color: {cor_selecionada}; color: white;">
+                        <th style="padding: 10px; text-align: left;">Nº</th>
+                        <th style="padding: 10px; text-align: left;">Descrição</th>
+                        <th style="padding: 10px; text-align: right;">Preço</th>
+                        <th style="padding: 10px; text-align: center;">Qtd</th>
+                        <th style="padding: 10px; text-align: right;">Total</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px; color: black;">1</td>
+                        <td style="padding: 10px; color: black;">{desc_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {preco_orc:,.2f}</td>
+                        <td style="padding: 10px; text-align: center; color: black;">{qtd_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {(preco_orc * qtd_orc):,.2f}</td>
+                    </tr>
+                </table>
+                <div style="text-align: right; margin-top: 20px; color: black;">
+                    Subtotal: R$ {(preco_orc * qtd_orc):,.2f}<br>
+                    <div style="background-color: {cor_selecionada}; color: white; display: inline-block; padding: 10px 20px; margin-top: 10px; border-radius: 5px;">
+                        <b>Total: R$ {(preco_orc * qtd_orc):,.2f}</b>
+                    </div>
+                </div>
+                <div style="margin-top: 40px; font-size: 12px; color: #666;">
+                    <b>Termos e Condições</b><br>{termos_orc}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -1567,7 +1611,6 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
-                # Salvando Carrossel Esquerda
                 if up_top_e1:
                     with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
                 if up_top_e2:
@@ -1575,7 +1618,6 @@ def tela_principal():
                 if up_top_e3:
                     with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
                     
-                # Salvando Carrossel Direita
                 if up_top_d1:
                     with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
                 if up_top_d2:
@@ -1583,7 +1625,6 @@ def tela_principal():
                 if up_top_d3:
                     with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
                     
-                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
