@@ -85,37 +85,19 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO E MENU NATIVOS (BLINDAGEM TOTAL)
+           A. CABEÇALHO NATIVO E SETA DO PC
            ========================================= */
         
-        /* Fundo da barra superior */
-        header[data-testid="stHeader"] { 
-            background-color: #f4f7f6 !important; 
-            border-bottom: 1px solid #cbd5e1 !important;
-        }
+        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
+        [data-testid="stToolbar"] { display: none !important; }
+        .stDeployButton { display: none !important; }
+        .viewerBadge_container { display: none !important; }
+        #MainMenu { display: none !important; }
+        footer { display: none !important; }
 
-        /* 🚀 GARANTE A SETA DO MENU NO PC E CELULAR SEMPRE VISÍVEL */
-        [data-testid="collapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 999999 !important;
-        }
-        
-        /* Cor Azul Petróleo para a seta e tamanho legível */
-        [data-testid="collapsedControl"] * { 
-            color: #177b82 !important; 
-            fill: #177b82 !important; 
-        }
-        [data-testid="collapsedControl"] svg {
-            width: 30px !important;
-            height: 30px !important;
-        }
-
-        /* OCULTA SOMENTE AS FERRAMENTAS DO LADO DIREITO (Modo Cirúrgico) */
-        .viewerBadge_container, .stDeployButton, [data-testid="stToolbarActions"], #MainMenu, footer { 
-            display: none !important; 
-        }
+        /* Garante a seta visivel no mobile e PC na cor Azul Petróleo */
+        [data-testid="collapsedControl"] { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
+        [data-testid="collapsedControl"] * { color: #177b82 !important; fill: #177b82 !important; }
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
@@ -144,7 +126,6 @@ def injetar_css_profissional():
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
             font-weight: 500 !important;
@@ -217,7 +198,7 @@ if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_aute
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
 if 'menu_navegacao' not in st.session_state: st.session_state['menu_navegacao'] = "🏠 Home"
 
-def mudar_pagina(nova_pagina): 
+def mudar_pagina_direto(nova_pagina):
     st.session_state['menu_navegacao'] = nova_pagina
 
 def ir_para_protocolo_especifico(servico):
@@ -365,11 +346,11 @@ def tela_principal():
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
-            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
+            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",))
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM CARROSSEL E SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
@@ -385,9 +366,6 @@ def tela_principal():
             
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
-
-        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para liberar todas as abas do sistema, você precisa preencher os dados na aba **'👤 Assinatura'** no menu lateral.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -588,31 +566,32 @@ def tela_principal():
         # Ações Rápidas
         st.markdown("<h4 style='color:#0f172a; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
-        with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
-        with c_act2: st.button("💲 Painel Financeiro", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
+        with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("📋 Minhas Listas",))
+        with c_act2: st.button("💲 Painel Financeiro", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("💲 Financeiro",))
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO DE ACESSO GIGANTE)
+    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO DE ACESSO INFALÍVEL)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # O AVISO NO TOPO
+        # O AVISO NO TOPO OU A PLACA GIGANTE DE SUCESSO
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
-            st.success("✅ Seu perfil está completo e salvo! O menu lateral está liberado.")
-            st.button("➡️ CLIQUE AQUI E VÁ PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_topo_home")
+            # A PLACA GIGANTE QUE APARECE ASSIM QUE ELE SALVA (Substituindo o aviso)
+            st.markdown("""
+                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 10px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
+                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
+                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # O Botão Seguro que avança para a Home na hora que clica
+            st.button("🚀 CLIQUE AQUI E VÁ PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",))
+            st.markdown("---")
 
-        st.markdown("""
-        <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
-            <h3 style='margin-top:0; color:#10b981;'>✅ Sua assinatura está ativa</h3>
-            <p style='margin:0; font-size: 16px;'>317 dias restantes<br>Acesso liberado até: 11/06/2027</p>
-            <span style='float:right; background:#10b981; color: white; padding:5px 10px; border-radius:15px; font-size:12px; margin-top:-45px; font-weight: bold;'>Período de Teste Grátis</span>
-        </div>
-        """, unsafe_allow_html=True)
-        
         dp = st.session_state.get('dados_perfil', {})
         
         # 🔗 SEÇÃO DO LINK DE INDICAÇÃO
@@ -650,8 +629,8 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO COM A PLACA GIGANTE EMBAIXO
-        if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
+        # 🚀 AÇÃO DE SALVAMENTO LIMPA (SEM REDIRECIONAMENTO QUE CRASHA)
+        if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
             else:
@@ -687,22 +666,12 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.rerun() 
+                    
+                    st.rerun() # Atualiza a página e mostra a Placa de Sucesso Gigante lá no topo
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
                     st.rerun()
-
-        # A PLACA GIGANTE QUE APARECE NO CELULAR LOGO ABAIXO DO BOTÃO SALVAR
-        if st.session_state.get('perfil_preenchido', False):
-            st.markdown("""
-                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
-                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.button("🚀 ENTRAR NO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_ir_home_gigante")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -922,7 +891,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO
@@ -1052,7 +1021,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
@@ -1599,6 +1568,7 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
+                # Salvando Carrossel Esquerda
                 if up_top_e1:
                     with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
                 if up_top_e2:
@@ -1606,6 +1576,7 @@ def tela_principal():
                 if up_top_e3:
                     with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
                     
+                # Salvando Carrossel Direita
                 if up_top_d1:
                     with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
                 if up_top_d2:
@@ -1613,6 +1584,7 @@ def tela_principal():
                 if up_top_d3:
                     with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
                     
+                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
