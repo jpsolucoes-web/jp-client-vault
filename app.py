@@ -85,7 +85,8 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO E SETA DO PC
+           A. CABEÇALHO NATIVO - INTOCÁVEL
+           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
         
         /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
@@ -94,10 +95,6 @@ def injetar_css_profissional():
         .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
         footer { display: none !important; }
-
-        /* Garante a seta visivel no mobile e PC na cor Azul Petróleo */
-        [data-testid="collapsedControl"] { display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 999999 !important; }
-        [data-testid="collapsedControl"] * { color: #177b82 !important; fill: #177b82 !important; }
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
@@ -198,7 +195,7 @@ if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_aute
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
 if 'menu_navegacao' not in st.session_state: st.session_state['menu_navegacao'] = "🏠 Home"
 
-def mudar_pagina_direto(nova_pagina):
+def mudar_pagina(nova_pagina): 
     st.session_state['menu_navegacao'] = nova_pagina
 
 def ir_para_protocolo_especifico(servico):
@@ -346,7 +343,7 @@ def tela_principal():
         st.markdown("<h5 style='text-align: center; color: #10b981; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
         c_voltar1, c_voltar2, c_voltar3 = st.columns([1, 2, 1])
         with c_voltar2:
-            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",))
+            st.button("🔙 VOLTAR PARA HOME", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
         st.markdown("---")
 
     # -----------------------------------------
@@ -355,7 +352,6 @@ def tela_principal():
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -566,32 +562,30 @@ def tela_principal():
         # Ações Rápidas
         st.markdown("<h4 style='color:#0f172a; margin-bottom:15px;'>⚡ Ações Rápidas</h4>", unsafe_allow_html=True)
         c_act1, c_act2, c_act3 = st.columns(3)
-        with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("📋 Minhas Listas",))
-        with c_act2: st.button("💲 Painel Financeiro", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("💲 Financeiro",))
+        with c_act1: st.button("📋 Gerenciar Minhas Listas", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("📋 Minhas Listas",))
+        with c_act2: st.button("💲 Painel Financeiro", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("💲 Financeiro",))
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO DE ACESSO INFALÍVEL)
+    # 👤 MEU PERFIL E ASSINATURA 
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # O AVISO NO TOPO OU A PLACA GIGANTE DE SUCESSO
+        # O AVISO NO TOPO
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
-            # A PLACA GIGANTE QUE APARECE ASSIM QUE ELE SALVA (Substituindo o aviso)
-            st.markdown("""
-                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 10px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
-                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # O Botão Seguro que avança para a Home na hora que clica
-            st.button("🚀 CLIQUE AQUI E VÁ PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",))
-            st.markdown("---")
+            st.success("✅ Seu perfil está completo e salvo! O menu lateral está liberado.")
 
+        st.markdown("""
+        <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
+            <h3 style='margin-top:0; color:#10b981;'>✅ Sua assinatura está ativa</h3>
+            <p style='margin:0; font-size: 16px;'>317 dias restantes<br>Acesso liberado até: 11/06/2027</p>
+            <span style='float:right; background:#10b981; color: white; padding:5px 10px; border-radius:15px; font-size:12px; margin-top:-45px; font-weight: bold;'>Período de Teste Grátis</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
         dp = st.session_state.get('dados_perfil', {})
         
         # 🔗 SEÇÃO DO LINK DE INDICAÇÃO
@@ -629,7 +623,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO LIMPA (SEM REDIRECIONAMENTO QUE CRASHA)
+        # 🚀 AÇÃO DE SALVAMENTO LISO (Sem tela vermelha)
         if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -666,12 +660,22 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    
-                    st.rerun() # Atualiza a página e mostra a Placa de Sucesso Gigante lá no topo
+                    st.rerun() 
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
                     st.rerun()
+
+        # 🚀 A PLACA GIGANTE QUE APARECE NO FINAL DA TELA ASSIM QUE SALVA
+        if st.session_state.get('perfil_preenchido', False):
+            st.markdown("""
+                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
+                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
+                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.button("🚀 ENTRAR NO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_ir_home_gigante")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
@@ -891,7 +895,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_protocolo")
 
     # -----------------------------------------
     # 🔄 REPROTOCOLO
@@ -1021,7 +1025,7 @@ def tela_principal():
         # BOTÃO SALVA-VIDAS VOLTAR NO RODAPÉ
         st.markdown("---")
         st.markdown("<h5 style='text-align: center; color: #f59e0b; margin-bottom: 5px;'>⬇️ CLIQUE ABAIXO PARA VOLTAR AO MENU INICIAL ⬇️</h5>", unsafe_allow_html=True)
-        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina_direto, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
+        st.button("🔙 VOLTAR PARA O MENU PRINCIPAL", type="secondary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_voltar_rodape_reprot")
 
     # -----------------------------------------
     # 📝 CONTRATOS PARA BAIXAR
@@ -1261,6 +1265,44 @@ def tela_principal():
         if st.button("📥 Gerar Orçamento em PDF", use_container_width=True, type="primary"):
             st.success("PDF Gerado com sucesso!")
         st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("<p style='color: #64748b;'>Pré-visualização</p>", unsafe_allow_html=True)
+        nome_exibir = nome_cliente_orc if nome_cliente_orc else "João da Silva"
+        st.markdown(f"""
+            <div class="pdf-preview">
+                <h1 style="color: {cor_selecionada}; text-align: right; border-bottom: 2px solid {cor_selecionada}; padding-bottom: 10px;">RECUPERE SEU CRÉDITO</h1>
+                <div style="display:flex; justify-content: space-between; margin-top: 20px;">
+                    <div><b>Orçamento para:</b><br>{nome_exibir}</div>
+                    <div style="text-align: right;"><b>Nº:</b> {num_orc}<br><b>Data:</b> {data_orc.strftime('%d/%m/%Y')}</div>
+                </div>
+                <table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
+                    <tr style="background-color: {cor_selecionada}; color: white;">
+                        <th style="padding: 10px; text-align: left;">Nº</th>
+                        <th style="padding: 10px; text-align: left;">Descrição</th>
+                        <th style="padding: 10px; text-align: right;">Preço</th>
+                        <th style="padding: 10px; text-align: center;">Qtd</th>
+                        <th style="padding: 10px; text-align: right;">Total</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 10px; color: black;">1</td>
+                        <td style="padding: 10px; color: black;">{desc_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {preco_orc:,.2f}</td>
+                        <td style="padding: 10px; text-align: center; color: black;">{qtd_orc}</td>
+                        <td style="padding: 10px; text-align: right; color: black;">R$ {(preco_orc * qtd_orc):,.2f}</td>
+                    </tr>
+                </table>
+                <div style="text-align: right; margin-top: 20px; color: black;">
+                    Subtotal: R$ {(preco_orc * qtd_orc):,.2f}<br>
+                    <div style="background-color: {cor_selecionada}; color: white; display: inline-block; padding: 10px 20px; margin-top: 10px; border-radius: 5px;">
+                        <b>Total: R$ {(preco_orc * qtd_orc):,.2f}</b>
+                    </div>
+                </div>
+                <div style="margin-top: 40px; font-size: 12px; color: #666;">
+                    <b>Termos e Condições</b><br>{termos_orc}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
     # -----------------------------------------
     # 🩺 SOLICITAR DIAGNÓSTICO
@@ -1568,7 +1610,6 @@ def tela_principal():
             img8 = c_up8.file_uploader("Upload Imagem Extra 8", type=['png', 'jpg', 'jpeg'])
             
             if st.button("💾 Salvar Mídias e Ativar Carrossel na Home", type="primary", use_container_width=True):
-                # Salvando Carrossel Esquerda
                 if up_top_e1:
                     with open("custom_esq_1.png", "wb") as f: f.write(up_top_e1.getbuffer())
                 if up_top_e2:
@@ -1576,7 +1617,6 @@ def tela_principal():
                 if up_top_e3:
                     with open("custom_esq_3.png", "wb") as f: f.write(up_top_e3.getbuffer())
                     
-                # Salvando Carrossel Direita
                 if up_top_d1:
                     with open("custom_dir_1.png", "wb") as f: f.write(up_top_d1.getbuffer())
                 if up_top_d2:
@@ -1584,7 +1624,6 @@ def tela_principal():
                 if up_top_d3:
                     with open("custom_dir_3.png", "wb") as f: f.write(up_top_d3.getbuffer())
                     
-                # Salvando resto
                 if up_mid1:
                     with open("custom_meio_1.png", "wb") as f: f.write(up_mid1.getbuffer())
                 if up_vid:
