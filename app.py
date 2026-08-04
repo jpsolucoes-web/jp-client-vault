@@ -85,12 +85,22 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - INTOCÁVEL
-           (Não vamos colocar cores forçadas para não bugar a seta no PC)
+           A. CABEÇALHO NATIVO - CORES PREMIUM E MENU BLINDADO
            ========================================= */
         
-        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
-        [data-testid="stToolbar"] { display: none !important; }
+        header[data-testid="stHeader"] { 
+            background-color: #f4f7f6 !important; 
+            border-bottom: 1px solid #cbd5e1 !important;
+        }
+
+        /* Garante a seta do menu na cor Azul Petróleo para ser visível no PC e Celular */
+        [data-testid="collapsedControl"] * { 
+            color: #177b82 !important; 
+            fill: #177b82 !important; 
+        }
+
+        /* Oculta as ferramentas extras da direita (GitHub) de forma segura sem apagar o menu inteiro */
+        [data-testid="stToolbarActions"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
@@ -123,6 +133,7 @@ def injetar_css_profissional():
             background-color: rgba(0, 0, 0, 0.2) !important;
             border-left: 4px solid #f59e0b;
         }
+        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         [data-testid="stSidebar"] div[role="radiogroup"] p {
             font-size: 15px !important;
             font-weight: 500 !important;
@@ -272,7 +283,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO PELA CHAVE "E-MAIL"
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -568,15 +579,23 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO GIGANTE FINAL)
+    # 👤 MEU PERFIL E ASSINATURA (CELULAR E PC PERFEITOS)
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
+        # 🚀 A PLACA DE SUCESSO E O BOTÃO GIGANTE PARA A HOME
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
-            st.success("✅ Seu perfil está completo e salvo! Você já tem acesso total ao sistema.")
+            st.markdown("""
+                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
+                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
+                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            st.button("🚀 ENTRAR NO MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
+            st.markdown("---")
 
         st.markdown("""
         <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
@@ -588,6 +607,7 @@ def tela_principal():
         
         dp = st.session_state.get('dados_perfil', {})
         
+        # 🔗 SEÇÃO DO LINK DE INDICAÇÃO
         if st.session_state.get('perfil_preenchido', False):
             meu_codigo = dp.get("codigo_afiliado", "")
             if meu_codigo:
@@ -622,7 +642,7 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO LISO (Sem Forçar Redirecionamento e Sem Tela Vermelha)
+        # 🚀 AÇÃO DE SALVAMENTO LISO E SEGURO (MÁGICA SEM TRAVAR O CELULAR)
         if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -659,22 +679,11 @@ def tela_principal():
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.rerun() 
+                    st.rerun() # Atualiza a página e mostra a Placa Gigante de Sucesso lá em cima sem dar pau!
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
                     st.rerun()
-
-        # 🚀 A PLACA GIGANTE QUE APARECE NO FINAL DA TELA ASSIM QUE SALVA (E O BOTÃO PARA A HOME)
-        if st.session_state.get('perfil_preenchido', False):
-            st.markdown("""
-                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-top: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
-                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.button("🚀 ENTRAR NO MENU PRINCIPAL", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",), key="btn_ir_home_gigante_final")
 
     # -----------------------------------------
     # 💼 SERVIÇOS AVANÇADOS
