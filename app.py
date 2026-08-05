@@ -86,10 +86,9 @@ def injetar_css_profissional():
         <style>
         /* =========================================
            A. CABEÇALHO NATIVO - INTOCÁVEL
-           (Não vamos colocar cores forçadas para não bugar a seta no PC)
+           (Seu código original preservado para não bugar o PC)
            ========================================= */
         
-        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
         [data-testid="stToolbarActions"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
@@ -108,7 +107,7 @@ def injetar_css_profissional():
         [data-testid="stSidebar"] { background-color: #177b82 !important; border-right: none; }
         [data-testid="stSidebar"] * { color: #ffffff !important; }
         
-        /* Menu de rádio clicável suave (TEXTO GARANTIDO E VISÍVEL) */
+        /* Menu de rádio clicável suave - TEXTO TOTALMENTE GARANTIDO E VISÍVEL */
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             padding: 8px 12px;
             border-radius: 8px;
@@ -129,6 +128,7 @@ def injetar_css_profissional():
             margin: 0 !important;
             color: #ffffff !important;
             visibility: visible !important;
+            opacity: 1 !important;
         }
         
         [data-testid="stSidebar"] button[kind="primary"] {
@@ -191,7 +191,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. CONTROLE DE SESSÃO E NAVEGAÇÃO SEGURO
+# 5. CONTROLE DE SESSÃO E NAVEGAÇÃO
 # ==========================================
 if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_autenticado'] = False
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
@@ -274,7 +274,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO PELA CHAVE "E-MAIL"
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -305,7 +305,7 @@ def tela_principal():
             
         st.write("---")
         
-        # 🚀 O MENU LATERAL SEGURO (Desvinculado do erro de chave do Streamlit)
+        # 🚀 A TRAVA DO COFRE NO MENU LATERAL
         if not is_diretor and not st.session_state.get('perfil_preenchido', False):
             opcoes_menu = ["👤 Assinatura"]
             st.markdown("<div style='padding: 10px; background-color: #fef08a; color: #b45309; border-radius: 8px; margin-bottom: 10px; font-weight: bold;'>⚠️ Preencha seus dados para liberar o acesso ao sistema.</div>", unsafe_allow_html=True)
@@ -320,18 +320,9 @@ def tela_principal():
             ]
             if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
-        # Sistema antibug para garantir que o rádio mude de página sem tela amarela
-        if st.session_state['menu_navegacao'] not in opcoes_menu:
-            st.session_state['menu_navegacao'] = opcoes_menu[0]
-            
-        idx_selecionado = opcoes_menu.index(st.session_state['menu_navegacao'])
-        selecao_radio = st.radio("Navegação do Sistema", opcoes_menu, index=idx_selecionado, label_visibility="collapsed")
-        
-        if selecao_radio != st.session_state['menu_navegacao']:
-            st.session_state['menu_navegacao'] = selecao_radio
-            st.rerun()
+        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
-    menu_selecionado = st.session_state['menu_navegacao']
+    menu_selecionado = st.session_state.get('menu_navegacao', "🏠 Home")
 
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
@@ -363,7 +354,6 @@ def tela_principal():
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
