@@ -305,16 +305,20 @@ def tela_principal():
             
         st.write("---")
         
-        # 🚀 O MENU SEMPRE MOSTRARÁ TODAS AS OPÇÕES (Sem sumir)
-        opcoes_menu = [
-            "🏠 Home", "💼 Serviços", "📅 Eventos",
-            "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
-            "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contrato Limpa Nome", 
-            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
-            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
-        ]
-        if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
+        # 🚀 A TRAVA DO COFRE NO MENU LATERAL
+        if not is_diretor and not st.session_state.get('perfil_preenchido', False):
+            opcoes_menu = ["👤 Assinatura"]
+            st.markdown("<div style='padding: 10px; background-color: #fef08a; color: #b45309; border-radius: 8px; margin-bottom: 10px; font-weight: bold;'>⚠️ Preencha seus dados para liberar o acesso ao sistema.</div>", unsafe_allow_html=True)
+        else:
+            opcoes_menu = [
+                "🏠 Home", "💼 Serviços", "📅 Eventos",
+                "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
+                "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
+                "📊 Orçamento", "📝 Contrato Limpa Nome", 
+                "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
+                "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
+            ]
+            if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
@@ -324,7 +328,7 @@ def tela_principal():
         menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES (Navegação Protegida)
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -361,28 +365,60 @@ def tela_principal():
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
 
-        # =========================================================================
-        # LINHA 1: Imagens do Topo
-        # =========================================================================
         def img_to_base64(filepath):
             if os.path.exists(filepath):
                 with open(filepath, "rb") as f: return base64.b64encode(f.read()).decode()
             return ""
 
-        img_t1 = img_to_base64("custom_topo_1.png") or img_to_base64("valortecpflimpo.png")
-        img_t2 = img_to_base64("custom_topo_2.png") or img_to_base64("RECONSTRUIR.png")
-        
-        html_linha1 = f"""
-        <div class="simetria-perfeita">
-            <div class="simetria-box">
-                {f'<img src="data:image/png;base64,{img_t1}">' if img_t1 else '<div class="espaco-livre">Topo Esquerda (Upload no Admin)</div>'}
+        # =========================================================================
+        # LINHA 1: CARROSSEL DE IMAGENS DO TOPO
+        # =========================================================================
+        def render_carousel(image_paths, default_img_path):
+            valid_imgs = [img_to_base64(p) for p in image_paths if os.path.exists(p)]
+            if not valid_imgs and default_img_path:
+                valid_imgs = [img_to_base64(default_img_path)]
+                
+            if not valid_imgs or not valid_imgs[0]:
+                return "<div class='espaco-livre'>Área de Imagem Livre</div>"
+            
+            if len(valid_imgs) == 1:
+                return f"<img src='data:image/png;base64,{valid_imgs[0]}' style='width:100%; height:380px; object-fit:cover; border-radius:12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>"
+            
+            num_imgs = len(valid_imgs)
+            width_pct = num_imgs * 100
+            img_width = 100 / num_imgs
+            
+            if num_imgs == 2:
+                anim_rule = "0%, 45% { transform: translateX(0%); } 50%, 95% { transform: translateX(-50%); } 100% { transform: translateX(0%); }"
+            elif num_imgs == 3:
+                anim_rule = "0%, 28% { transform: translateX(0%); } 33%, 61% { transform: translateX(-33.333%); } 66%, 95% { transform: translateX(-66.666%); } 100% { transform: translateX(0%); }"
+                
+            slides_html = "".join([f"<img src='data:image/png;base64,{img}' style='width:{img_width}%; height:100%; object-fit:cover;'>" for img in valid_imgs])
+            
+            car_html = f"""
+            <style>
+                .slider-wrapper-{num_imgs} {{ width: 100%; height: 380px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0px 4px 15px rgba(0,0,0,0.05); position: relative; }}
+                .slider-track-{num_imgs} {{ display: flex; width: {width_pct}%; height: 100%; animation: slideAnim{num_imgs} {num_imgs*4}s infinite; }}
+                @keyframes slideAnim{num_imgs} {{ {anim_rule} }}
+            </style>
+            <div class="slider-wrapper-{num_imgs}">
+                <div class="slider-track-{num_imgs}">
+                    {slides_html}
+                </div>
             </div>
-            <div class="simetria-box">
-                {f'<img src="data:image/png;base64,{img_t2}">' if img_t2 else '<div class="espaco-livre">Topo Direita (Upload no Admin)</div>'}
-            </div>
-        </div>
-        """
-        st.markdown(html_linha1, unsafe_allow_html=True)
+            """
+            return car_html
+
+        col_carr1, col_carr2 = st.columns(2)
+        with col_carr1:
+            imgs_esq = ["custom_esq_1.png", "custom_esq_2.png", "custom_esq_3.png"]
+            st.markdown(render_carousel(imgs_esq, "valortecpflimpo.png"), unsafe_allow_html=True)
+            
+        with col_carr2:
+            imgs_dir = ["custom_dir_1.png", "custom_dir_2.png", "custom_dir_3.png"]
+            st.markdown(render_carousel(imgs_dir, "RECONSTRUIR.png"), unsafe_allow_html=True)
+            
+        st.markdown("<br>", unsafe_allow_html=True)
 
         # =========================================================================
         # LINHA 2: Imagem do Meio e Vídeo
@@ -533,7 +569,7 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (O BOTÃO GIGANTE FINAL PARA A HOME)
+    # 👤 MEU PERFIL E ASSINATURA 
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
@@ -560,7 +596,6 @@ def tela_principal():
         
         dp = st.session_state.get('dados_perfil', {})
         
-        # 🔗 SEÇÃO DO LINK DE INDICAÇÃO
         if st.session_state.get('perfil_preenchido', False):
             meu_codigo = dp.get("codigo_afiliado", "")
             if meu_codigo:
@@ -595,7 +630,6 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO SEGURA E MACIA
         if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
@@ -1362,7 +1396,7 @@ def tela_principal():
         c1, c2, c3 = st.columns([3, 1, 1])
         c1.markdown("<h4>Histórico</h4>", unsafe_allow_html=True)
         c2.selectbox("Todos os pagamentos", ["Todos os pagamentos", "Pendente", "Pago", "Cancelado"], label_visibility="collapsed")
-        c3.selectbox("Todos os status", ["Todos os status", "Aguardando pagamento", "Iniciado", "Concluído", "Cancelado"], label_visibility="collapsed")
+        c3.selectbox("Todos os status", ["Todos os status", "Aguardando paymento", "Iniciado", "Concluído", "Cancelado"], label_visibility="collapsed")
         st.markdown("<br><br><p style='text-align:center; color:#94a3b8; font-size:16px;'>Nenhum diagnóstico solicitado ainda.</p><br><br>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
