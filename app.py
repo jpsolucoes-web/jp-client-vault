@@ -191,7 +191,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. CONTROLE DE SESSÃO E NAVEGAÇÃO
+# 5. CONTROLE DE SESSÃO E NAVEGAÇÃO SEGURO
 # ==========================================
 if 'usuario_autenticado' not in st.session_state: st.session_state['usuario_autenticado'] = False
 if 'dados_usuario' not in st.session_state: st.session_state['dados_usuario'] = None
@@ -305,7 +305,7 @@ def tela_principal():
             
         st.write("---")
         
-        # 🚀 A TRAVA DO COFRE NO MENU LATERAL
+        # 🚀 O MENU LATERAL SEGURO (Desvinculado do erro de chave do Streamlit)
         if not is_diretor and not st.session_state.get('perfil_preenchido', False):
             opcoes_menu = ["👤 Assinatura"]
             st.markdown("<div style='padding: 10px; background-color: #fef08a; color: #b45309; border-radius: 8px; margin-bottom: 10px; font-weight: bold;'>⚠️ Preencha seus dados para liberar o acesso ao sistema.</div>", unsafe_allow_html=True)
@@ -320,9 +320,18 @@ def tela_principal():
             ]
             if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
-        st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
+        # Sistema antibug para garantir que o rádio mude de página sem tela amarela
+        if st.session_state['menu_navegacao'] not in opcoes_menu:
+            st.session_state['menu_navegacao'] = opcoes_menu[0]
+            
+        idx_selecionado = opcoes_menu.index(st.session_state['menu_navegacao'])
+        selecao_radio = st.radio("Navegação do Sistema", opcoes_menu, index=idx_selecionado, label_visibility="collapsed")
+        
+        if selecao_radio != st.session_state['menu_navegacao']:
+            st.session_state['menu_navegacao'] = selecao_radio
+            st.rerun()
 
-    menu_selecionado = st.session_state.get('menu_navegacao', "🏠 Home")
+    menu_selecionado = st.session_state['menu_navegacao']
 
     if menu_selecionado == "👤 Assinatura":
         menu_selecionado = "👤 Meu Perfil"
@@ -354,6 +363,7 @@ def tela_principal():
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
+        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -1396,7 +1406,7 @@ def tela_principal():
         c1, c2, c3 = st.columns([3, 1, 1])
         c1.markdown("<h4>Histórico</h4>", unsafe_allow_html=True)
         c2.selectbox("Todos os pagamentos", ["Todos os pagamentos", "Pendente", "Pago", "Cancelado"], label_visibility="collapsed")
-        c3.selectbox("Todos os status", ["Todos os status", "Aguardando paymento", "Iniciado", "Concluído", "Cancelado"], label_visibility="collapsed")
+        c3.selectbox("Todos os status", ["Todos os status", "Aguardando pagamento", "Iniciado", "Concluído", "Cancelado"], label_visibility="collapsed")
         st.markdown("<br><br><p style='text-align:center; color:#94a3b8; font-size:16px;'>Nenhum diagnóstico solicitado ainda.</p><br><br>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
