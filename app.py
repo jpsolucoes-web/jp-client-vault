@@ -85,18 +85,16 @@ def injetar_css_profissional():
     st.markdown("""
         <style>
         /* =========================================
-           A. CABEÇALHO NATIVO - INTOCÁVEL E BLINDADO
+           A. CABEÇALHO NATIVO - INTOCÁVEL
+           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
         
-        /* Oculta APENAS as ferramentas extras da direita (GitHub/Deploy) de forma cirúrgica */
-        [data-testid="stToolbarActions"] { display: none !important; }
+        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
+        [data-testid="stToolbar"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
         #MainMenu { display: none !important; }
         footer { display: none !important; }
-
-        /* Garante que o botão de abrir/fechar o menu fique na cor do tema (Azul Petróleo) */
-        [data-testid="collapsedControl"] * { color: #177b82 !important; fill: #177b82 !important; }
 
         /* =========================================
            B. CORES GERAIS - TEMA CLARO PREMIUM
@@ -130,7 +128,6 @@ def injetar_css_profissional():
             font-weight: 500 !important;
             margin: 0 !important;
         }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child { display: none !important; }
         
         [data-testid="stSidebar"] button[kind="primary"] {
             background: rgba(0,0,0,0.2) !important;
@@ -275,18 +272,23 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO PELA CHAVE "E-MAIL"
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO (CORRIGIDO PARA NÃO REPETIR CADASTRO)
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
-            email_busca = email_logado.strip().lower()
-            res_perf = supabase.table("perfis_clientes").select("*").eq("email", email_busca).execute()
+            user_id = st.session_state['dados_usuario'].id
+            res_perf = supabase.table("perfis_clientes").select("*").eq("user_id", user_id).execute()
             if res_perf.data and res_perf.data[0].get('cpf_cnpj'):
                 st.session_state['perfil_preenchido'] = True
                 st.session_state['dados_perfil'] = res_perf.data[0]
             else:
-                st.session_state['perfil_preenchido'] = False
-                st.session_state['dados_perfil'] = {}
+                res_perf_email = supabase.table("perfis_clientes").select("*").eq("email", email_logado).execute()
+                if res_perf_email.data and res_perf_email.data[0].get('cpf_cnpj'):
+                    st.session_state['perfil_preenchido'] = True
+                    st.session_state['dados_perfil'] = res_perf_email.data[0]
+                else:
+                    st.session_state['perfil_preenchido'] = False
+                    st.session_state['dados_perfil'] = {}
         except:
             st.session_state['perfil_preenchido'] = False
             st.session_state['dados_perfil'] = {}
@@ -307,16 +309,20 @@ def tela_principal():
             
         st.write("---")
         
-        # 🚀 AQUI O MENU APARECE 100% INTEIRO SEMPRE, GARANTINDO O VISUAL DO PC E CELULAR!
-        opcoes_menu = [
-            "🏠 Home", "💼 Serviços", "📅 Eventos",
-            "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
-            "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
-            "📊 Orçamento", "📝 Contrato Limpa Nome", 
-            "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
-            "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
-        ]
-        if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
+        # 🚀 A TRAVA DO COFRE NO MENU LATERAL
+        if not is_diretor and not st.session_state.get('perfil_preenchido', False):
+            opcoes_menu = ["👤 Assinatura"]
+            st.markdown("<div style='padding: 10px; background-color: #fef08a; color: #b45309; border-radius: 8px; margin-bottom: 10px; font-weight: bold;'>⚠️ Preencha seus dados para liberar o acesso ao sistema.</div>", unsafe_allow_html=True)
+        else:
+            opcoes_menu = [
+                "🏠 Home", "💼 Serviços", "📅 Eventos",
+                "🛡️ Enviar Protocolo", "🔄 Reprotocolo", "📖 Manual do Parceiro", 
+                "📋 Minhas Listas", "💲 Financeiro", "⚠️ Reclame Aqui", 
+                "📊 Orçamento", "📝 Contrato Limpa Nome", 
+                "📄 Documentos de Apoio", "🎓 Academia Limpa Nome", 
+                "🏢 CNPJ Inapto", "🩺 Solicitar Diagnóstico", "📑 Meus Diagnósticos", "👤 Assinatura"
+            ]
+            if is_diretor: opcoes_menu.append("⚙️ Painel do Diretor")
         
         st.radio("Navegação do Sistema", opcoes_menu, key="menu_navegacao", label_visibility="collapsed")
 
@@ -326,7 +332,7 @@ def tela_principal():
         menu_selecionado = "👤 Meu Perfil"
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES SEM PERFIL
+    # TRAVA DE SEGURANÇA 2: BLOQUEIO DE TELA PARA CLIENTES
     # =========================================================
     if not is_diretor and not st.session_state.get('perfil_preenchido', False):
         if menu_selecionado not in ["🏠 Home", "👤 Meu Perfil"]:
@@ -347,12 +353,11 @@ def tela_principal():
         st.markdown("---")
 
     # -----------------------------------------
-    # 🏠 HOME PAGE (COM CARROSSEL E SAUDAÇÃO INTELIGENTE)
+    # 🏠 HOME PAGE
     # -----------------------------------------
     if menu_selecionado == "🏠 Home":
         nome_display = st.session_state.get('dados_perfil', {}).get('nome_exibicao', 'Cliente') if not is_diretor else 'JP SOLUÇÕES (Admin)'
         
-        # RELÓGIO INTELIGENTE (FUSO GMT-3)
         hora_brasilia = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
         if 5 <= hora_brasilia < 12: 
             saudacao_atual = "Bom dia"
@@ -363,9 +368,6 @@ def tela_principal():
             
         st.markdown(f"<h2 style='color: #0f172a; margin-bottom: 0px;'>{saudacao_atual}, {nome_display}! 👋</h2>", unsafe_allow_html=True)
         st.markdown("<p style='color: #64748b; font-size: 16px; margin-top: 5px; margin-bottom: 30px;'>Gerencie e acompanhe seus processos na nossa plataforma de reabilitação.</p>", unsafe_allow_html=True)
-
-        if not st.session_state.get('perfil_preenchido', False) and not is_diretor:
-            st.warning("⚠️ Lembre-se: Para acessar os serviços restritos do menu lateral, você precisa preencher os dados na aba **'👤 Assinatura'**.")
 
         def img_to_base64(filepath):
             if os.path.exists(filepath):
@@ -571,23 +573,15 @@ def tela_principal():
         with c_act3: st.button("💬 Suporte Rápido", type="secondary", use_container_width=True)
 
     # -----------------------------------------
-    # 👤 MEU PERFIL E ASSINATURA (UX LIMPA SEM BUG DE REDIRECIONAMENTO)
+    # 👤 MEU PERFIL E ASSINATURA 
     # -----------------------------------------
     elif menu_selecionado == "👤 Meu Perfil":
         st.header("👤 Assinatura e Perfil")
         
-        # AVISO INICIAL OU SUCESSO GIGANTE APÓS SALVAR
         if not st.session_state.get('perfil_preenchido', False):
             st.warning("⚠️ **Ação Necessária:** Preencha os campos abaixo e clique em Salvar para desbloquear o menu do sistema.")
         else:
-            st.markdown("""
-                <div style='background-color:#ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 2px solid #10b981; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <h2 style='color:#10b981; margin:0;'>✅ PERFIL SALVO E LIBERADO!</h2>
-                    <p style='color:#64748b; font-size:16px; margin-top:5px;'>Seu acesso está totalmente liberado. Clique no botão abaixo para iniciar.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.button("🚀 ENTRAR NO MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
-            st.markdown("---")
+            st.button("➡️ IR PARA O MENU PRINCIPAL (HOME)", type="primary", use_container_width=True, on_click=mudar_pagina, args=("🏠 Home",))
 
         st.markdown("""
         <div style='background-color:#f0fdf4; border: 1px solid #10b981; padding: 20px; border-radius: 10px; color: #064e3b; margin-bottom: 20px;'>
@@ -634,8 +628,8 @@ def tela_principal():
         
         cidade = c5.text_input("Cidade", value=dp.get("cidade", ""))
         
-        # 🚀 AÇÃO DE SALVAMENTO SEGURA (Sem tela vermelha no celular)
-        if st.button("💾 Salvar Alterações", use_container_width=True, type="primary"):
+        # 🚀 AÇÃO DE SALVAMENTO E REDIRECIONAMENTO AUTOMÁTICO
+        if st.button("💾 Salvar Alterações e Desbloquear Sistema", use_container_width=True, type="primary"):
             if not nome_exibicao or not cpf_cnpj or not whatsapp:
                 st.error("⚠️ Os campos Nome, WhatsApp e CPF/CNPJ são obrigatórios!")
             else:
@@ -663,18 +657,25 @@ def tela_principal():
                     dados_salvar["indicado_por"] = dp.get('indicado_por')
                 
                 try:
-                    res_check = supabase.table("perfis_clientes").select("id").eq("email", email_logado.strip().lower()).execute()
+                    # Modificado apenas a busca de atualização para user_id para garantir segurança na gravação
+                    res_check = supabase.table("perfis_clientes").select("id").eq("user_id", st.session_state['dados_usuario'].id).execute()
                     if res_check.data:
-                        supabase.table("perfis_clientes").update(dados_salvar).eq("email", email_logado.strip().lower()).execute()
+                        supabase.table("perfis_clientes").update(dados_salvar).eq("user_id", st.session_state['dados_usuario'].id).execute()
                     else:
                         supabase.table("perfis_clientes").insert(dados_salvar).execute()
                         
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
-                    st.rerun() 
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME E ABERTURA DO MENU
+                    st.session_state['menu_navegacao'] = "🏠 Home"
+                    st.rerun()
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
+                    
+                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME (Caso caia no bloco de segurança)
+                    st.session_state['menu_navegacao'] = "🏠 Home"
                     st.rerun()
 
     # -----------------------------------------
@@ -1594,7 +1595,7 @@ def tela_principal():
             st.markdown("---")
             c_m1, c_m2 = st.columns(2)
             up_mid1 = c_m1.file_uploader("Upload Imagem Meio Esquerda (Banner Fixo)", type=['png', 'jpg', 'jpeg'])
-            up_vid = c_m2.file_uploader("Upload Ví Principal (Banner Fixo)", type=['mp4', 'mov'])
+            up_vid = c_m2.file_uploader("Upload Vídeo Principal (Banner Fixo)", type=['mp4', 'mov'])
             
             st.markdown("#### Galeria de Campanhas Extra (Até 8 Imagens)")
             c_up1, c_up2, c_up3, c_up4 = st.columns(4)
