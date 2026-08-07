@@ -86,10 +86,7 @@ def injetar_css_profissional():
         <style>
         /* =========================================
            A. CABEÇALHO NATIVO - INTOCÁVEL
-           (Não vamos colocar cores forçadas para não bugar a seta no PC)
            ========================================= */
-        
-        /* Oculta apenas as ferramentas extras da direita (GitHub) de forma segura */
         [data-testid="stToolbar"] { display: none !important; }
         .stDeployButton { display: none !important; }
         .viewerBadge_container { display: none !important; }
@@ -272,7 +269,7 @@ def tela_principal():
         return
 
     # =========================================================
-    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO (CORRIGIDO PARA NÃO REPETIR CADASTRO)
+    # TRAVA DE SEGURANÇA 1: BUSCA DE PERFIL NO BANCO 
     # =========================================================
     if 'perfil_preenchido' not in st.session_state:
         try:
@@ -657,7 +654,6 @@ def tela_principal():
                     dados_salvar["indicado_por"] = dp.get('indicado_por')
                 
                 try:
-                    # Modificado apenas a busca de atualização para user_id para garantir segurança na gravação
                     res_check = supabase.table("perfis_clientes").select("id").eq("user_id", st.session_state['dados_usuario'].id).execute()
                     if res_check.data:
                         supabase.table("perfis_clientes").update(dados_salvar).eq("user_id", st.session_state['dados_usuario'].id).execute()
@@ -667,14 +663,12 @@ def tela_principal():
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
                     
-                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME E ABERTURA DO MENU
                     st.session_state['menu_navegacao'] = "🏠 Home"
                     st.rerun()
                 except Exception as e:
                     st.session_state['perfil_preenchido'] = True
                     st.session_state['dados_perfil'] = dados_salvar
                     
-                    # 🚀 O REDIRECIONAMENTO MÁGICO PARA A HOME (Caso caia no bloco de segurança)
                     st.session_state['menu_navegacao'] = "🏠 Home"
                     st.rerun()
 
@@ -1506,7 +1500,7 @@ def tela_principal():
                 except Exception as ex:
                     st.error(f"⚠️ O banco recusou a gravação. O erro exato foi: {ex}")
                 
-       with aba_acesso:
+        with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
             
             # --- LISTA AUTOMÁTICA DE E-MAILS CADASTRADOS ---
@@ -1542,7 +1536,7 @@ def tela_principal():
                 if email_alvo_bloqueio in st.session_state['usuarios_bloqueados']:
                     st.session_state['usuarios_bloqueados'].remove(email_alvo_bloqueio)
                     st.success(f"O acesso de {email_alvo_bloqueio} foi RESTAURADO.")
-                    
+
         with aba_relogio:
             st.markdown("### ⏳ Configurar Data do Próximo Processo")
             nova_data_rel = st.date_input("Selecione a nova data limite", value=datetime.date(2026, 8, 5))
