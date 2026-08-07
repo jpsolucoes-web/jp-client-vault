@@ -1506,9 +1506,32 @@ def tela_principal():
                 except Exception as ex:
                     st.error(f"⚠️ O banco recusou a gravação. O erro exato foi: {ex}")
                 
-        with aba_acesso:
+       with aba_acesso:
             st.markdown("### 🚫 Bloquear ou Desbloquear Usuários")
-            email_alvo_bloqueio = st.text_input("E-mail do Usuário Alvo")
+            
+            # --- LISTA AUTOMÁTICA DE E-MAILS CADASTRADOS ---
+            st.markdown("#### 👥 Lista de E-mails e Usuários Cadastrados")
+            try:
+                res_users = supabase.table("perfis_clientes").select("nome_exibicao, email, whatsapp").execute()
+                if res_users.data:
+                    df_users = pd.DataFrame(res_users.data)
+                    df_users['Status de Acesso'] = df_users['email'].apply(
+                        lambda x: "🚫 BLOQUEADO" if x in st.session_state['usuarios_bloqueados'] else "✅ ATIVO"
+                    )
+                    df_users = df_users.rename(columns={
+                        "nome_exibicao": "Nome do Cliente", 
+                        "email": "E-mail Cadastrado", 
+                        "whatsapp": "WhatsApp"
+                    })
+                    st.dataframe(df_users, use_container_width=True, hide_index=True)
+                else:
+                    st.info("Nenhum usuário completou o cadastro do perfil ainda.")
+            except Exception as e:
+                st.error(f"Erro ao buscar lista de usuários: {e}")
+                
+            st.markdown("---")
+
+            email_alvo_bloqueio = st.text_input("E-mail do Usuário Alvo (Copie da tabela acima)")
             c_btn_blk1, c_btn_blk2 = st.columns(2)
             if c_btn_blk1.button("🔒 BLOQUEAR ACESSO", type="primary", use_container_width=True):
                 if email_alvo_bloqueio:
